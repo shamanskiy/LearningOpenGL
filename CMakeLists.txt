@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.10)
 
 project(LearningOpenGL
       VERSION 1.0
@@ -27,11 +27,10 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
 endif()
 
-find_library(OpenGL_LIBRARY OpenGL REQUIRED)
+find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(glfw3 REQUIRED)
-
-message("${OpenGL_LIBRARY}")
+#find_package(glm)
 
 if(OpenGL_FOUND)
   message("Got OpenGL")
@@ -50,7 +49,9 @@ endif()
 
 
 # The compiled library code is here
-#add_subdirectory(src)
+add_subdirectory(src)
 
 # The executable code is here
 add_subdirectory(apps)
+
+add_definitions(-DSHADERS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/shaders/") 

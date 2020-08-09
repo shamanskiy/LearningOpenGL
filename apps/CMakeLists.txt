@@ -1,9 +1,9 @@
 # create a target to build
-add_executable(cameraMove main.cpp)
+add_executable(cameraMove cameraMove.cpp)
 
 #
-target_link_libraries(cameraMove PRIVATE ${OpenGL_LIBRARY} GLEW::GLEW glfw)
+target_link_libraries(cameraMove PRIVATE OpenGL::GL GLEW::GLEW glfw learningOpenGL)
 
-target_include_directories(cameraMove PRIVATE /usr/local/include)
+target_include_directories(cameraMove PRIVATE ../src)
 
 #install(TARGETS appA DESTINATION bin)
