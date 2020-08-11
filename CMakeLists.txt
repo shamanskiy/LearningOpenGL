@@ -5,27 +5,11 @@ project(LearningOpenGL
       DESCRIPTION "OpenGL exercises following the OpenGL tutorial by Ben Cook from Udemy.com"
       LANGUAGES CXX)
 
-# Only do these if this is the main project, and not if it is included through add_subdirectory
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+# Let's ensure -std=c++xx instead of -std=g++xx
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-    # Let's ensure -std=c++xx instead of -std=g++xx
-    set(CMAKE_CXX_EXTENSIONS OFF)
-
-    # Let's nicely support folders in IDEs
-    set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
-    # Testing only available if this is the main app
-#    include(CTest)
-
-    # Docs only available if this is the main app
-    #find_package(Doxygen)
-    #if(Doxygen_FOUND)
-    #  add_subdirectory(docs)
-  #else()
-  #    message(STATUS "Doxygen not found, not building docs")
-#  endif()
-
-endif()
+# Let's nicely support folders in IDEs
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # find necessary libraries
 find_package(OpenGL REQUIRED)
