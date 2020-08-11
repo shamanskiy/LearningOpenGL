@@ -1,0 +1,5 @@
+// the configured options and settings
+#define LEARNING_OPENGL_VERSION_MAJOR @LearningOpenGL_VERSION_MAJOR@
+#define LEARNING_OPENGL_VERSION_MINOR @LearningOpenGL_VERSION_MINOR@
+
+#define LEARNING_OPENGL_SHADERS_DIR "@SHADERS_DIR@"

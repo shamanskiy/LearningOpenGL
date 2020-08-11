@@ -13,19 +13,9 @@
 #include "Mesh.h"
 #include "Shader.h"
 #include "Camera.h"
+#include "Config.h"
 
-// Window dimensions
-const GLint WIDTH = 800, HEIGHT = 600;
-
-// container with objects to draw
-std::vector<Mesh *> objects;
-
-// vertex shader filename
-std::string vShader = SHADERS_DIR"/vShader.txt";
-// fragment shader filename
-std::string fShader = SHADERS_DIR"/fShader.txt";
-
-void CreateObjects()
+void CreateObjects(std::vector<Mesh *> & objects)
 {
     GLfloat vertices[] = {
         -1.0f, -1.0f, 0.0f,
@@ -48,6 +38,8 @@ void CreateObjects()
 
 int main() {
 
+    // Window dimensions
+    const GLint WIDTH = 800, HEIGHT = 600;
     // create & initialize main window
     Window mainWindow(WIDTH,HEIGHT);
     if (mainWindow.initialize() != 0)
@@ -56,13 +48,23 @@ int main() {
         return 1;
     }
 
-    // create objects on GPU
-    CreateObjects();
+    // container with pointers to objects to draw
+    std::vector<Mesh *> objects;
+    // create objects on GPU and save pointers to objects
+    CreateObjects(objects);
 
-    // create camera object
-    Camera camera(glm::vec3(0.0f,0.0f,0.0f), glm::vec3(0.0f,1.0f,0.0f),
-                  -90.0f,0.0f,10.0f,0.05f);
+    // create acamera object
+    Camera camera(glm::vec3(0.0f,0.0f,0.0f), // centered at the origin
+                  glm::vec3(0.0f,1.0f,0.0f), // global up direction
+                  -90.0f,                    // initial pitch -> along -Z axis
+                  0.0f,                      // initial yaw -> strictly horizontal
+                  10.0f,                     // linear move speed pixel/sec
+                  0.05f);                    // rotational move speed a.k.a. mouse sensitivity
 
+    // vertex shader filename
+    std::string vShader = std::string(LEARNING_OPENGL_SHADERS_DIR) + "/vShader.txt";
+    // fragment shader filename
+    std::string fShader = std::string(LEARNING_OPENGL_SHADERS_DIR) + "/fShader.txt";
     // create and compile shaders on GPU
     Shader shader;
     shader.createFromFile(vShader, fShader);
@@ -94,33 +96,37 @@ int main() {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        // activate/bind a shader to use it
         shader.useShader();
+        // get locations of uniform variables on the GPU
         uniModel = shader.getUniformModel();
         uniView = shader.getUniformView();
         uniProjection = shader.getUniformProjection();
-        glUniformMatrix4fv(uniProjection,1,GL_FALSE,glm::value_ptr(projection));
+        // copy view and projection matrices to the GPU
         glUniformMatrix4fv(uniView,1,GL_FALSE,glm::value_ptr(camera.viewMatrix()));
+        glUniformMatrix4fv(uniProjection,1,GL_FALSE,glm::value_ptr(projection));
 
-
+        // set model matrix for the first object and copy in to the GPU
         glm::mat4 model(1.0f);
         model = glm::translate(model, glm::vec3(0.0f,0.0f,-5.0f));
-        //model = glm::scale(model,glm::vec3(0.5f,0.5f,1.0f));
         glUniformMatrix4fv(uniModel,1,GL_FALSE,glm::value_ptr(model));
         objects[0]->renderMesh();
 
+        // set model matrix for the second object and copy in to the GPU
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(2.0f,2.0f,-5.0f));
-        //model = glm::scale(model,glm::vec3(0.5f,0.5f,1.0f));
         glUniformMatrix4fv(uniModel,1,GL_FALSE,glm::value_ptr(model));
         objects[0]->renderMesh();
 
+        // deactivate/unbind shader
         glUseProgram(0);
 
+        // refresh the screen buffer (actual draw)
         mainWindow.swapBuffers();
     }
 
     delete objects[0];
-
+    delete objects[1];
 
     return 0;
 }

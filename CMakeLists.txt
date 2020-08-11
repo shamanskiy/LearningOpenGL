@@ -27,31 +27,22 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
 endif()
 
+# find necessary libraries
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(glfw3 REQUIRED)
-#find_package(glm)
-
-if(OpenGL_FOUND)
-  message("Got OpenGL")
-  message("${OpenGL_LIBS}")
-endif()
-
-
-if(GLEW_FOUND)
-  message("got GLEW")
-  message("${GLEW_LIBS}")
-endif()
-
-if (glfw3_FOUND)
-  message("got glfw3")
-endif()
-
 
 # The compiled library code is here
 add_subdirectory(src)
 
 # The executable code is here
-add_subdirectory(apps)
+add_subdirectory(bin)
 
-add_definitions(-DSHADERS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/shaders/") 
+# define a variable with the path to shaders; it will be configured in Config.h and made available in the code as LEARNING_OPENGL_SHADERS_DIR
+set(SHADERS_DIR "${PROJECT_SOURCE_DIR}/shaders")
+
+# configure Config.h to define
+# LEARNING_OPENGL_SHADERS_DIR
+# LEARNING_OPENGL_VERSION_MAJOR
+# LEARNING_OPENGL_VERSION_MINOR
+configure_file("${PROJECT_SOURCE_DIR}/src/Config.h.in" "${PROJECT_BINARY_DIR}/src/Config.h")
