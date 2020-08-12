@@ -19,27 +19,65 @@
 #include "Config.h"
 #include "Texture.h"
 
-void CreateObjects(std::vector<Mesh *> & objects)
+Mesh * CreatePyramid()
 {
     // 3 coordinates in 3D space, 2 texture coordinates
     GLfloat vertices[] = {
         // x     y     z     u     v
-        -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, -1.0f, -1.0f, 0.5f, 0.0f,
-        0.0f, 2.0f, 0.0f, 1.0f, 0.0f,
-        1.0f, 0.0f, 0.0f, 0.5, 1.0f
+        -1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+        1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+        -1.0f, 0.0f, -1.0f, 1.0f, 0.0f,
+        1.0f, 0.0f, -1.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.5f, 1.0f
     };
 
     unsigned int elements[] = {
-        0,3,1,
-        1,3,2,
-        2,3,0,
-        0,1,2
+        0, 1, 4,
+        1, 3, 4,
+        3, 2, 4,
+        2, 0, 4,
+        0, 1, 2,
+        1, 3, 2
     };
 
-    Mesh * obj1 = new Mesh();
-    obj1->createMesh(vertices,elements,20,12);
-    objects.push_back(obj1);
+    Mesh * obj = new Mesh();
+    obj->createMesh(vertices,elements,25,18);
+    return obj;
+}
+
+Mesh * CreateCube()
+{
+    // 3 coordinates in 3D space, 2 texture coordinates
+    GLfloat vertices[] = {
+        // x     y     z     u     v
+        0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+        1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+        1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+        0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+        1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+    };
+
+    unsigned int elements[] = {
+        0, 1, 2,
+        1, 3, 2,
+        1, 5, 3,
+        5, 7, 3,
+        5, 4, 7,
+        4, 6, 7,
+        4, 0, 6,
+        0, 2, 6,
+        0, 1, 5,
+        5, 4, 0,
+        2, 3, 6,
+        3, 7, 6
+    };
+
+    Mesh * obj = new Mesh();
+    obj->createMesh(vertices,elements,40,36);
+    return obj;
 }
 
 int main() {
@@ -57,16 +95,17 @@ int main() {
     // container with pointers to objects to draw
     std::vector<Mesh *> objects;
     // create objects on GPU and save pointers to objects
-    CreateObjects(objects);
+    objects.push_back(CreatePyramid());
+    objects.push_back(CreateCube());
 
     // create texture objects
     Texture brick(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/textures/brick.png");
     brick.loadTexture();
-    Texture dirt(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/textures/dirt.png");
-    dirt.loadTexture();
+    Texture straw(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/textures/straw2.png");
+    straw.loadTexture();
 
     // create acamera object
-    Camera camera(glm::vec3(0.0f,0.0f,0.0f), // centered at the origin
+    Camera camera(glm::vec3(0.0f,-0.5f,5.0f), // centered at the origin
                   glm::vec3(0.0f,1.0f,0.0f), // global up direction
                   -90.0f,                    // initial pitch -> along -Z axis
                   0.0f,                      // initial yaw -> strictly horizontal
@@ -120,22 +159,22 @@ int main() {
 
         // set model matrix for the first object and copy in to the GPU
         glm::mat4 model(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f,0.0f,-5.0f));
+        model = glm::translate(model, glm::vec3(0.0f,0.0f,0.0f));
         glUniformMatrix4fv(uniModel,1,GL_FALSE,glm::value_ptr(model));
-
         // activate texture
-        brick.useTexture();
+        straw.useTexture();
         // render object
         objects[0]->renderMesh();
 
         // set model matrix for the second object and copy in to the GPU
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(2.0f,2.0f,-5.0f));
+        model = glm::translate(model, glm::vec3(-1.0f,-2.0f,-1.0f));
+        model = glm::scale(model, glm::vec3(2.0,2.0,2.0));
         glUniformMatrix4fv(uniModel,1,GL_FALSE,glm::value_ptr(model));
         // activate texture
-        dirt.useTexture();
+        brick.useTexture();
         // render object
-        objects[0]->renderMesh();
+        objects[1]->renderMesh();
 
         // deactivate/unbind shader
         glUseProgram(0);

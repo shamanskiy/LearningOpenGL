@@ -1,7 +1,5 @@
 #include "Texture.h"
 
-#include <stb_image.h>
-
 #include <iostream>
 
 Texture::Texture() :
@@ -31,15 +29,14 @@ void Texture::loadTexture()
     unsigned char *textureData = stbi_load(fileLoc.c_str(), &width, &height, &bitDepth, 0);
     if (!textureData)
         std::cout << "Failed to find a texture in " << fileLoc << std::endl;
-
     // create texture object on the GPU
     glGenTextures(1, &textureID);
     // activate/bind texture object for future operations
     glBindTexture(GL_TEXTURE_2D, textureID);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // x-wrap option (s is x for textures)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // x-wrap option (s is x for textures) GL_REPEAT GL_MIRRORED_REPEAT GL_CLAMP_TO_EDGE GL_CLAMP_TO_BORDER
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); // y-wrap option (t is y for textures)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // texture scaling on zoom-out (related to mipmaps?)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // texture scaling on zoom-out (related to mipmaps?) GL_LINEAR or GL_NEAREST
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // texture scaling on zoom-in (related to mipmaps?)
 
     glTexImage2D(GL_TEXTURE_2D, 0, // mipmap level
