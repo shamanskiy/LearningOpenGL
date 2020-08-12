@@ -3,6 +3,7 @@
 #include <string>
 
 #include <GL/glew.h>
+// must be here for some reason; can't move to Texture.cpp
 #include <stb_image.h>
 
 // Texture is a class for loading and managing textures

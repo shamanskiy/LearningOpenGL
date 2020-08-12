@@ -1,3 +1,6 @@
+// some funny preprocessor command to enable stb_image library
+#define STB_IMAGE_IMPLEMENTATION
+
 #include <iostream>
 #include <cmath>
 #include <vector>
@@ -14,14 +17,17 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Config.h"
+#include "Texture.h"
 
 void CreateObjects(std::vector<Mesh *> & objects)
 {
+    // 3 coordinates in 3D space, 2 texture coordinates
     GLfloat vertices[] = {
-        -1.0f, -1.0f, 0.0f,
-        0.0f, -1.0f, -1.0f,
-        0.0f, 2.0f, 0.0f,
-        1.0f, 0.0f, 0.0f
+        // x     y     z     u     v
+        -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, -1.0f, -1.0f, 0.5f, 0.0f,
+        0.0f, 2.0f, 0.0f, 1.0f, 0.0f,
+        1.0f, 0.0f, 0.0f, 0.5, 1.0f
     };
 
     unsigned int elements[] = {
@@ -32,7 +38,7 @@ void CreateObjects(std::vector<Mesh *> & objects)
     };
 
     Mesh * obj1 = new Mesh();
-    obj1->createMesh(vertices,elements,12,12);
+    obj1->createMesh(vertices,elements,20,12);
     objects.push_back(obj1);
 }
 
@@ -53,6 +59,12 @@ int main() {
     // create objects on GPU and save pointers to objects
     CreateObjects(objects);
 
+    // create texture objects
+    Texture brick(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/textures/brick.png");
+    brick.loadTexture();
+    Texture dirt(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/textures/dirt.png");
+    dirt.loadTexture();
+
     // create acamera object
     Camera camera(glm::vec3(0.0f,0.0f,0.0f), // centered at the origin
                   glm::vec3(0.0f,1.0f,0.0f), // global up direction
@@ -62,9 +74,9 @@ int main() {
                   0.05f);                    // rotational move speed a.k.a. mouse sensitivity
 
     // vertex shader filename
-    std::string vShader = std::string(LEARNING_OPENGL_SHADERS_DIR) + "/vShader.txt";
+    std::string vShader = std::string(LEARNING_OPENGL_SOURCE_PATH) + "/shaders/vShader.txt";
     // fragment shader filename
-    std::string fShader = std::string(LEARNING_OPENGL_SHADERS_DIR) + "/fShader.txt";
+    std::string fShader = std::string(LEARNING_OPENGL_SOURCE_PATH) + "/shaders/fShader.txt";
     // create and compile shaders on GPU
     Shader shader;
     shader.createFromFile(vShader, fShader);
@@ -110,12 +122,19 @@ int main() {
         glm::mat4 model(1.0f);
         model = glm::translate(model, glm::vec3(0.0f,0.0f,-5.0f));
         glUniformMatrix4fv(uniModel,1,GL_FALSE,glm::value_ptr(model));
+
+        // activate texture
+        brick.useTexture();
+        // render object
         objects[0]->renderMesh();
 
         // set model matrix for the second object and copy in to the GPU
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(2.0f,2.0f,-5.0f));
         glUniformMatrix4fv(uniModel,1,GL_FALSE,glm::value_ptr(model));
+        // activate texture
+        dirt.useTexture();
+        // render object
         objects[0]->renderMesh();
 
         // deactivate/unbind shader

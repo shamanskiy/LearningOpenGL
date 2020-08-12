@@ -22,11 +22,8 @@ add_subdirectory(src)
 # The executable code is here
 add_subdirectory(bin)
 
-# define a variable with the path to shaders; it will be configured in Config.h and made available in the code as LEARNING_OPENGL_SHADERS_DIR
-set(SHADERS_DIR "${PROJECT_SOURCE_DIR}/shaders")
-
 # configure Config.h to define
-# LEARNING_OPENGL_SHADERS_DIR
+# LEARNING_OPENGL_SOURCE_PATH
 # LEARNING_OPENGL_VERSION_MAJOR
 # LEARNING_OPENGL_VERSION_MINOR
 configure_file("${PROJECT_SOURCE_DIR}/src/Config.h.in" "${PROJECT_BINARY_DIR}/src/Config.h")
