@@ -18,6 +18,7 @@
 #include "Camera.h"
 #include "Config.h"
 #include "Texture.h"
+#include "Light.h"
 
 Mesh * CreatePyramid()
 {
@@ -122,6 +123,9 @@ int main() {
     Texture straw(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/textures/straw.png");
     straw.loadTexture();
 
+    // create light objects
+    Light light(1.0f, 1.0f, 1.0f, 1.0f); // white light, full intensity
+
     // create acamera object
     Camera camera(glm::vec3(1.5f,2.5f,3.5f), // centered at the origin
                   glm::vec3(0.0f,1.0f,0.0f), // global up direction
@@ -137,7 +141,7 @@ int main() {
     // create and compile shaders on GPU
     Shader shader;
     shader.createFromFile(vShader, fShader);
-    GLuint uniModel, uniView, uniProjection;
+    GLuint uniModel, uniView, uniProjection, uniAmbientColor, uniAmbientIntensity;
 
     // projection matrix
     glm::mat4 projection(1.0f);
@@ -171,9 +175,15 @@ int main() {
         uniModel = shader.getUniformModel();
         uniView = shader.getUniformView();
         uniProjection = shader.getUniformProjection();
+        uniAmbientColor = shader.getUniformAmbientColor();
+        uniAmbientIntensity = shader.getUniformAmbientIntensity();
+
         // copy view and projection matrices to the GPU
         glUniformMatrix4fv(uniView,1,GL_FALSE,glm::value_ptr(camera.viewMatrix()));
         glUniformMatrix4fv(uniProjection,1,GL_FALSE,glm::value_ptr(projection));
+
+        // activate Light
+        light.useLight(uniAmbientColor, uniAmbientIntensity);
 
         // set model matrix for the floor and copy in to the GPU
         glm::mat4 model(1.0f);

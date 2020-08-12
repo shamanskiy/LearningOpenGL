@@ -9,30 +9,32 @@ class Shader
 {
 private:
     // shader ID on GPU and IDs of uniform variables
-    GLuint shaderID, uniModel, uniView, uniProjection;
-    
+    GLuint shaderID, uniModel, uniView, uniProjection, uniAmbientColor, uniAmbientIntensity;
+
 public:
     // default constructor, does not initialize anything on GPU
     Shader();
     ~Shader();
-    
+
     // pass shader codes as C strings
     void createFromString(const std::string & vertexShaderCode,
                         const std::string & fragmentShaderCode);
     // read shader codes from files
     void createFromFile(const std::string & vertexShaderFilename,
                        const std::string & fragmentShaderFilename);
-    
+
     // get IDs of uniform variables to set model, view and projection matrices
     GLuint getUniformModel() { return uniModel; }
     GLuint getUniformView() { return uniView; }
-    GLuint getUniformProjection() {return uniProjection; }
-    
+    GLuint getUniformProjection() { return uniProjection; }
+    GLuint getUniformAmbientColor() { return uniAmbientColor; }
+    GLuint getUniformAmbientIntensity() { return uniAmbientIntensity; }
+
     // activate shader for further use
     void useShader() { glUseProgram(shaderID); }
     // free memory on GPU
     void deleteShader();
-    
+
 private:
     // compile shader on GPU
     void compileShader(const std::string & vShader,
