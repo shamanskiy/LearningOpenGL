@@ -35,13 +35,11 @@ Mesh * CreatePyramid()
         0, 1, 4,
         1, 3, 4,
         3, 2, 4,
-        2, 0, 4,
-        0, 1, 2,
-        1, 3, 2
+        2, 0, 4
     };
 
     Mesh * obj = new Mesh();
-    obj->createMesh(vertices,elements,25,18);
+    obj->createMesh(vertices,elements,25,12);
     return obj;
 }
 
@@ -68,11 +66,28 @@ Mesh * CreateCube()
         5, 4, 7,
         4, 6, 7,
         4, 0, 6,
-        0, 2, 6,
-        0, 1, 5,
-        5, 4, 0,
-        2, 3, 6,
-        3, 7, 6
+        0, 2, 6
+    };
+
+    Mesh * obj = new Mesh();
+    obj->createMesh(vertices,elements,40,24);
+    return obj;
+}
+
+Mesh * CreateFloor()
+{
+    // 3 coordinates in 3D space, 2 texture coordinates
+    GLfloat vertices[] = {
+        // x     y     z     u     v
+        0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+        1.0f, 0.0f, 0.0f, 10.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 0.0f, 10.0f,
+        1.0f, 0.0f, 1.0f, 10.0f, 10.0f
+    };
+
+    unsigned int elements[] = {
+        0, 1, 2,
+        1, 3, 2,
     };
 
     Mesh * obj = new Mesh();
@@ -95,20 +110,23 @@ int main() {
     // container with pointers to objects to draw
     std::vector<Mesh *> objects;
     // create objects on GPU and save pointers to objects
-    objects.push_back(CreatePyramid());
+    objects.push_back(CreateFloor());
     objects.push_back(CreateCube());
+    objects.push_back(CreatePyramid());
 
     // create texture objects
+    Texture grass(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/textures/grass.png");
+    grass.loadTexture();
     Texture brick(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/textures/brick.png");
     brick.loadTexture();
-    Texture straw(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/textures/straw2.png");
+    Texture straw(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/textures/straw.png");
     straw.loadTexture();
 
     // create acamera object
-    Camera camera(glm::vec3(0.0f,-0.5f,5.0f), // centered at the origin
+    Camera camera(glm::vec3(1.5f,2.5f,3.5f), // centered at the origin
                   glm::vec3(0.0f,1.0f,0.0f), // global up direction
-                  -90.0f,                    // initial pitch -> along -Z axis
-                  0.0f,                      // initial yaw -> strictly horizontal
+                  -110.0f,                    // initial pitch -> along -Z axis
+                  -20.0f,                      // initial yaw -> strictly horizontal
                   10.0f,                     // linear move speed pixel/sec
                   0.05f);                    // rotational move speed a.k.a. mouse sensitivity
 
@@ -157,24 +175,34 @@ int main() {
         glUniformMatrix4fv(uniView,1,GL_FALSE,glm::value_ptr(camera.viewMatrix()));
         glUniformMatrix4fv(uniProjection,1,GL_FALSE,glm::value_ptr(projection));
 
-        // set model matrix for the first object and copy in to the GPU
+        // set model matrix for the floor and copy in to the GPU
         glm::mat4 model(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f,0.0f,0.0f));
+        model = glm::scale(model, glm::vec3(10.0,10.0,10.0));
+        model = glm::translate(model, glm::vec3(-0.5f,0.0f,-0.5f));
         glUniformMatrix4fv(uniModel,1,GL_FALSE,glm::value_ptr(model));
         // activate texture
-        straw.useTexture();
-        // render object
+        grass.useTexture();
+        // render the floor
         objects[0]->renderMesh();
 
-        // set model matrix for the second object and copy in to the GPU
+        // set model matrix for the cube and copy in to the GPU
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(-1.0f,-2.0f,-1.0f));
         model = glm::scale(model, glm::vec3(2.0,2.0,2.0));
+        model = glm::translate(model, glm::vec3(-0.5f,0.0f,-0.5f));
         glUniformMatrix4fv(uniModel,1,GL_FALSE,glm::value_ptr(model));
         // activate texture
         brick.useTexture();
-        // render object
+        // render the cube
         objects[1]->renderMesh();
+
+        // set model matrix for the pyramid and copy in to the GPU
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f,2.0f,0.0f));
+        glUniformMatrix4fv(uniModel,1,GL_FALSE,glm::value_ptr(model));
+        // activate texture
+        straw.useTexture();
+        // render the cube
+        objects[2]->renderMesh();
 
         // deactivate/unbind shader
         glUseProgram(0);
@@ -183,8 +211,8 @@ int main() {
         mainWindow.swapBuffers();
     }
 
-    delete objects[0];
-    delete objects[1];
+    for (auto &it : objects)
+        delete it;
 
     return 0;
 }

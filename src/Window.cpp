@@ -24,7 +24,7 @@ Window::~Window()
 int Window::initialize()
 {
     // ================================ GLFW ============================//
-    
+
     // Initialise GLFW
     if (!glfwInit())
     {
@@ -32,7 +32,7 @@ int Window::initialize()
         glfwTerminate();
         return 1;
     }
-    
+
     // Setup GLFW window properties
     // OpenGL version
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -41,36 +41,36 @@ int Window::initialize()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     // Allow Forward Compatbility
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    
+
     // Create the window
-    mainWindow = glfwCreateWindow(width, height, "First triangle", nullptr, nullptr);
+    mainWindow = glfwCreateWindow(width, height, "OpenGL App", nullptr, nullptr);
     if (!mainWindow)
     {
         std::cout << "GLFW window creation failed\n";
         glfwTerminate();
         return 1;
     }
-    
+
     // Get Buffer Size information
     glfwGetFramebufferSize(mainWindow, &bufferWidth, &bufferHeight);
-    
+
     // set auxiliary pointer for the static function "handleKeys" to access the Window class instance
     glfwSetWindowUserPointer(mainWindow,this);
-    
+
     // set a callback function to handle keyboard events
     glfwSetKeyCallback(mainWindow, handleKeys);
-    
+
     // set a callback function to handle mouse events
     glfwSetCursorPosCallback(mainWindow, handleMouse);
     // bind cursor to the window
     glfwSetInputMode(mainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    
-    
+
+
     // ================================ GLEW ============================//
-    
+
     // Set context for GLEW to use
     glfwMakeContextCurrent(mainWindow);
-    
+
     // Allow modern extension features
     glewExperimental = GL_TRUE;
 
@@ -81,14 +81,14 @@ int Window::initialize()
         glfwTerminate();
         return 1;
     }
-    
+
     // ================================ OpenGL ============================//
-    
+
     glEnable(GL_DEPTH_TEST);
-    
+
     // Setup Viewport size
     glViewport(0, 0, bufferWidth, bufferHeight);
-    
+
     return 0;
 }
 
@@ -99,10 +99,10 @@ void Window::handleKeys(GLFWwindow* window, int key, int code,
     // associated with the GLFW window handling the event.
     // Look a bit unsafe though
     Window* theWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
-    
+
     if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
         glfwSetWindowShouldClose(window, GL_TRUE);
-    
+
     if (key >= 0 && key < 1024)
     {
         if (action == GLFW_PRESS)
@@ -118,14 +118,14 @@ void Window::handleMouse(GLFWwindow* window, double xPos, double yPos)
     // associated with the GLFW window handling the event.
     // Look a bit unsafe though
     Window* theWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
-    
+
     if (theWindow->mouseFirstMove)
     {
         theWindow->lastX = xPos;
         theWindow->lastY = yPos;
         theWindow->mouseFirstMove = false;
     }
-    
+
     theWindow->changeX = xPos - theWindow->lastX;
     theWindow->changeY = theWindow->lastY - yPos;
     theWindow->lastX = xPos;
