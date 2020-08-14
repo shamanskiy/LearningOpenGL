@@ -16,6 +16,12 @@ find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(glfw3 REQUIRED)
 
+find_path(glm_INCLUDE_DIR glm/glm.hpp REQUIRED)
+include_directories(${glm_INCLUDE_DIR})
+
+find_path(stb_image_INCLUDE_DIR stb_image.h REQUIRED)
+include_directories(${stb_image_INCLUDE_DIR})
+
 # The compiled library code is here
 add_subdirectory(src)
 
