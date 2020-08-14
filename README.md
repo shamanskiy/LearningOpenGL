@@ -31,4 +31,9 @@ cmake .. -G "XCode"
 You may try configuring for `make` but since OpenGL is deprecated since MacOS 10.14 Mojave you may run into troubles (just like I did).
 
 #### Windows
-I haven't tested it yet, sorry. But you may try. Good luck!
+Use CMake-gui or cmake to configure the project for Visual Studio. 
+I use [vcpkg](https://github.com/microsoft/vcpkg) to install all dependencies. For example:
+```
+./vcpkg install glfw3:x64-windows
+```
+Add a variable `CMAKE`
