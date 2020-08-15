@@ -33,13 +33,26 @@ make
 ```
 Nice and easy.
 #### MacOS
-Configure for XCode and compile there:
+Building on MacOS is very similar to building on Ubuntu. One of differences is that you use [brew](https://brew.sh/) instead of `apt` or `apt-get` to install dependencies:
+```
+brew install glew
+brew install glfw3
+brew install glm
+```
+For stb_image, download the [stb_image.h](https://github.com/nothings/stb/blob/master/stb_image.h) file and put it into `/usr/local/include`. After that, execute the following commands from the project directory:
 ```
 mkdir build
 cd build
-cmake .. -G "XCode"
+cmake ..
+make
 ```
-You may try configuring for `make` but since OpenGL is deprecated since MacOS 10.14 Mojave you may run into troubles (just like I did).
+Alternatively, use can configure the project for Xcode:
+```
+cmake .. -G "Xcode"
+```
+Then, open and build the project in Xcode.
+
+P.S. Make sure to update the [Command Line Tools](developer.apple.com/download/more) or you may run into troubles with linking the OpenGL framework.
 
 #### Windows
 You can use [vcpkg](https://github.com/microsoft/vcpkg) to install all necessary dependencies:
