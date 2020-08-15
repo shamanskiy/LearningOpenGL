@@ -14,13 +14,24 @@ The following libraries have to be installed to compile the project:
 ## How to build
 
 #### Ubuntu
-Nice and easy:
+Installing dependencies on Ubuntu is a piece of cake:
+```
+sudo
+apt-get update
+apt-get install libglew-dev
+apt-get install libglfw3
+apt-get install libglfw3-dev
+apt-get install libglm-dev
+```
+For stb_image, download the [stb_image.h](https://github.com/nothings/stb/blob/master/stb_image.h) file and put it into `/usr/local/include`.
+After that, execute the following commands from the project directory:
 ```
 mkdir build
 cd build
 cmake .. 
 make
 ```
+Nice and easy.
 #### MacOS
 Configure for XCode and compile there:
 ```
