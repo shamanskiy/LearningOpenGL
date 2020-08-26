@@ -123,10 +123,12 @@ int main() {
     Texture straw(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/textures/straw.png");
     straw.loadTexture();
 
-    // create light objects
-    Light light(1.0f, 1.0f, 1.0f, 1.0f); // white light, full intensity
+    // create a light objects
+    Light light(glm::vec3(1.0f,1.0f,1.0f), // white light
+                glm::vec3(0.0f,1.0f,0.0f), // comming from above
+                1.0f, 1.0f); // full ambient and diffuse intensity
 
-    // create acamera object
+    // create a camera object
     Camera camera(glm::vec3(1.5f,2.5f,3.5f), // centered at the origin
                   glm::vec3(0.0f,1.0f,0.0f), // global up direction
                   -110.0f,                    // initial pitch -> along -Z axis
@@ -183,7 +185,7 @@ int main() {
         glUniformMatrix4fv(uniProjection,1,GL_FALSE,glm::value_ptr(projection));
 
         // activate Light
-        light.useLight(uniAmbientColor, uniAmbientIntensity);
+        light.useLight(uniAmbientColor, 0, uniAmbientIntensity, 0);
 
         // set model matrix for the floor and copy in to the GPU
         glm::mat4 model(1.0f);

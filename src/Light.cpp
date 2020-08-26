@@ -1,20 +1,19 @@
 #include "Light.h"
 
-Light::Light() :
-    color(glm::vec3(1.0f,1.0f,1.0f)),
-    aIntensity(1.0f)
-{}
-
-Light::Light(GLfloat red, GLfloat green, GLfloat blue, GLfloat ambientIntensity) :
-    color(glm::vec3(red,green,blue)),
-    aIntensity(ambientIntensity)
+Light::Light(glm::vec3 lightColor, glm::vec3 lightDirection,
+             GLfloat ambientIntensity, GLfloat diffuseIntensity) :
+    color(lightColor),
+    direction(lightDirection),
+    aIntensity(ambientIntensity),
+    dIntensity(diffuseIntensity)
 {}
 
 Light::~Light()
 {}
 
-void Light::useLight(GLuint uniAmbientColor, GLuint uniAmbientIntensity)
+void Light::useLight(GLuint uniColor, GLuint uniDirection,
+              GLuint uniAmbientIntensity, GLuint uniDiffuseIntensity)
 {
-    glUniform3f(uniAmbientColor, color.x, color.y, color.z);
+    glUniform3f(uniColor, color.x, color.y, color.z);
     glUniform1f(uniAmbientIntensity, aIntensity);
 }
