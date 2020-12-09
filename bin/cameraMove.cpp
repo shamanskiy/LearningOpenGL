@@ -125,7 +125,7 @@ int main() {
 
     // create a light objects
     Light light(glm::vec3(1.0f,1.0f,1.0f), // white light
-                glm::vec3(0.0f,1.0f,0.0f), // comming from above
+                glm::vec3(0.0f,-1.0f,0.0f), // comming from above
                 1.0f, 1.0f); // full ambient and diffuse intensity
 
     // create a camera object
@@ -137,13 +137,14 @@ int main() {
                   0.05f);                    // rotational move speed a.k.a. mouse sensitivity
 
     // vertex shader filename
-    std::string vShader = std::string(LEARNING_OPENGL_SOURCE_PATH) + "/shaders/vShader.txt";
+    std::string vShader = std::string(LEARNING_OPENGL_SOURCE_PATH) + "/src/shaders/vShader.glsl";
     // fragment shader filename
-    std::string fShader = std::string(LEARNING_OPENGL_SOURCE_PATH) + "/shaders/fShader.txt";
+    std::string fShader = std::string(LEARNING_OPENGL_SOURCE_PATH) + "/src/shaders/fShader.glsl";
     // create and compile shaders on GPU
     Shader shader;
     shader.createFromFile(vShader, fShader);
-    GLuint uniModel, uniView, uniProjection, uniAmbientColor, uniAmbientIntensity;
+    GLuint uniModel, uniView, uniProjection,
+           uniLightColor, uniLightDirection, uniAmbientIntensity, uniDiffuseIntensity;
 
     // projection matrix
     glm::mat4 projection(1.0f);
@@ -177,15 +178,18 @@ int main() {
         uniModel = shader.getUniformModel();
         uniView = shader.getUniformView();
         uniProjection = shader.getUniformProjection();
-        uniAmbientColor = shader.getUniformAmbientColor();
+        
+        uniLightColor = shader.getUniformLightColor();
+        uniLightDirection = shader.getUniformLightDirection();
         uniAmbientIntensity = shader.getUniformAmbientIntensity();
+        uniDiffuseIntensity = shader.getUniformDiffuseIntensity();
 
         // copy view and projection matrices to the GPU
         glUniformMatrix4fv(uniView,1,GL_FALSE,glm::value_ptr(camera.viewMatrix()));
         glUniformMatrix4fv(uniProjection,1,GL_FALSE,glm::value_ptr(projection));
 
         // activate Light
-        light.useLight(uniAmbientColor, 0, uniAmbientIntensity, 0);
+        light.useLight(uniLightColor, 0, uniAmbientIntensity, 0);
 
         // set model matrix for the floor and copy in to the GPU
         glm::mat4 model(1.0f);

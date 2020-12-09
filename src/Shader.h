@@ -9,7 +9,9 @@ class Shader
 {
 private:
     // shader ID on GPU and IDs of uniform variables
-    GLuint shaderID, uniModel, uniView, uniProjection, uniAmbientColor, uniAmbientIntensity;
+    GLuint shaderID,
+    uniModel, uniView, uniProjection,
+    uniLightColor, uniLightDirection, uniAmbientIntensity, uniDiffuseIntensity;
 
 public:
     // default constructor, does not initialize anything on GPU
@@ -27,8 +29,10 @@ public:
     GLuint getUniformModel() { return uniModel; }
     GLuint getUniformView() { return uniView; }
     GLuint getUniformProjection() { return uniProjection; }
-    GLuint getUniformAmbientColor() { return uniAmbientColor; }
+    GLuint getUniformLightColor() { return uniLightColor; }
+    GLuint getUniformLightDirection() { return uniLightDirection; }
     GLuint getUniformAmbientIntensity() { return uniAmbientIntensity; }
+    GLuint getUniformDiffuseIntensity() { return uniDiffuseIntensity; }
 
     // activate shader for further use
     void useShader() { glUseProgram(shaderID); }
