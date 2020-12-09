@@ -3,7 +3,7 @@
 Light::Light(glm::vec3 lightColor, glm::vec3 lightDirection,
              GLfloat ambientIntensity, GLfloat diffuseIntensity) :
     color(lightColor),
-    direction(lightDirection),
+    direction(glm::normalize(lightDirection)),
     aIntensity(ambientIntensity),
     dIntensity(diffuseIntensity)
 {}

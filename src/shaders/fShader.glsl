@@ -1,6 +1,7 @@
 #version 330
 
 in vec2 texCoord;
+in vec3 normal;
 
 out vec4 colour;
 
@@ -19,5 +20,9 @@ void main()
 {
     vec4 ambientColor = vec4(light.color, 1.0f) * light.ambientIntensity;
 
-    colour = texture(texSampler, texCoord) * ambientColor;
+    // light direction is normalized at creation
+    float diffuseFactor = max(dot(normalize(normal),light.direction),0.0f);
+    vec4 diffuseColor = vec4(light.color,1.0f) * light.diffuseIntensity * diffuseFactor;
+    
+    colour = texture(texSampler, texCoord) * (ambientColor + diffuseColor);
 }
