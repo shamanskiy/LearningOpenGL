@@ -33,14 +33,19 @@ void Mesh::createMesh(GLfloat *vertices, unsigned int *indices, unsigned int num
     // we copy 5 values per vertex: the first 3 are the coordinates in 3D, the last 2 are the corresponding texture coordinates
     // here we tell OpenGl which values are coordinates
     // layout -> size of data (3 coordinates) -> type -> normalize -> stride -> offset
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * 5, 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * 8, 0);
     // enable (layout = 0), no need to search to the vertices when using the vertex shader (?)
     glEnableVertexAttribArray(0);
 
     // here we tell OpenGL which values are texture coordinates
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * 5, (void*)(sizeof(vertices[0]) * 3));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * 8, (void*)(sizeof(vertices[0]) * 3));
     // same as above
     glEnableVertexAttribArray(1);
+    
+    // here we tell OpenGL which values are normal components
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * 8, (void*)(sizeof(vertices[0]) * 5));
+    // same as above
+    glEnableVertexAttribArray(2);
 
     // create a Element Buffer Object on the GPU and store its number
     glGenBuffers(1, &EBO);
