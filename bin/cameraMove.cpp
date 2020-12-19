@@ -21,8 +21,6 @@
 #include "Light.h"
 #include "Primitive.h"
 
-
-
 int main() {
 
     // Window dimensions
@@ -41,8 +39,6 @@ int main() {
     objects.push_back(std::move(makePlane()));
     objects.push_back(std::move(makeCube()));
     objects.push_back(std::move(makePyramid()));
-    //auto plane = makePlane();
-    
 
     // create texture objects
     Texture grass(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/textures/grass.png");
@@ -58,23 +54,19 @@ int main() {
                 1.0f, 3.0f); // full ambient and diffuse intensity
 
     // create a camera object
-    Camera camera(glm::vec3(1.5f,2.5f,3.5f), // centered at the origin
-                  glm::vec3(0.0f,1.0f,0.0f), // global up direction
-                  -110.0f,                    // initial pitch -> along -Z axis
-                  -20.0f,                      // initial yaw -> strictly horizontal
-                  10.0f,                     // linear move speed pixel/sec
-                  0.05f);                    // rotational move speed a.k.a. mouse sensitivity
+    Camera camera(glm::vec3(1.5f,2.5f,3.5f), // initial location
+                  glm::vec3(0.0f,1.0f,0.0f), // up direction
+                  -110.0f, // pitch: rotation in XY plane from the X axis
+                  -20.0f, // yaw: rotation up-down from the horizontal
+                  10.0f,  // linear move speed pixel/sec
+                  0.05f); // rotational move speed a.k.a. mouse sensitivity
 
-    // vertex shader filename
-    std::string vShader = std::string(LEARNING_OPENGL_SOURCE_PATH) + "/src/shaders/vShader.glsl";
-    // fragment shader filename
-    std::string fShader = std::string(LEARNING_OPENGL_SOURCE_PATH) + "/src/shaders/fShader.glsl";
     // create and compile shaders on GPU
     Shader shader;
-    shader.createFromFile(vShader, fShader);
-    GLuint uniModel, uniView, uniProjection,
-           uniLightColor, uniLightDirection, uniAmbientIntensity, uniDiffuseIntensity;
-
+    shader.createFromFile(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/src/shaders/vShader.glsl",
+                         std::string(LEARNING_OPENGL_SOURCE_PATH) +
+        "/src/shaders/fShader.glsl");
+    
     // projection matrix
     glm::mat4 projection(1.0f);
     projection = glm::perspective(45.0f, (GLfloat)mainWindow.getBufferWidth()/(GLfloat)mainWindow.getBufferHeight(), 0.1f, 100.0f);
@@ -103,28 +95,22 @@ int main() {
 
         // activate/bind a shader to use it
         shader.useShader();
-        // get locations of uniform variables on the GPU
-        uniModel = shader.getUniformModel();
-        uniView = shader.getUniformView();
-        uniProjection = shader.getUniformProjection();
         
-        uniLightColor = shader.getUniformLightColor();
-        uniLightDirection = shader.getUniformLightDirection();
-        uniAmbientIntensity = shader.getUniformAmbientIntensity();
-        uniDiffuseIntensity = shader.getUniformDiffuseIntensity();
-
         // copy view and projection matrices to the GPU
-        glUniformMatrix4fv(uniView,1,GL_FALSE,glm::value_ptr(camera.viewMatrix()));
-        glUniformMatrix4fv(uniProjection,1,GL_FALSE,glm::value_ptr(projection));
+        glUniformMatrix4fv(shader.getUniformView(),1,GL_FALSE,
+                           glm::value_ptr(camera.viewMatrix()));
+        glUniformMatrix4fv(shader.getUniformProjection(),1,GL_FALSE,
+                           glm::value_ptr(projection));
 
         // activate Light
-        light.useLight(uniLightColor, uniLightDirection, uniAmbientIntensity, uniDiffuseIntensity);
+        light.useLight(shader.getUniformLightColor(), shader.getUniformLightDirection(), shader.getUniformAmbientIntensity(), shader.getUniformDiffuseIntensity());
 
         // set model matrix for the floor and copy in to the GPU
         glm::mat4 model(1.0f);
         model = glm::scale(model, glm::vec3(10.0,10.0,10.0));
         //model = glm::translate(model, glm::vec3(-0.5f,0.0f,-0.5f));
-        glUniformMatrix4fv(uniModel,1,GL_FALSE,glm::value_ptr(model));
+        glUniformMatrix4fv(shader.getUniformModel(),1,GL_FALSE,
+                           glm::value_ptr(model));
         // activate texture
         grass.useTexture();
         // render the floor
@@ -134,7 +120,8 @@ int main() {
         model = glm::mat4(1.0f);
         model = glm::scale(model, glm::vec3(2.0,2.0,2.0));
         model = glm::translate(model, glm::vec3(0.0f,0.5f,0.0f));
-        glUniformMatrix4fv(uniModel,1,GL_FALSE,glm::value_ptr(model));
+        glUniformMatrix4fv(shader.getUniformModel(),1,GL_FALSE,
+                           glm::value_ptr(model));
         // activate texture
         brick.useTexture();
         // render the cube
@@ -144,7 +131,8 @@ int main() {
         model = glm::mat4(1.0f);
         model = glm::scale(model, glm::vec3(2.0,2.0,2.0));
         model = glm::translate(model, glm::vec3(0.0f,1.0f,0.0f));
-        glUniformMatrix4fv(uniModel,1,GL_FALSE,glm::value_ptr(model));
+        glUniformMatrix4fv(shader.getUniformModel(),1,GL_FALSE,
+                           glm::value_ptr(model));
         // activate texture
         straw.useTexture();
         // render the cube
