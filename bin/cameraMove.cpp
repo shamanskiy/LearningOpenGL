@@ -19,126 +19,9 @@
 #include "Config.h"
 #include "Texture.h"
 #include "Light.h"
+#include "Primitive.h"
 
-void computeNormals(GLfloat * vertices, unsigned int numVertices ,unsigned int * elements, unsigned int numElements)
-{
-    for (int i = 0; i < numElements; ++i)
-    {
-        int A = elements[i*3];
-        int B = elements[i*3+1];
-        int C = elements[i*3+2];
-        glm::vec3 AB(vertices[B*8] - vertices[A*8], vertices[B*8 + 1] - vertices[A*8 + 1], vertices[B*8 + 2] - vertices[A*8 + 2] );
-        glm::vec3 AC(vertices[C*8] - vertices[A*8], vertices[C*8 + 1] - vertices[A*8 + 1], vertices[C*8 + 2] - vertices[A*8 + 2] );
-        glm::vec3 ABxAC = glm::normalize(glm::cross(AB, AC));
-        
-        vertices[A*8+5] += ABxAC.x; vertices[B*8+5] += ABxAC.x; vertices[C*8+5] += ABxAC.x;
-        vertices[A*8+6] += ABxAC.y; vertices[B*8+6] += ABxAC.y; vertices[C*8+6] += ABxAC.y;
-        vertices[A*8+7] += ABxAC.z; vertices[B*8+7] += ABxAC.z; vertices[C*8+7] += ABxAC.z;
-    }
-    
-    for (int i = 0; i < numVertices; ++i)
-    {
-        glm::vec3 norm(vertices[i*8+5],vertices[i*8+6],vertices[i*8+7]);
-        norm = glm::normalize(norm);
-        vertices[i*8+5] = norm.x;
-        vertices[i*8+6] = norm.y;
-        vertices[i*8+7] = norm.z;
-    }
-    
-}
 
-void printNormals(GLfloat * vertices, unsigned int numVertices)
-{
-    for (int i = 0; i < numVertices; ++i)
-    {
-        std::cout << "Vertex " << vertices[i*8] << " " << vertices[i*8+1]
-        << " " << vertices[i*8+2] << " Normal " << vertices[i*8+5] << " " << vertices[i*8+6]
-        << " " << vertices[i*8+7] << std::endl;
-    }
-    std::cout << std::endl;
-}
-
-Mesh * CreatePyramid()
-{
-    // 3 coordinates in 3D space, 2 texture coordinates
-    GLfloat vertices[] = {
-        // x     y     z     u     v       nx    ny    nz
-        -1.0f, 0.0f, 1.0f, 0.0f, 0.0f,   0.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, 1.0f, 1.0f, 0.0f,    0.0f, 0.0f, 0.0f,
-        -1.0f, 0.0f, -1.0f, 1.0f, 0.0f,  0.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, -1.0f, 0.0f, 0.0f,   0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f, 0.5f, 1.0f,    0.0f, 0.0f, 0.0f
-    };
-
-    unsigned int elements[] = {
-        0, 1, 4,
-        1, 3, 4,
-        3, 2, 4,
-        2, 0, 4
-    };
-
-    computeNormals(vertices, 5, elements, 4);
-    printNormals(vertices, 5);
-    Mesh * obj = new Mesh();
-    obj->createMesh(vertices,elements,40,12);
-    return obj;
-}
-
-Mesh * CreateCube()
-{
-    // 3 coordinates in 3D space, 2 texture coordinates
-    GLfloat vertices[] = {
-        // x     y     z     u     v    nx    ny    nz
-        0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-        1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-        1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f
-    };
-
-    unsigned int elements[] = {
-        0, 2, 1,
-        1, 2, 3,
-        1, 3, 7,
-        5, 1, 7,
-        4, 5, 7,
-        4, 7, 6,
-        0, 4, 2,
-        6, 2, 4
-    };
-
-    computeNormals(vertices,8, elements, 8);
-    printNormals(vertices, 8);
-    Mesh * obj = new Mesh();
-    obj->createMesh(vertices,elements,64,24);
-    return obj;
-}
-
-Mesh * CreateFloor()
-{
-    // 3 coordinates in 3D space, 2 texture coordinates
-    GLfloat vertices[] = {
-        // x     y     z       u     v      nx    ny    nz
-        0.0f, 0.0f, 0.0f,   0.0f, 0.0f,   0.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, 0.0f,   10.0f, 0.0f,  0.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f,   0.0f, 10.0f,  0.0f, 0.0f, 0.0f,
-        1.0f, 0.0f, 1.0f,   10.0f, 10.0f,  0.0f, 0.0f, 0.0f
-    };
-
-    unsigned int elements[] = {
-        0, 2, 1,
-        1, 2, 3
-    };
-
-    computeNormals(vertices, 4,elements, 2);
-    printNormals(vertices,4);
-    Mesh * obj = new Mesh();
-    obj->createMesh(vertices,elements,32,6);
-    return obj;
-}
 
 int main() {
 
@@ -153,11 +36,13 @@ int main() {
     }
 
     // container with pointers to objects to draw
-    std::vector<Mesh *> objects;
+    std::vector<std::unique_ptr<Mesh> > objects;
     // create objects on GPU and save pointers to objects
-    objects.push_back(CreateFloor());
-    objects.push_back(CreateCube());
-    objects.push_back(CreatePyramid());
+    objects.push_back(std::move(makePlane()));
+    objects.push_back(std::move(makeCube()));
+    objects.push_back(std::move(makePyramid()));
+    //auto plane = makePlane();
+    
 
     // create texture objects
     Texture grass(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/textures/grass.png");
@@ -167,7 +52,7 @@ int main() {
     Texture straw(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/textures/straw.png");
     straw.loadTexture();
 
-    // create a light objects
+    // create a light object
     Light light(glm::vec3(1.0f,1.0f,1.0f), // white light
                 glm::vec3(-1.0f,-0.0f,-0.0f), // comming from above
                 1.0f, 3.0f); // full ambient and diffuse intensity
@@ -238,7 +123,7 @@ int main() {
         // set model matrix for the floor and copy in to the GPU
         glm::mat4 model(1.0f);
         model = glm::scale(model, glm::vec3(10.0,10.0,10.0));
-        model = glm::translate(model, glm::vec3(-0.5f,0.0f,-0.5f));
+        //model = glm::translate(model, glm::vec3(-0.5f,0.0f,-0.5f));
         glUniformMatrix4fv(uniModel,1,GL_FALSE,glm::value_ptr(model));
         // activate texture
         grass.useTexture();
@@ -248,7 +133,7 @@ int main() {
         // set model matrix for the cube and copy in to the GPU
         model = glm::mat4(1.0f);
         model = glm::scale(model, glm::vec3(2.0,2.0,2.0));
-        model = glm::translate(model, glm::vec3(-0.5f,0.0f,-0.5f));
+        model = glm::translate(model, glm::vec3(0.0f,0.5f,0.0f));
         glUniformMatrix4fv(uniModel,1,GL_FALSE,glm::value_ptr(model));
         // activate texture
         brick.useTexture();
@@ -257,7 +142,8 @@ int main() {
 
         // set model matrix for the pyramid and copy in to the GPU
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f,2.0f,0.0f));
+        model = glm::scale(model, glm::vec3(2.0,2.0,2.0));
+        model = glm::translate(model, glm::vec3(0.0f,1.0f,0.0f));
         glUniformMatrix4fv(uniModel,1,GL_FALSE,glm::value_ptr(model));
         // activate texture
         straw.useTexture();
@@ -270,9 +156,6 @@ int main() {
         // refresh the screen buffer (actual draw)
         mainWindow.swapBuffers();
     }
-
-    for (auto &it : objects)
-        delete it;
 
     return 0;
 }
