@@ -9,8 +9,8 @@ Shader::Shader() :
     shaderID(0),
     uniModel(0),
     uniProjection(0),
-    uniLightColor(0),
-    uniAmbientIntensity(0)
+    uniLightClr(0),
+    uniAmbientInt(0)
 { }
 
 Shader::~Shader()
@@ -70,10 +70,10 @@ void Shader::compileShader(const std::string &vShader, const std::string &fShade
     uniModel = glGetUniformLocation(shaderID, "model");
     uniView = glGetUniformLocation(shaderID, "view");
     uniProjection = glGetUniformLocation(shaderID, "projection");
-    uniLightColor = glGetUniformLocation(shaderID, "light.color");
-    uniLightDirection = glGetUniformLocation(shaderID, "light.direction");
-    uniAmbientIntensity = glGetUniformLocation(shaderID, "light.ambientIntensity");
-    uniDiffuseIntensity = glGetUniformLocation(shaderID, "light.diffuseIntensity");
+    uniLightClr = glGetUniformLocation(shaderID, "light.color");
+    uniLightDir = glGetUniformLocation(shaderID, "light.direction");
+    uniAmbientInt = glGetUniformLocation(shaderID, "light.ambientIntensity");
+    uniDiffuseInt = glGetUniformLocation(shaderID, "light.diffuseIntensity");
 
     //========== Validation ===//
 

@@ -97,19 +97,19 @@ int main() {
         shader.useShader();
         
         // copy view and projection matrices to the GPU
-        glUniformMatrix4fv(shader.getUniformView(),1,GL_FALSE,
+        glUniformMatrix4fv(shader.uniViewMatrix(),1,GL_FALSE,
                            glm::value_ptr(camera.viewMatrix()));
-        glUniformMatrix4fv(shader.getUniformProjection(),1,GL_FALSE,
+        glUniformMatrix4fv(shader.uniProjMatrix(),1,GL_FALSE,
                            glm::value_ptr(projection));
 
         // activate Light
-        light.useLight(shader.getUniformLightColor(), shader.getUniformLightDirection(), shader.getUniformAmbientIntensity(), shader.getUniformDiffuseIntensity());
+        light.useLight(shader.uniLightColor(), shader.uniLightDirection(), shader.uniAmbientIntensity(), shader.uniDiffuseIntensity());
 
         // set model matrix for the floor and copy in to the GPU
         glm::mat4 model(1.0f);
         model = glm::scale(model, glm::vec3(10.0,10.0,10.0));
         //model = glm::translate(model, glm::vec3(-0.5f,0.0f,-0.5f));
-        glUniformMatrix4fv(shader.getUniformModel(),1,GL_FALSE,
+        glUniformMatrix4fv(shader.uniModelMatrix(),1,GL_FALSE,
                            glm::value_ptr(model));
         // activate texture
         grass.useTexture();
@@ -120,7 +120,7 @@ int main() {
         model = glm::mat4(1.0f);
         model = glm::scale(model, glm::vec3(2.0,2.0,2.0));
         model = glm::translate(model, glm::vec3(0.0f,0.5f,0.0f));
-        glUniformMatrix4fv(shader.getUniformModel(),1,GL_FALSE,
+        glUniformMatrix4fv(shader.uniModelMatrix(),1,GL_FALSE,
                            glm::value_ptr(model));
         // activate texture
         brick.useTexture();
@@ -131,7 +131,7 @@ int main() {
         model = glm::mat4(1.0f);
         model = glm::scale(model, glm::vec3(2.0,2.0,2.0));
         model = glm::translate(model, glm::vec3(0.0f,1.0f,0.0f));
-        glUniformMatrix4fv(shader.getUniformModel(),1,GL_FALSE,
+        glUniformMatrix4fv(shader.uniModelMatrix(),1,GL_FALSE,
                            glm::value_ptr(model));
         // activate texture
         straw.useTexture();

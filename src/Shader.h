@@ -11,7 +11,7 @@ private:
     // shader ID on GPU and IDs of uniform variables
     GLuint shaderID,
     uniModel, uniView, uniProjection,
-    uniLightColor, uniLightDirection, uniAmbientIntensity, uniDiffuseIntensity;
+    uniLightClr, uniLightDir, uniAmbientInt, uniDiffuseInt;
 
 public:
     // default constructor, does not initialize anything on GPU
@@ -26,13 +26,13 @@ public:
                        const std::string & fragmentShaderFilename);
 
     // get IDs of uniform variables to set model, view and projection matrices
-    GLuint getUniformModel() { return uniModel; }
-    GLuint getUniformView() { return uniView; }
-    GLuint getUniformProjection() { return uniProjection; }
-    GLuint getUniformLightColor() { return uniLightColor; }
-    GLuint getUniformLightDirection() { return uniLightDirection; }
-    GLuint getUniformAmbientIntensity() { return uniAmbientIntensity; }
-    GLuint getUniformDiffuseIntensity() { return uniDiffuseIntensity; }
+    GLuint uniModelMatrix() { return uniModel; }
+    GLuint uniViewMatrix() { return uniView; }
+    GLuint uniProjMatrix() { return uniProjection; }
+    GLuint uniLightColor() { return uniLightClr; }
+    GLuint uniLightDirection() { return uniLightDir; }
+    GLuint uniAmbientIntensity() { return uniAmbientInt; }
+    GLuint uniDiffuseIntensity() { return uniDiffuseInt; }
 
     // activate shader for further use
     void useShader() { glUseProgram(shaderID); }
