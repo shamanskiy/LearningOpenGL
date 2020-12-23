@@ -36,18 +36,15 @@ int main() {
     // container with pointers to objects to draw
     std::vector<std::unique_ptr<Mesh> > objects;
     // create objects on GPU and save pointers to objects
-    objects.push_back(std::move(makePlane()));
-    objects.push_back(std::move(makeCube()));
-    objects.push_back(std::move(makePyramid()));
+    objects.push_back(makePlane());
+    objects.push_back(makeCube());
+    objects.push_back(makePyramid());
 
-    // create texture objects
+    // load textures to GPU
     Texture grass(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/textures/grass.png");
-    grass.loadTexture();
     Texture brick(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/textures/brick.png");
-    brick.loadTexture();
     Texture straw(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/textures/straw.png");
-    straw.loadTexture();
-
+    
     // create a light object
     Light light(glm::vec3(1.0f,1.0f,1.0f), // white light
                 glm::vec3(-1.0f,-0.0f,-0.0f), // comming from above
@@ -62,14 +59,12 @@ int main() {
                   0.05f); // rotational move speed a.k.a. mouse sensitivity
 
     // create and compile shaders on GPU
-    Shader shader;
-    shader.createFromFile(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/src/shaders/vShader.glsl",
-                         std::string(LEARNING_OPENGL_SOURCE_PATH) +
+    Shader shader(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/src/shaders/vShader.glsl",
+                 std::string(LEARNING_OPENGL_SOURCE_PATH) +
         "/src/shaders/fShader.glsl");
     
     // projection matrix
-    glm::mat4 projection(1.0f);
-    projection = glm::perspective(45.0f, (GLfloat)mainWindow.getBufferWidth()/(GLfloat)mainWindow.getBufferHeight(), 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(45.0f, (GLfloat)mainWindow.getBufferWidth()/(GLfloat)mainWindow.getBufferHeight(), 0.1f, 100.0f);
 
     // time tracking for delta t
     GLfloat lastTime = glfwGetTime();

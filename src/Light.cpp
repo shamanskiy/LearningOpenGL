@@ -12,7 +12,7 @@ Light::~Light()
 {}
 
 void Light::useLight(GLuint uniColor, GLuint uniDirection,
-              GLuint uniAmbientIntensity, GLuint uniDiffuseIntensity)
+              GLuint uniAmbientIntensity, GLuint uniDiffuseIntensity) const
 {
     glUniform3f(uniColor, color.x, color.y, color.z);
     glUniform3f(uniDirection, direction.x, direction.y, direction.z);

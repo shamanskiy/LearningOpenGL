@@ -10,6 +10,8 @@ class Camera
 private:
     // camera position in 3D space
     glm::vec3 position;
+    // original position for camera reset
+    glm::vec3 resetPosition;
     // camera Z-vector in the global coordinates
     glm::vec3 front;
     // camera Y-vector in the global coordinates
@@ -21,8 +23,12 @@ private:
 
     // current yaw angle (left-right)
     GLfloat yaw;
+    // original yaw for camera reset
+    GLfloat resetYaw;
     // current pitch angle (bottom-top)
     GLfloat pitch;
+    // original pitch for camera reset
+    GLfloat resetPitch;
 
     // moving speed (keyboard)
     const GLfloat moveSpeed;

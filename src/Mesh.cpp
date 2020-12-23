@@ -62,7 +62,7 @@ void Mesh::createMesh(GLfloat *vertices, unsigned int *indices, unsigned int num
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
 }
 
-void Mesh::renderMesh()
+void Mesh::renderMesh() const
 {
     // activate VAO, VAO = object (?)
     glBindVertexArray(VAO);

@@ -5,13 +5,16 @@
 #include <stdio.h>
 #include <cstring>
 
-Shader::Shader() :
+Shader::Shader(const std::string & vertexShaderFilename,
+               const std::string & fragmentShaderFilename) :
     shaderID(0),
     uniModel(0),
     uniProjection(0),
     uniLightClr(0),
     uniAmbientInt(0)
-{ }
+{
+    createFromFile(vertexShaderFilename, fragmentShaderFilename);
+}
 
 Shader::~Shader()
 {
