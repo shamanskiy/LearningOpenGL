@@ -14,6 +14,7 @@
 
 #include "Window.h"
 #include "Mesh.h"
+#include "StaticModel.h"
 #include "Shader.h"
 #include "Camera.h"
 #include "Config.h"
@@ -33,17 +34,34 @@ int main() {
         return 1;
     }
 
-    // container with pointers to objects to draw
-    std::vector<std::unique_ptr<Mesh> > objects;
-    // create objects on GPU and save pointers to objects
-    objects.push_back(makePlane());
-    objects.push_back(makeCube());
-    objects.push_back(makePyramid());
-
-    // load textures to GPU
+    // create meshes
+    auto plane = makePlane();
+    auto cube = makeCube();
+    auto pyramid = makePyramid();
+    
+    // create textures
     Texture grass(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/textures/grass.png");
     Texture brick(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/textures/brick.png");
     Texture straw(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/textures/straw.png");
+    
+    // container with pointers to models to draw
+    std::vector<std::unique_ptr<StaticModel> > models;
+    
+    // create floor
+    glm::mat4 modelMatrix(1.0f); // "base" transformation matrix
+    models.push_back(std::make_unique<StaticModel>(plane.get(),&grass,
+                     glm::scale(modelMatrix, glm::vec3(10.0,10.0,10.0))));
+    
+    // create walls; first translate, then scale
+    modelMatrix = glm::scale(modelMatrix, glm::vec3(2.0,2.0,2.0));
+    models.push_back(std::make_unique<StaticModel>(cube.get(),&brick,
+                     glm::translate(modelMatrix, glm::vec3(0.0f,0.5f,0.0f))));
+    
+    // create roof
+    modelMatrix = glm::mat4(1.0f); // reset base matrix to identity
+    modelMatrix = glm::scale(modelMatrix, glm::vec3(2.0,2.0,2.0));
+    models.push_back(std::make_unique<StaticModel>(pyramid.get(),&straw,
+                     glm::translate(modelMatrix, glm::vec3(0.0f,1.0f,0.0f))));
     
     // create a light object
     Light light(glm::vec3(1.0f,1.0f,1.0f), // white light
@@ -100,38 +118,9 @@ int main() {
         // activate Light
         light.useLight(shader.uniLightColor(), shader.uniLightDirection(), shader.uniAmbientIntensity(), shader.uniDiffuseIntensity());
 
-        // set model matrix for the floor and copy in to the GPU
-        glm::mat4 model(1.0f);
-        model = glm::scale(model, glm::vec3(10.0,10.0,10.0));
-        //model = glm::translate(model, glm::vec3(-0.5f,0.0f,-0.5f));
-        glUniformMatrix4fv(shader.uniModelMatrix(),1,GL_FALSE,
-                           glm::value_ptr(model));
-        // activate texture
-        grass.useTexture();
-        // render the floor
-        objects[0]->renderMesh();
-
-        // set model matrix for the cube and copy in to the GPU
-        model = glm::mat4(1.0f);
-        model = glm::scale(model, glm::vec3(2.0,2.0,2.0));
-        model = glm::translate(model, glm::vec3(0.0f,0.5f,0.0f));
-        glUniformMatrix4fv(shader.uniModelMatrix(),1,GL_FALSE,
-                           glm::value_ptr(model));
-        // activate texture
-        brick.useTexture();
-        // render the cube
-        objects[1]->renderMesh();
-
-        // set model matrix for the pyramid and copy in to the GPU
-        model = glm::mat4(1.0f);
-        model = glm::scale(model, glm::vec3(2.0,2.0,2.0));
-        model = glm::translate(model, glm::vec3(0.0f,1.0f,0.0f));
-        glUniformMatrix4fv(shader.uniModelMatrix(),1,GL_FALSE,
-                           glm::value_ptr(model));
-        // activate texture
-        straw.useTexture();
-        // render the cube
-        objects[2]->renderMesh();
+        // render models
+        for (auto &it : models)
+            it->render(shader);
 
         // deactivate/unbind shader
         glUseProgram(0);

@@ -20,16 +20,16 @@ public:
     ~Shader();
 
     // get IDs of uniform variables to set model, view and projection matrices
-    GLuint uniModelMatrix() { return uniModel; }
-    GLuint uniViewMatrix() { return uniView; }
-    GLuint uniProjMatrix() { return uniProjection; }
-    GLuint uniLightColor() { return uniLightClr; }
-    GLuint uniLightDirection() { return uniLightDir; }
-    GLuint uniAmbientIntensity() { return uniAmbientInt; }
-    GLuint uniDiffuseIntensity() { return uniDiffuseInt; }
+    GLuint uniModelMatrix() const { return uniModel; }
+    GLuint uniViewMatrix() const { return uniView; }
+    GLuint uniProjMatrix() const { return uniProjection; }
+    GLuint uniLightColor() const { return uniLightClr; }
+    GLuint uniLightDirection() const { return uniLightDir; }
+    GLuint uniAmbientIntensity() const { return uniAmbientInt; }
+    GLuint uniDiffuseIntensity() const { return uniDiffuseInt; }
 
     // activate shader for further use
-    void useShader() { glUseProgram(shaderID); }
+    void useShader() const { glUseProgram(shaderID); }
     
 private:
     // compile shader on GPU
