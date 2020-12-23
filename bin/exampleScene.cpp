@@ -63,6 +63,13 @@ int main() {
     models.push_back(std::make_unique<StaticModel>(pyramid.get(),&straw,
                      glm::translate(modelMatrix, glm::vec3(0.0f,1.0f,0.0f))));
     
+    // create another "house"
+    modelMatrix = glm::mat4(1.0f); // reset base matrix to identity
+    models.push_back(std::make_unique<StaticModel>(cube.get(),&brick,
+                     glm::translate(modelMatrix, glm::vec3(2.0f,0.5f,-2.0f))));
+    models.push_back(std::make_unique<StaticModel>(pyramid.get(),&straw,
+                     glm::translate(modelMatrix, glm::vec3(2.0f,1.0f,-2.0f))));
+    
     // create a light object
     Light light(glm::vec3(1.0f,1.0f,1.0f), // white light
                 glm::vec3(-1.0f,-0.0f,-0.0f), // comming from above
