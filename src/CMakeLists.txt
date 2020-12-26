@@ -19,8 +19,10 @@ add_library(learningOpenGL
     Texture.h
     Window.h
     # same for the shaders
-    shaders/fShader.glsl
-    shaders/vShader.glsl)
+    shaders/fragmentShader_texture.glsl
+    shaders/fragmentShader_noTexture.glsl
+    shaders/vertexShader_texture.glsl
+    shaders/vertexShader_noTexture.glsl)
 
 # link necessary external libraries
 target_link_libraries(learningOpenGL PUBLIC OpenGL::GL GLEW::GLEW glfw)

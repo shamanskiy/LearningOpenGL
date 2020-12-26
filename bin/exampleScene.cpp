@@ -73,7 +73,7 @@ int main() {
     // create a light object
     Light light(glm::vec3(1.0f,1.0f,1.0f), // white light
                 glm::vec3(1.0f,-1.0f,1.0f), // comming from above
-                0.01f, 0.01f); // full ambient and diffuse intensity
+                0.3f, 0.7f); // full ambient and diffuse intensity
 
     // create a camera object
     Camera camera(glm::vec3(1.5f,2.5f,3.5f), // initial location
@@ -84,15 +84,22 @@ int main() {
                   0.05f); // rotational move speed a.k.a. mouse sensitivity
 
     // create and compile shaders on GPU
-    Shader shader(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/src/shaders/vShader.glsl",
+    Shader shaderTexture(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/src/shaders/vertexShader_texture.glsl",
                  std::string(LEARNING_OPENGL_SOURCE_PATH) +
-        "/src/shaders/fShader.glsl");
+        "/src/shaders/fragmentShader_texture.glsl");
+    
+    Shader shaderNoTexture(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/src/shaders/vertexShader_noTexture.glsl",
+                 std::string(LEARNING_OPENGL_SOURCE_PATH) +
+        "/src/shaders/fragmentShader_noTexture.glsl");
     
     // projection matrix
     glm::mat4 projection = glm::perspective(45.0f, (GLfloat)mainWindow.getBufferWidth()/(GLfloat)mainWindow.getBufferHeight(), 0.1f, 100.0f);
 
     // time tracking for delta t
     GLfloat lastTime = glfwGetTime();
+    
+    // shader switching; will move to a dedicated class
+    bool useTextures = true;
 
     // Loop until window closed
     while (!mainWindow.shouldClose())
@@ -108,11 +115,16 @@ int main() {
         // pass data to the camera
         camera.keyControl(mainWindow.getKeys(),delta_t);
         camera.mouseControl(mainWindow.getChangeX(), mainWindow.getChangeY());
-
+        
+        // shader switching
+        if (mainWindow.getKeys()[GLFW_KEY_G])
+            useTextures = !useTextures;
+        Shader & shader = useTextures ? shaderTexture : shaderNoTexture;
+        
         // Clear window
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+        
         // activate/bind a shader to use it
         shader.useShader();
         
@@ -129,7 +141,7 @@ int main() {
         glUniform3f(shader.uniCameraPosition(), camera.cameraPosition().x, camera.cameraPosition().y, camera.cameraPosition().z);
         
         glUniform1f(shader.uniMaterialShininess(), 32);
-        glUniform1f(shader.uniSpecularIntensity(),1.0);
+        glUniform1f(shader.uniSpecularIntensity(),4.0);
         
         // render models
         for (auto &it : models)
