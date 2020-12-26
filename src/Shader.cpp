@@ -77,6 +77,9 @@ void Shader::compileShader(const std::string &vShader, const std::string &fShade
     uniLightDir = glGetUniformLocation(shaderID, "light.direction");
     uniAmbientInt = glGetUniformLocation(shaderID, "light.ambientIntensity");
     uniDiffuseInt = glGetUniformLocation(shaderID, "light.diffuseIntensity");
+    uniMaterialShine = glGetUniformLocation(shaderID, "material.shininess");
+    uniSpecularInt = glGetUniformLocation(shaderID, "material.specularIntensity");
+    uniCameraPos = glGetUniformLocation(shaderID, "cameraPosition");
 
     //========== Validation ===//
 

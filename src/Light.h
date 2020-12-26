@@ -19,5 +19,5 @@ public:
     ~Light();
 
     void useLight(GLuint uniColor, GLuint uniDirection,
-                  GLuint uniAmbientIntensity, GLuint uniDiffuseIntensity) const;
+                 GLuint uniAmbientIntensity, GLuint uniDiffuseIntensity) const;
 };

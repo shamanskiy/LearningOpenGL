@@ -11,7 +11,8 @@ private:
     // shader ID on GPU and IDs of uniform variables
     GLuint shaderID,
     uniModel, uniView, uniProjection,
-    uniLightClr, uniLightDir, uniAmbientInt, uniDiffuseInt;
+    uniLightClr, uniLightDir, uniAmbientInt, uniDiffuseInt,
+    uniMaterialShine, uniSpecularInt, uniCameraPos;
 
 public:
     // default constructor, does not initialize anything on GPU
@@ -27,6 +28,9 @@ public:
     GLuint uniLightDirection() const { return uniLightDir; }
     GLuint uniAmbientIntensity() const { return uniAmbientInt; }
     GLuint uniDiffuseIntensity() const { return uniDiffuseInt; }
+    GLuint uniMaterialShininess() const { return uniMaterialShine; }
+    GLuint uniSpecularIntensity() const { return uniSpecularInt; }
+    GLuint uniCameraPosition() const { return uniCameraPos; }
 
     // activate shader for further use
     void useShader() const { glUseProgram(shaderID); }

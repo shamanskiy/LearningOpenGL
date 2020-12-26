@@ -6,6 +6,7 @@ layout (location = 2) in vec3 norm;
 
 out vec2 texCoord;
 out vec3 normal;
+out vec3 worldPosition;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -17,5 +18,7 @@ void main()
 
     texCoord = tex;
     
-    normal = mat3(model)*norm;
+    normal = mat3(transpose(inverse(model)))*norm;
+    
+    worldPosition = mat3(model) * pos;
 }

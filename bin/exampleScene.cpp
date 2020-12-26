@@ -72,8 +72,8 @@ int main() {
     
     // create a light object
     Light light(glm::vec3(1.0f,1.0f,1.0f), // white light
-                glm::vec3(-1.0f,-0.0f,-0.0f), // comming from above
-                1.0f, 3.0f); // full ambient and diffuse intensity
+                glm::vec3(1.0f,-1.0f,1.0f), // comming from above
+                0.01f, 0.01f); // full ambient and diffuse intensity
 
     // create a camera object
     Camera camera(glm::vec3(1.5f,2.5f,3.5f), // initial location
@@ -124,7 +124,13 @@ int main() {
 
         // activate Light
         light.useLight(shader.uniLightColor(), shader.uniLightDirection(), shader.uniAmbientIntensity(), shader.uniDiffuseIntensity());
-
+        
+        
+        glUniform3f(shader.uniCameraPosition(), camera.cameraPosition().x, camera.cameraPosition().y, camera.cameraPosition().z);
+        
+        glUniform1f(shader.uniMaterialShininess(), 32);
+        glUniform1f(shader.uniSpecularIntensity(),1.0);
+        
         // render models
         for (auto &it : models)
             it->render(shader);

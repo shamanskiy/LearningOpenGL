@@ -52,6 +52,8 @@ public:
 
     // return a view matrix corresponding to the current camera's position and orientation
     glm::mat4 viewMatrix() { return glm::lookAt(position, position+front, up); }
+    
+    const glm::vec3 & cameraPosition() const { return position; }
 
 private:
 
