@@ -2,21 +2,15 @@
 
 #include <iostream>
 
-Texture::Texture() :
-    textureID(0),
-    width(0),
-    height(0),
-    bitDepth(0),
-    fileLoc("")
-{}
-
 Texture::Texture(const std::string & fileLocation) :
     textureID(0),
     width(0),
     height(0),
     bitDepth(0),
     fileLoc(fileLocation)
-{}
+{
+    loadTexture();
+}
 
 Texture::~Texture()
 {
@@ -50,7 +44,7 @@ void Texture::loadTexture()
     stbi_image_free(textureData);
 }
 
-void Texture::useTexture()
+void Texture::useTexture() const
 {
     // texture unit - this guy will access texture data. 0 is default, so this is line is not necessary.
     // by using several different texture units we can bind several textures (?)

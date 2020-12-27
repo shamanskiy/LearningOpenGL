@@ -97,7 +97,7 @@ void Window::handleKeys(GLFWwindow* window, int key, int code,
 {
     // a nifty way to get the pointer to the Window class
     // associated with the GLFW window handling the event.
-    // Look a bit unsafe though
+    // Looks a bit unsafe though
     Window* theWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
 
     if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)

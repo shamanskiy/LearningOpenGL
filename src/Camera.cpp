@@ -8,9 +8,12 @@ Camera::Camera(glm::vec3 initialPosition, glm::vec3 worldUp_,
               GLfloat initialYaw, GLfloat initialPitch,
               GLfloat moveSpeed_, GLfloat turnSpeed_) :
     position(initialPosition),
+    resetPosition(initialPosition),
     worldUp(worldUp_),
     yaw(initialYaw),
+    resetYaw(initialYaw),
     pitch(initialPitch),
+    resetPitch(initialPitch),
     moveSpeed(moveSpeed_),
     turnSpeed(turnSpeed_)
 {
@@ -39,9 +42,9 @@ void Camera::keyControl(bool *keys, GLfloat delta_t)
     
     if (keys[GLFW_KEY_R])
     {
-        position = glm::vec3(0.0f,0.0f,0.0f);
-        yaw = -90;
-        pitch = 0;
+        position = resetPosition;
+        yaw = resetYaw;
+        pitch = resetPitch;
         update();
     }
 }

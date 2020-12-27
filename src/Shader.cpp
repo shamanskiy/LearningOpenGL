@@ -5,13 +5,16 @@
 #include <stdio.h>
 #include <cstring>
 
-Shader::Shader() :
+Shader::Shader(const std::string & vertexShaderFilename,
+               const std::string & fragmentShaderFilename) :
     shaderID(0),
     uniModel(0),
     uniProjection(0),
-    uniAmbientColor(0),
-    uniAmbientIntensity(0)
-{ }
+    uniLightClr(0),
+    uniAmbientInt(0)
+{
+    createFromFile(vertexShaderFilename, fragmentShaderFilename);
+}
 
 Shader::~Shader()
 {
@@ -70,8 +73,13 @@ void Shader::compileShader(const std::string &vShader, const std::string &fShade
     uniModel = glGetUniformLocation(shaderID, "model");
     uniView = glGetUniformLocation(shaderID, "view");
     uniProjection = glGetUniformLocation(shaderID, "projection");
-    uniAmbientColor = glGetUniformLocation(shaderID, "dirLight.color");
-    uniAmbientIntensity = glGetUniformLocation(shaderID, "dirLight.intensity");
+    uniLightClr = glGetUniformLocation(shaderID, "light.color");
+    uniLightDir = glGetUniformLocation(shaderID, "light.direction");
+    uniAmbientInt = glGetUniformLocation(shaderID, "light.ambientIntensity");
+    uniDiffuseInt = glGetUniformLocation(shaderID, "light.diffuseIntensity");
+    uniMaterialShine = glGetUniformLocation(shaderID, "material.shininess");
+    uniSpecularInt = glGetUniformLocation(shaderID, "material.specularIntensity");
+    uniCameraPos = glGetUniformLocation(shaderID, "cameraPosition");
 
     //========== Validation ===//
 

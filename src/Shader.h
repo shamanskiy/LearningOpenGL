@@ -9,32 +9,32 @@ class Shader
 {
 private:
     // shader ID on GPU and IDs of uniform variables
-    GLuint shaderID, uniModel, uniView, uniProjection, uniAmbientColor, uniAmbientIntensity;
+    GLuint shaderID,
+    uniModel, uniView, uniProjection,
+    uniLightClr, uniLightDir, uniAmbientInt, uniDiffuseInt,
+    uniMaterialShine, uniSpecularInt, uniCameraPos;
 
 public:
     // default constructor, does not initialize anything on GPU
-    Shader();
+    Shader(const std::string & vertexShaderFilename,
+           const std::string & fragmentShaderFilename);
     ~Shader();
 
-    // pass shader codes as C strings
-    void createFromString(const std::string & vertexShaderCode,
-                        const std::string & fragmentShaderCode);
-    // read shader codes from files
-    void createFromFile(const std::string & vertexShaderFilename,
-                       const std::string & fragmentShaderFilename);
-
     // get IDs of uniform variables to set model, view and projection matrices
-    GLuint getUniformModel() { return uniModel; }
-    GLuint getUniformView() { return uniView; }
-    GLuint getUniformProjection() { return uniProjection; }
-    GLuint getUniformAmbientColor() { return uniAmbientColor; }
-    GLuint getUniformAmbientIntensity() { return uniAmbientIntensity; }
+    GLuint uniModelMatrix() const { return uniModel; }
+    GLuint uniViewMatrix() const { return uniView; }
+    GLuint uniProjMatrix() const { return uniProjection; }
+    GLuint uniLightColor() const { return uniLightClr; }
+    GLuint uniLightDirection() const { return uniLightDir; }
+    GLuint uniAmbientIntensity() const { return uniAmbientInt; }
+    GLuint uniDiffuseIntensity() const { return uniDiffuseInt; }
+    GLuint uniMaterialShininess() const { return uniMaterialShine; }
+    GLuint uniSpecularIntensity() const { return uniSpecularInt; }
+    GLuint uniCameraPosition() const { return uniCameraPos; }
 
     // activate shader for further use
-    void useShader() { glUseProgram(shaderID); }
-    // free memory on GPU
-    void deleteShader();
-
+    void useShader() const { glUseProgram(shaderID); }
+    
 private:
     // compile shader on GPU
     void compileShader(const std::string & vShader,
@@ -43,4 +43,14 @@ private:
     void addShader(const std::string & shaderCode, GLenum shaderType);
     // read shader code from the file
     std::string readFile(const std::string & shaderCodeFilename);
+    
+    // free memory on GPU
+    void deleteShader();
+    
+    // pass shader codes as C strings
+    void createFromString(const std::string & vertexShaderCode,
+                        const std::string & fragmentShaderCode);
+    // read shader codes from files
+    void createFromFile(const std::string & vertexShaderFilename,
+                       const std::string & fragmentShaderFilename);
 };

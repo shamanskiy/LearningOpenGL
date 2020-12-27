@@ -21,7 +21,7 @@ public:
     void createMesh(GLfloat * vertices, unsigned int * indices,
                    unsigned int numVertices, unsigned int numIndices);
     // render object
-    void renderMesh();
+    void renderMesh() const;
     // delete object from GPU memory
     void deleteMesh();
 };

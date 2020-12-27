@@ -18,15 +18,16 @@ private:
     std::string fileLoc;
 
 public:
-    // ctors and dtor
-    Texture();
+    // ctor: create texture on the GPU
     Texture(const std::string & fileLocation);
+    // dtor: free memory on GPU
     ~Texture();
-
+    // activate/bind texture on the GPU
+    void useTexture() const;
+    
+private:
     // load texture from file
     void loadTexture();
-    // activate/bind texture on the GPU
-    void useTexture();
     // free memory on the GPU
     void clearTexture();
 };
