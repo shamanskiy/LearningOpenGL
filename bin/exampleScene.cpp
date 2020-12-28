@@ -22,6 +22,8 @@
 #include "Light.h"
 #include "Primitive.h"
 
+#include <assimp/Importer.hpp>
+
 int main() {
 
     // Window dimensions
@@ -34,6 +36,8 @@ int main() {
         return 1;
     }
 
+    Assimp::Importer importer;
+    
     // create meshes
     auto plane = makePlane();
     auto cube = makeCube();
