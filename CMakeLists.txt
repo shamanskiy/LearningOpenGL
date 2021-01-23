@@ -5,7 +5,7 @@ project(LearningOpenGL
       DESCRIPTION "OpenGL exercises following the OpenGL tutorial by Ben Cook from Udemy.com"
       LANGUAGES CXX)
 
-# we want to use c++14      
+# we want to use c++14
 set (CMAKE_CXX_STANDARD 14)
 
 # Let's ensure -std=c++xx instead of -std=g++xx
@@ -30,15 +30,19 @@ include_directories(${glm_INCLUDE_DIR})
 find_path(stb_image_INCLUDE_DIR stb_image.h REQUIRED)
 include_directories(${stb_image_INCLUDE_DIR})
 
+find_package(GTest REQUIRED)
+
 # The compiled library code is here
 add_subdirectory(src)
 
 # The executable code is here
 add_subdirectory(bin)
 
+# Unit tests are here
+add_subdirectory(test)
+
 # configure Config.h to define
 # LEARNING_OPENGL_SOURCE_PATH
 # LEARNING_OPENGL_VERSION_MAJOR
 # LEARNING_OPENGL_VERSION_MINOR
 configure_file("${PROJECT_SOURCE_DIR}/src/Config.h.in" "${PROJECT_BINARY_DIR}/src/Config.h")
-
