@@ -16,13 +16,14 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # we want to find external packages not supported by Cmake by default.
 # Find***.cmake files for each such package are in cmake/Modules
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+#set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 # find necessary libraries
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(glfw3 REQUIRED)
-find_package(assimp REQUIRED)
+find_package(ASSIMP CONFIG REQUIRED)
+message(${ASSIMP_LIBRARY_DIRS})
 
 find_path(glm_INCLUDE_DIR glm/glm.hpp REQUIRED)
 include_directories(${glm_INCLUDE_DIR})
