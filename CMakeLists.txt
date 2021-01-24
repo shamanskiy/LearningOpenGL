@@ -5,14 +5,14 @@ project(LearningOpenGL
       DESCRIPTION "OpenGL exercises following the OpenGL tutorial by Ben Cook from Udemy.com"
       LANGUAGES CXX)
 
-# we want to use c++14
-set (CMAKE_CXX_STANDARD 14)
-
-# Let's ensure -std=c++xx instead of -std=g++xx
+# We do not want to use GNU extension of C++ (may be unavailable on some platforms)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Let's nicely support folders in IDEs
+# Use folders to structure the project in IDEs that support folders
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+# configure Config.h to set some #defines
+configure_file("${PROJECT_SOURCE_DIR}/src/Config.h.in" "${PROJECT_BINARY_DIR}/src/Config.h")
 
 # find necessary libraries
 find_package(OpenGL REQUIRED)
@@ -28,12 +28,6 @@ if(ASSIMP_FOUND)
     message("-- Found assimp: ${ASSIMP_LIBNAME}")
 endif(ASSIMP_FOUND)
 
-
-find_path(stb_image_INCLUDE_DIR stb_image.h REQUIRED)
-include_directories(${stb_image_INCLUDE_DIR})
-
-
-
 # The compiled library code is here
 add_subdirectory(src)
 
@@ -43,9 +37,4 @@ add_subdirectory(bin)
 # Unit tests are here
 add_subdirectory(test)
 
-# configure Config.h to set some #defines
-configure_file("${PROJECT_SOURCE_DIR}/src/Config.h.in" "${PROJECT_BINARY_DIR}/src/Config.h")
 
-
-####################
-# fetch content for textures
