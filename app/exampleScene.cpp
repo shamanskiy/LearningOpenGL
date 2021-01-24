@@ -88,13 +88,13 @@ int main() {
                   0.05f); // rotational move speed a.k.a. mouse sensitivity
 
     // create and compile shaders on GPU
-    Shader shaderTexture(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/src/shaders/vertexShader_texture.glsl",
+    Shader shaderTexture(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/lib/shaders/vertexShader_texture.glsl",
                  std::string(LEARNING_OPENGL_SOURCE_PATH) +
-        "/src/shaders/fragmentShader_texture.glsl");
+        "/lib/shaders/fragmentShader_texture.glsl");
     
-    Shader shaderNoTexture(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/src/shaders/vertexShader_noTexture.glsl",
+    Shader shaderNoTexture(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/lib/shaders/vertexShader_noTexture.glsl",
                  std::string(LEARNING_OPENGL_SOURCE_PATH) +
-        "/src/shaders/fragmentShader_noTexture.glsl");
+        "/lib/shaders/fragmentShader_noTexture.glsl");
     
     // projection matrix
     glm::mat4 projection = glm::perspective(45.0f, (GLfloat)mainWindow.getBufferWidth()/(GLfloat)mainWindow.getBufferHeight(), 0.1f, 100.0f);

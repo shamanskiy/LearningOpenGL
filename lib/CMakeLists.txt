@@ -1,5 +1,5 @@
 # define a library to compile
-add_library(learningOpenGL
+add_library(RendGL
     Camera.cpp
     Light.cpp
     Mesh.cpp
@@ -25,11 +25,11 @@ add_library(learningOpenGL
     shaders/vertexShader_noTexture.glsl)
 
 # link necessary external libraries
-target_link_libraries(learningOpenGL PUBLIC OpenGL::GL GLEW::GLEW glfw glm::glm ${ASSIMP_LIBNAME})
+target_link_libraries(RendGL PUBLIC OpenGL::GL GLEW::GLEW glfw glm::glm ${ASSIMP_LIBNAME})
 
 # require c++14 for the library and anything that depends on it
-target_compile_features(learningOpenGL PUBLIC cxx_std_14)
+target_compile_features(RendGL PUBLIC cxx_std_14)
 
 # include external header-only libs (currently, only std_image.h)
-target_include_directories(learningOpenGL PUBLIC ${PROJECT_SOURCE_DIR}/include/extern)
+target_include_directories(RendGL PUBLIC ${PROJECT_SOURCE_DIR}/include/extern)
 

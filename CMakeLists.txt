@@ -12,7 +12,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # configure Config.h to set some #defines
-configure_file("${PROJECT_SOURCE_DIR}/src/Config.h.in" "${PROJECT_BINARY_DIR}/src/Config.h")
+configure_file("${PROJECT_SOURCE_DIR}/lib/Config.h.in" "${PROJECT_BINARY_DIR}/lib/Config.h")
 
 # find necessary libraries
 find_package(OpenGL REQUIRED)
@@ -29,10 +29,10 @@ if(ASSIMP_FOUND)
 endif(ASSIMP_FOUND)
 
 # The compiled library code is here
-add_subdirectory(src)
+add_subdirectory(lib)
 
 # The executable code is here
-add_subdirectory(bin)
+add_subdirectory(app)
 
 # Unit tests are here
 add_subdirectory(test)
