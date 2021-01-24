@@ -11,9 +11,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Use folders to structure the project in IDEs that support folders
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-# configure Config.h to set some #defines
-configure_file("${PROJECT_SOURCE_DIR}/lib/Config.h.in" "${PROJECT_BINARY_DIR}/lib/Config.h")
-
 # find necessary libraries
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED) # a distribution/wrapper for OpenGL (I guess)
@@ -28,6 +25,9 @@ if(ASSIMP_FOUND)
     message("-- Found assimp: ${ASSIMP_LIBNAME}")
 endif(ASSIMP_FOUND)
 
+# download content (textures and models) from AWS S3 if not yet downloaded
+include(cmake/DownloadData.txt)
+
 # The compiled library code is here
 add_subdirectory(lib)
 
@@ -36,5 +36,11 @@ add_subdirectory(app)
 
 # Unit tests are here
 add_subdirectory(test)
+
+# Config.h contains various useful #defines:
+# TEXTURE_DIR is a path to textures.
+# SHADERS_DIR is a path to shaders.
+set(SHADERS_DIR ${PROJECT_SOURCE_DIR}/lib/shaders)
+configure_file("${PROJECT_SOURCE_DIR}/lib/Config.h.in" "${PROJECT_BINARY_DIR}/lib/Config.h")
 
 

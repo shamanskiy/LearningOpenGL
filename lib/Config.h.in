@@ -1,5 +1,3 @@
 // the configured options and settings
-#define LEARNING_OPENGL_VERSION_MAJOR @LearningOpenGL_VERSION_MAJOR@
-#define LEARNING_OPENGL_VERSION_MINOR @LearningOpenGL_VERSION_MINOR@
-
-#define LEARNING_OPENGL_SOURCE_PATH "@PROJECT_SOURCE_DIR@"
+#cmakedefine SHADERS_DIR std::string("@SHADERS_DIR@")
+#cmakedefine TEXTURES_DIR std::string("@TEXTURES_DIR@")
