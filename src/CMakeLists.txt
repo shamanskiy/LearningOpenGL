@@ -25,5 +25,8 @@ add_library(learningOpenGL
     shaders/vertexShader_noTexture.glsl)
 
 # link necessary external libraries
-target_link_libraries(learningOpenGL PUBLIC OpenGL::GL GLEW::GLEW glfw)
+target_link_libraries(learningOpenGL PUBLIC OpenGL::GL GLEW::GLEW glfw glm::glm)
+
+# require c++14 for the library and anything that depends on it
+target_compile_features(learningOpenGL PUBLIC cxx_std_14)
 

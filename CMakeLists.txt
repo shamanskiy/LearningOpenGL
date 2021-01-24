@@ -14,24 +14,25 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Let's nicely support folders in IDEs
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-# we want to find external packages not supported by Cmake by default.
-# Find***.cmake files for each such package are in cmake/Modules
-#set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
-
 # find necessary libraries
 find_package(OpenGL REQUIRED)
-find_package(GLEW REQUIRED)
-find_package(glfw3 REQUIRED)
-find_package(ASSIMP CONFIG REQUIRED)
-message(${ASSIMP_LIBRARY_DIRS})
+find_package(GLEW REQUIRED) # a distribution/wrapper for OpenGL (I guess)
+find_package(glfw3 REQUIRED) # window and IO manager for OpenGL
+find_package(glm REQUIRED) # linear algebra library for OpenGL
+find_package(GTest REQUIRED) # unit_testing
 
-find_path(glm_INCLUDE_DIR glm/glm.hpp REQUIRED)
-include_directories(${glm_INCLUDE_DIR})
+# we use CONFIG mode to find ASSIMP because we want to use a config file coming with ASSIMP
+find_package(ASSIMP CONFIG REQUIRED)
+if(ASSIMP_FOUND)
+    set(ASSIMP_LIBNAME ${ASSIMP_LIBRARY_DIRS}/${ASSIMP_LIBRARIES})
+    message("-- Found assimp: ${ASSIMP_LIBNAME}")
+endif(ASSIMP_FOUND)
+
 
 find_path(stb_image_INCLUDE_DIR stb_image.h REQUIRED)
 include_directories(${stb_image_INCLUDE_DIR})
 
-find_package(GTest REQUIRED)
+
 
 # The compiled library code is here
 add_subdirectory(src)
@@ -42,8 +43,9 @@ add_subdirectory(bin)
 # Unit tests are here
 add_subdirectory(test)
 
-# configure Config.h to define
-# LEARNING_OPENGL_SOURCE_PATH
-# LEARNING_OPENGL_VERSION_MAJOR
-# LEARNING_OPENGL_VERSION_MINOR
+# configure Config.h to set some #defines
 configure_file("${PROJECT_SOURCE_DIR}/src/Config.h.in" "${PROJECT_BINARY_DIR}/src/Config.h")
+
+
+####################
+# fetch content for textures
