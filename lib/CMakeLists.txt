@@ -1,35 +1,69 @@
+# define lists of header, source and shader files for convenience
+set(HEADERS_LIST
+  ${PROJECT_SOURCE_DIR}/lib/Camera.h
+  ${PROJECT_SOURCE_DIR}/lib/Light.h
+  ${PROJECT_SOURCE_DIR}/lib/Mesh.h
+  ${PROJECT_SOURCE_DIR}/lib/Primitive.h
+  ${PROJECT_SOURCE_DIR}/lib/Shader.h
+  ${PROJECT_SOURCE_DIR}/lib/StaticModel.h
+  ${PROJECT_SOURCE_DIR}/lib/Texture.h
+  ${PROJECT_SOURCE_DIR}/lib/Window.h
+)
+
+set(SOURCES_LIST
+  ${PROJECT_SOURCE_DIR}/lib/Camera.cpp
+  ${PROJECT_SOURCE_DIR}/lib/Light.cpp
+  ${PROJECT_SOURCE_DIR}/lib/Mesh.cpp
+  ${PROJECT_SOURCE_DIR}/lib/Primitive.cpp
+  ${PROJECT_SOURCE_DIR}/lib/Shader.cpp
+  ${PROJECT_SOURCE_DIR}/lib/StaticModel.cpp
+  ${PROJECT_SOURCE_DIR}/lib/Texture.cpp
+  ${PROJECT_SOURCE_DIR}/lib/Window.cpp
+)
+
+set(SHADERS_LIST
+  ${PROJECT_SOURCE_DIR}/lib/shaders/fragmentShader_texture.glsl
+  ${PROJECT_SOURCE_DIR}/lib/shaders/fragmentShader_noTexture.glsl
+  ${PROJECT_SOURCE_DIR}/lib/shaders/vertexShader_texture.glsl
+  ${PROJECT_SOURCE_DIR}/lib/shaders/vertexShader_noTexture.glsl
+)
+
 # define a library to compile
 add_library(RendGL
-    Camera.cpp
-    Light.cpp
-    Mesh.cpp
-    Primitive.cpp
-    Shader.cpp
-    StaticModel.cpp
-    Texture.cpp
-    Window.cpp
-    
-    # add header files so that they are visible from an IDE
-    Camera.h
-    Light.h
-    Mesh.h
-    Primitive.h
-    Shader.h
-    StaticModel.h
-    Texture.h
-    Window.h
-    # same for the shaders
-    shaders/fragmentShader_texture.glsl
-    shaders/fragmentShader_noTexture.glsl
-    shaders/vertexShader_texture.glsl
-    shaders/vertexShader_noTexture.glsl)
+  ${SOURCES_LIST}
+  # header files are not necessary here. Only adding them so that
+  # they are visible in an IDE
+  ${HEADERS_LIST}
+  # same for the shaders
+  ${SHADERS_LIST}
+)
 
 # link necessary external libraries
-target_link_libraries(RendGL PUBLIC OpenGL::GL GLEW::GLEW glfw glm::glm ${ASSIMP_LIBNAME})
+# PUBLIC means that they will also be linked to any downstream app or lib
+target_link_libraries(RendGL
+  PUBLIC
+    OpenGL::GL
+    GLEW::GLEW
+    glfw
+    glm::glm
+    ${ASSIMP_LIBNAME}
+)
 
 # require c++14 for the library and anything that depends on it
 target_compile_features(RendGL PUBLIC cxx_std_14)
 
-# include external header-only libs (currently, only std_image.h)
-target_include_directories(RendGL PUBLIC ${PROJECT_SOURCE_DIR}/include/extern)
+# add include directories here so that they available in anything
+# that depends on RendGL
+target_include_directories(RendGL
+  PUBLIC
+    ${PROJECT_SOURCE_DIR}/lib
+    ${PROJECT_SOURCE_DIR}/include/extern
+    ${PROJECT_BINARY_DIR}/lib
+)
 
+# shaders will appear in a Shaders folder in an IDE
+# for header and source files this happens automatically
+source_group(Shaders
+  FILES
+    ${SHADERS_LIST}
+)
