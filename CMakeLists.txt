@@ -41,7 +41,7 @@ add_subdirectory(test)
 # TEXTURE_DIR is a path to textures.
 # SHADERS_DIR is a path to shaders.
 set(SHADERS_DIR ${PROJECT_SOURCE_DIR}/lib/shaders)
-configure_file("${PROJECT_SOURCE_DIR}/lib/Config.h.in" "${PROJECT_BINARY_DIR}/lib/Config.h")
+configure_file("${PROJECT_SOURCE_DIR}/lib/Config.h.in" "${PROJECT_BINARY_DIR}/include/Config.h")
 
 
 

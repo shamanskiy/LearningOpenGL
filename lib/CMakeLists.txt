@@ -1,13 +1,13 @@
 # define lists of header, source and shader files for convenience
 set(HEADERS_LIST
-  ${PROJECT_SOURCE_DIR}/lib/Camera.h
-  ${PROJECT_SOURCE_DIR}/lib/Light.h
-  ${PROJECT_SOURCE_DIR}/lib/Mesh.h
-  ${PROJECT_SOURCE_DIR}/lib/Primitive.h
-  ${PROJECT_SOURCE_DIR}/lib/Shader.h
-  ${PROJECT_SOURCE_DIR}/lib/StaticModel.h
-  ${PROJECT_SOURCE_DIR}/lib/Texture.h
-  ${PROJECT_SOURCE_DIR}/lib/Window.h
+  ${PROJECT_SOURCE_DIR}/include/RendGL/Camera.h
+  ${PROJECT_SOURCE_DIR}/include/RendGL/Light.h
+  ${PROJECT_SOURCE_DIR}/include/RendGL/Mesh.h
+  ${PROJECT_SOURCE_DIR}/include/RendGL/Primitive.h
+  ${PROJECT_SOURCE_DIR}/include/RendGL/Shader.h
+  ${PROJECT_SOURCE_DIR}/include/RendGL/StaticModel.h
+  ${PROJECT_SOURCE_DIR}/include/RendGL/Texture.h
+  ${PROJECT_SOURCE_DIR}/include/RendGL/Window.h
 )
 
 set(SOURCES_LIST
@@ -56,9 +56,9 @@ target_compile_features(RendGL PUBLIC cxx_std_14)
 # that depends on RendGL
 target_include_directories(RendGL
   PUBLIC
-    ${PROJECT_SOURCE_DIR}/lib
+    ${PROJECT_SOURCE_DIR}/include/RendGL
     ${PROJECT_SOURCE_DIR}/include/extern
-    ${PROJECT_BINARY_DIR}/lib
+    ${PROJECT_BINARY_DIR}/include
 )
 
 # shaders will appear in a Shaders folder in an IDE
