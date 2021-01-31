@@ -117,7 +117,10 @@ int main() {
         
         // shader switching
         if (mainWindow.getKeys()[GLFW_KEY_G])
+        {
             useTextures = !useTextures;
+            mainWindow.getKeys()[GLFW_KEY_G] = false;
+        }
         Shader & shader = useTextures ? shaderTexture : shaderNoTexture;
         
         // Clear window
