@@ -1,0 +1,69 @@
+# define lists of header, source and shader files for convenience
+set(HEADERS_LIST
+  ${PROJECT_SOURCE_DIR}/include/RendGL/Camera.h
+  ${PROJECT_SOURCE_DIR}/include/RendGL/Light.h
+  ${PROJECT_SOURCE_DIR}/include/RendGL/Mesh.h
+  ${PROJECT_SOURCE_DIR}/include/RendGL/Primitive.h
+  ${PROJECT_SOURCE_DIR}/include/RendGL/Shader.h
+  ${PROJECT_SOURCE_DIR}/include/RendGL/StaticModel.h
+  ${PROJECT_SOURCE_DIR}/include/RendGL/Texture.h
+  ${PROJECT_SOURCE_DIR}/include/RendGL/Window.h
+)
+
+set(SOURCES_LIST
+  ${PROJECT_SOURCE_DIR}/lib/Camera.cpp
+  ${PROJECT_SOURCE_DIR}/lib/Light.cpp
+  ${PROJECT_SOURCE_DIR}/lib/Mesh.cpp
+  ${PROJECT_SOURCE_DIR}/lib/Primitive.cpp
+  ${PROJECT_SOURCE_DIR}/lib/Shader.cpp
+  ${PROJECT_SOURCE_DIR}/lib/StaticModel.cpp
+  ${PROJECT_SOURCE_DIR}/lib/Texture.cpp
+  ${PROJECT_SOURCE_DIR}/lib/Window.cpp
+)
+
+set(SHADERS_LIST
+  ${PROJECT_SOURCE_DIR}/lib/shaders/fragmentShader_texture.glsl
+  ${PROJECT_SOURCE_DIR}/lib/shaders/fragmentShader_noTexture.glsl
+  ${PROJECT_SOURCE_DIR}/lib/shaders/vertexShader_texture.glsl
+  ${PROJECT_SOURCE_DIR}/lib/shaders/vertexShader_noTexture.glsl
+)
+
+# define a library to compile
+add_library(RendGL
+  ${SOURCES_LIST}
+  # header files are not necessary here. Only adding them so that
+  # they are visible in an IDE
+  ${HEADERS_LIST}
+  # same for the shaders
+  ${SHADERS_LIST}
+)
+
+# link necessary external libraries
+# PUBLIC means that they will also be linked to any downstream app or lib
+target_link_libraries(RendGL
+  PUBLIC
+    OpenGL::GL
+    GLEW::GLEW
+    glfw
+    glm::glm
+    ${ASSIMP_LIBNAME}
+)
+
+# require c++14 for the library and anything that depends on it
+target_compile_features(RendGL PUBLIC cxx_std_14)
+
+# add include directories here so that they available in anything
+# that depends on RendGL
+target_include_directories(RendGL
+  PUBLIC
+    ${PROJECT_SOURCE_DIR}/include/RendGL
+    ${PROJECT_SOURCE_DIR}/include/extern
+    ${PROJECT_BINARY_DIR}/include
+)
+
+# shaders will appear in a Shaders folder in an IDE
+# for header and source files this happens automatically
+source_group(Shaders
+  FILES
+    ${SHADERS_LIST}
+)

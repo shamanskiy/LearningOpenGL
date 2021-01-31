@@ -1,0 +1,14 @@
+# This variable will be used to configure Config.h.in to define path to textures
+set(TEXTURES_DIR ${PROJECT_BINARY_DIR}/data/textures)
+
+# Check if the straw file does not exist. Assume that this means that none
+# of texture/model files exists. Download all from AWS S3 where they are stored
+# and publicly accessable.
+
+if(NOT EXISTS ${PROJECT_BINARY_DIR}/data/textures/straw.png)
+  message("-- Downloading content from AWS...")
+  file(DOWNLOAD https://learning-open-gl.s3.eu-central-1.amazonaws.com/textures/straw.png ${PROJECT_BINARY_DIR}/data/textures/straw.png)
+  file(DOWNLOAD https://learning-open-gl.s3.eu-central-1.amazonaws.com/textures/grass.png ${PROJECT_BINARY_DIR}/data/textures/grass.png)
+  file(DOWNLOAD https://learning-open-gl.s3.eu-central-1.amazonaws.com/textures/brick.png ${PROJECT_BINARY_DIR}/data/textures/brick.png)
+  file(DOWNLOAD https://learning-open-gl.s3.eu-central-1.amazonaws.com/textures/dirt.png ${PROJECT_BINARY_DIR}/data/textures/dirt.png)
+endif()

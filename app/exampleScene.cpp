@@ -22,6 +22,8 @@
 #include "Light.h"
 #include "Primitive.h"
 
+#include <assimp/Importer.hpp>
+
 int main() {
 
     // Window dimensions
@@ -34,15 +36,17 @@ int main() {
         return 1;
     }
 
+    Assimp::Importer importer;
+    
     // create meshes
     auto plane = makePlane();
     auto cube = makeCube();
     auto pyramid = makePyramid();
     
     // create textures
-    Texture grass(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/textures/grass.png");
-    Texture brick(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/textures/brick.png");
-    Texture straw(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/textures/straw.png");
+    Texture grass(TEXTURES_DIR + "/grass.png");
+    Texture brick(TEXTURES_DIR + "/brick.png");
+    Texture straw(TEXTURES_DIR + "/straw.png");
     
     // container with pointers to models to draw
     std::vector<std::unique_ptr<StaticModel> > models;
@@ -84,13 +88,8 @@ int main() {
                   0.05f); // rotational move speed a.k.a. mouse sensitivity
 
     // create and compile shaders on GPU
-    Shader shaderTexture(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/src/shaders/vertexShader_texture.glsl",
-                 std::string(LEARNING_OPENGL_SOURCE_PATH) +
-        "/src/shaders/fragmentShader_texture.glsl");
-    
-    Shader shaderNoTexture(std::string(LEARNING_OPENGL_SOURCE_PATH) + "/src/shaders/vertexShader_noTexture.glsl",
-                 std::string(LEARNING_OPENGL_SOURCE_PATH) +
-        "/src/shaders/fragmentShader_noTexture.glsl");
+    Shader shaderTexture(SHADERS_DIR + "/vertexShader_texture.glsl",SHADERS_DIR + "/fragmentShader_texture.glsl");
+    Shader shaderNoTexture(SHADERS_DIR + "/vertexShader_noTexture.glsl", SHADERS_DIR + "/fragmentShader_noTexture.glsl");
     
     // projection matrix
     glm::mat4 projection = glm::perspective(45.0f, (GLfloat)mainWindow.getBufferWidth()/(GLfloat)mainWindow.getBufferHeight(), 0.1f, 100.0f);
@@ -118,7 +117,10 @@ int main() {
         
         // shader switching
         if (mainWindow.getKeys()[GLFW_KEY_G])
+        {
             useTextures = !useTextures;
+            mainWindow.getKeys()[GLFW_KEY_G] = false;
+        }
         Shader & shader = useTextures ? shaderTexture : shaderNoTexture;
         
         // Clear window
