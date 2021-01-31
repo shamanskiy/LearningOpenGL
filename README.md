@@ -1,7 +1,7 @@
 # LearningOpenGL
 LearningOpenGL is a small project based on [a great OpenGL course by Ben Cook on Udemy.com.](https://www.udemy.com/course/graphics-with-modern-opengl)
 
-The project follows the guidelines of modern OpenGL and demonstrates the complete rendering pipeline, object importing, shading, interactive camera, texturing and more.
+The project follows the guidelines of modern OpenGL and demonstrates the complete rendering pipeline, object importing, shading, interactive camera, texturing and more. This is also my playground to experiment with Cmake and unit testing.
 
 ## Dependencies
 The following libraries have to be installed to compile the project:
@@ -9,7 +9,8 @@ The following libraries have to be installed to compile the project:
 * [GLEW](http://glew.sourceforge.net/) - for managing OpenGL extensions
 * [glfw3](https://www.glfw.org/) - for window and input management
 * [glm](https://glm.g-truc.net/0.9.9/index.html) - for linear algebra (header-only)
-* [stb_image](https://github.com/nothings/stb/blob/master/stb_image.h) - for texture loading (header-only, part of [stb](https://github.com/nothings/stb))
+* assimp
+* gtest
 
 ## How to build
 
@@ -23,7 +24,6 @@ apt-get install libglfw3
 apt-get install libglfw3-dev
 apt-get install libglm-dev
 ```
-For stb_image, download the [stb_image.h](https://github.com/nothings/stb/blob/master/stb_image.h) file and put it into `/usr/local/include`.
 After that, execute the following commands from the project directory:
 ```
 mkdir build
