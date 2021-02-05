@@ -45,8 +45,8 @@ target_link_libraries(RendGL
     OpenGL::GL
     GLEW::GLEW
     glfw
-    glm::glm
-    ${ASSIMP_LIBNAME}
+    glm
+    assimp::assimp
 )
 
 # require c++14 for the library and anything that depends on it

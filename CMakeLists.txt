@@ -15,15 +15,12 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED) # a distribution/wrapper for OpenGL (I guess)
 find_package(glfw3 REQUIRED) # window and IO manager for OpenGL
-find_package(glm REQUIRED) # linear algebra library for OpenGL
-find_package(GTest REQUIRED) # unit_testing
+find_package(glm CONFIG REQUIRED) # linear algebra library for OpenGL
+find_package(assimp CONFIG REQUIRED) # asset import
+find_package(GTest CONFIG REQUIRED) # unit_testing
 
-# we use CONFIG mode to find ASSIMP because we want to use a config file coming with ASSIMP
-find_package(ASSIMP CONFIG REQUIRED)
-if(ASSIMP_FOUND)
-    set(ASSIMP_LIBNAME ${ASSIMP_LIBRARY_DIRS}/${ASSIMP_LIBRARIES})
-    message("-- Found assimp: ${ASSIMP_LIBNAME}")
-endif(ASSIMP_FOUND)
+
+message("yoyo")
 
 # download content (textures and models) from AWS S3 if not yet downloaded
 include(cmake/DownloadData.txt)
