@@ -60,6 +60,15 @@ You can use [vcpkg](https://github.com/microsoft/vcpkg) to install all necessary
 ./vcpkg install GLEW:x64-windows
 ./vcpkg install glfw3:x64-windows
 ./vcpkg install glm:x64-windows
-./vcpkg install stb:x64-windows
+./vcpkg install assimp:x64-windows
+./vcpkg install gtest:x64-windows
 ```
-Then, use cmake or CMake-gui to configure the project for Visual Studio. Add variable `CMAKE_TOOLCHAIN_FILE` and set it to `path/to/vcpkg/scripts/buildsystems/vcpkg.cmake` - this will allow CMake to easily find all libraries installed with `vcpkg`. Open and build the project in Visual Studio.
+Remember to specify the platform! If you just do `./vcpkg install GLEW`, vcpck may install an x86 version, and Cmake won't find the library.
+
+Then, go to LearningOpenGL source directory and use cmake to configure the project:
+```
+mkdir build
+cd build
+cmake .. -DCMAKE_TOOLCHAIN_FILE=C:\path\to\vcpkg\scripts\buildsystems\vcpkg.cmake
+```
+If Visual Studio is installed, Cmake will automaticall choose to configure the project for Visual Studio, so you do not have to specify the generator. Also notice that we specify the `CMAKE_TOOLCHAIN_VARIABLE`: this is so that Cmake could find and use the packages installed by vcpkg. Now open and build the project in Visual Studio.
