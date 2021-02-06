@@ -56,7 +56,7 @@ target_link_libraries(RendGL
 )
 
 # require c++14 for the library and anything that depends on it
-target_compile_features(RendGL PUBLIC cxx_std_14)
+target_compile_features(RendGL PUBLIC cxx_std_17)
 
 # add include directories here so that they available in anything
 # that depends on RendGL

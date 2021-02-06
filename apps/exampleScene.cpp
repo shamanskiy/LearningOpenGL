@@ -7,16 +7,21 @@ int main() {
 
     // Create and initialize an application window with given dimensions.
     Window window(800,600);
-    auto out = window.initialize();
-    if (!out.ok())
+    auto outcomeWindow = window.initialize();
+    if (!outcomeWindow.ok())
     {
-        std::cout << out.message() << std::endl;
+        std::cout << outcomeWindow.message() << std::endl;
         return 1;
     }
 
     // Scene holds all information about models, textures and lights to render
-    // as well as the camera. Normally it's loaded from a file.
-    auto scene = Scene::loadScene("fileNamePlaceHolder");
+    // as well as the camera.
+    auto [scene, outcomeLoad] = Scene::loadScene("fileNamePlaceHolder");
+    if (!outcomeLoad.ok())
+    {
+        std::cout << outcomeLoad.message() << std::endl;
+        return 1;
+    }
 
     // Loop until the window is closed.
     while (!window.shouldClose())

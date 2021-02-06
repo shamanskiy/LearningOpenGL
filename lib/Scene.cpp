@@ -1,7 +1,7 @@
 #include "Scene.h"
 #include "SceneCrazyDisco.h"
 
-std::unique_ptr<Scene> Scene::loadScene(const std::string& fileName)
+std::pair<std::unique_ptr<Scene>, Outcome> Scene::loadScene(const std::string& fileName)
 {
-	return std::make_unique<SceneCrazyDisco>();
+	return std::make_pair(std::make_unique<SceneCrazyDisco>(), Outcome(true));
 }
