@@ -21,16 +21,14 @@ Window::~Window()
     glfwTerminate();
 }
 
-int Window::initialize()
+Outcome Window::initialize()
 {
     // ================================ GLFW ============================//
-
     // Initialise GLFW
     if (!glfwInit())
     {
-        std::cout << "GLFW initialization failed\n";
         glfwTerminate();
-        return 1;
+        return Outcome(false, "GLFW initialization failed");
     }
 
     // Setup GLFW window properties
@@ -46,9 +44,8 @@ int Window::initialize()
     mainWindow = glfwCreateWindow(width, height, "OpenGL App", nullptr, nullptr);
     if (!mainWindow)
     {
-        std::cout << "GLFW window creation failed\n";
         glfwTerminate();
-        return 1;
+        return Outcome(false, "GLFW window creation failed");
     }
 
     // Get Buffer Size information
@@ -76,10 +73,9 @@ int Window::initialize()
 
     if (glewInit() != GLEW_OK)
     {
-        std::cout << "GLEW initialisation failed!\n";
         glfwDestroyWindow(mainWindow);
         glfwTerminate();
-        return 1;
+        return Outcome(false, "GLEW initialization failed!");
     }
 
     // ================================ OpenGL ============================//
@@ -89,7 +85,7 @@ int Window::initialize()
     // Setup Viewport size
     glViewport(0, 0, bufferWidth, bufferHeight);
 
-    return 0;
+    return Outcome(true);
 }
 
 void Window::handleKeys(GLFWwindow* window, int key, int code,

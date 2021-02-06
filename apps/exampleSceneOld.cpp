@@ -1,6 +1,3 @@
-// some funny preprocessor command to enable stb_image library
-#define STB_IMAGE_IMPLEMENTATION
-
 #include <iostream>
 #include <cmath>
 #include <vector>
@@ -30,9 +27,10 @@ int main() {
     const GLint WIDTH = 800, HEIGHT = 600;
     // create & initialize main window
     Window mainWindow(WIDTH,HEIGHT);
-    if (mainWindow.initialize() != 0)
+    auto out = mainWindow.initialize();
+    if (!out.ok())
     {
-        std::cout << "Problem creating window!\n";
+        std::cout << out.message() << std::endl;
         return 1;
     }
 

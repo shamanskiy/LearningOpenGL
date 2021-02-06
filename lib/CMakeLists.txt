@@ -7,6 +7,7 @@ set(HEADERS_LIST
   ${PROJECT_SOURCE_DIR}/include/RendGL/Shader.h
   ${PROJECT_SOURCE_DIR}/include/RendGL/StaticModel.h
   ${PROJECT_SOURCE_DIR}/include/RendGL/Texture.h
+  ${PROJECT_SOURCE_DIR}/include/RendGL/Utils.h
   ${PROJECT_SOURCE_DIR}/include/RendGL/Window.h
 )
 
@@ -18,6 +19,7 @@ set(SOURCES_LIST
   ${PROJECT_SOURCE_DIR}/lib/Shader.cpp
   ${PROJECT_SOURCE_DIR}/lib/StaticModel.cpp
   ${PROJECT_SOURCE_DIR}/lib/Texture.cpp
+  ${PROJECT_SOURCE_DIR}/lib/Utils.cpp
   ${PROJECT_SOURCE_DIR}/lib/Window.cpp
 )
 

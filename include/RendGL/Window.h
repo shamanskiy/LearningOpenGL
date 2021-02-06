@@ -5,6 +5,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include "Utils.h"
+
 // Window is a class that creates an actual application window and manages GLFW
 class Window
 {
@@ -31,7 +33,7 @@ public:
     ~Window();
     
     // initialize GLFW context and  createthe window (constructor does nothing)
-    int initialize();
+    Outcome initialize();
     
     // access functions for the buffer size
     GLint getBufferWidth() { return bufferWidth; }

@@ -1,6 +1,7 @@
 # unit_tests is a single executable that runs tests in all listed .cpp files
 add_executable(unit_tests
   CameraTest.cpp
+  WindowTest.cpp
 )
 
 # gtest_main is a standard main file to launch the unit_test app.

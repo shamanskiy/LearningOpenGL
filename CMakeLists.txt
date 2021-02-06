@@ -19,9 +19,6 @@ find_package(glm CONFIG REQUIRED) # linear algebra library for OpenGL
 find_package(assimp CONFIG REQUIRED) # asset import
 find_package(GTest CONFIG REQUIRED) # unit_testing
 
-
-message("yoyo")
-
 # download content (textures and models) from AWS S3 if not yet downloaded
 include(cmake/DownloadData.txt)
 
@@ -29,10 +26,10 @@ include(cmake/DownloadData.txt)
 add_subdirectory(lib)
 
 # The executable code is here
-add_subdirectory(app)
+add_subdirectory(apps)
 
 # Unit tests are here
-add_subdirectory(test)
+add_subdirectory(tests)
 
 # Config.h contains various useful #defines:
 # TEXTURE_DIR is a path to textures.
