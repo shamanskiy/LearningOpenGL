@@ -1,8 +1,8 @@
 #pragma once
 
-#include <SceneInterface.h>
+#include <Scene.h>
 
-class SceneCrazyDisco : public SceneInterface
+class SceneCrazyDisco : public Scene
 {
 public: 
 	SceneCrazyDisco();
