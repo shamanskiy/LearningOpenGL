@@ -1,7 +1,14 @@
 #include "Utils.h"
 
 EventContainer::EventContainer() :
-	m_timeTracker() {}
+	m_timeTracker(),
+	m_keys()
+{
+	for (auto&& it : m_keys)
+		it = false;
+}
+
+
 
 TimeTracker::TimeTracker() : 
 	m_time(0.),

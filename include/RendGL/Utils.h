@@ -65,16 +65,23 @@ class EventContainer
 public:
     EventContainer();
 
+    // current time record
     void setTime(GLfloat time) { m_timeTracker.setTime(time); }
+    // time passed since the last time record
     GLfloat timeStep() const { return m_timeTracker.timeStep(); }
+
+    // set key state. Uses GLFW key codes. True/false = down/up
+    void setKeyState(int key, bool state) { m_keys[key] = state; }
+    // get key state. Uses GLFW key codes. True/false = down/up
+    bool keyState(int key) { return m_keys[key]; }
 
 private:
     // time tracker computes time steps for other systems
     TimeTracker m_timeTracker;
 
-    //std::array<bool, 1024> m_keys;
-
-
+    // states of all keys on the keyboard in ASCII code (true/false = down/up).
+    // initialized with all falses.
+    std::array<bool, 1024> m_keys;
 };
 
 
