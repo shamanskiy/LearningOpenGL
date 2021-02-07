@@ -60,10 +60,10 @@ private:
 };
 
 
-class InputContainer
+class EventContainer
 {
 public:
-    InputContainer();
+    EventContainer();
 
     void setTime(GLfloat time) { m_timeTracker.setTime(time); }
     GLfloat timeStep() const { return m_timeTracker.timeStep(); }

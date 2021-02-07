@@ -32,7 +32,7 @@ int main() {
         // Scene makes all the calls to OpenGL that it need to do to render.
         // Receives input events from the window and extracts whatever is important.
         // Also gets a time step (dt, delta t) to update camera and animations.
-        scene->render(window.input());
+        scene->render(window.events());
 
         // Window has been displaying a buffer from the previous frame.
         // OpenGL has been drawing to a reserve buffer.

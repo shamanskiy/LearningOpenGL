@@ -27,7 +27,7 @@ private:
     // a flag that this is the first mouse move
     bool mouseFirstMove;
 
-    InputContainer m_input;
+    EventContainer m_events;
     
 public:
     // constructor 
@@ -49,7 +49,7 @@ public:
     // process glfw input. should be called at the start of the loop
     void pollEvents();
 
-    const InputContainer& input() { return m_input; }
+    const EventContainer& events() { return m_events; }
 
 
     

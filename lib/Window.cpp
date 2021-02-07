@@ -10,7 +10,7 @@ Window::Window(GLint windowWidth, GLint windowHeight) :
     changeX(0.0f),
     changeY(0.0f),
     mouseFirstMove(true),
-    m_input()
+    m_events()
 {
     for (size_t i = 0; i < 1024; ++i)
         keys[i] = false;
@@ -147,5 +147,5 @@ GLfloat Window::getChangeY()
 void Window::pollEvents()
 {
     glfwPollEvents();
-    m_input.setTime(glfwGetTime());
+    m_events.setTime(glfwGetTime());
 }

@@ -102,7 +102,7 @@ int main() {
         glfwPollEvents();
 
         // pass data to the camera
-        camera.keyControl(mainWindow.getKeys(),mainWindow.input().timeStep());
+        camera.keyControl(mainWindow.getKeys(),mainWindow.events().timeStep());
         camera.mouseControl(mainWindow.getChangeX(), mainWindow.getChangeY());
         
         // shader switching

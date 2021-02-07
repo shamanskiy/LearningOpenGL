@@ -1,6 +1,6 @@
 #include "Utils.h"
 
-InputContainer::InputContainer() :
+EventContainer::EventContainer() :
 	m_timeTracker() {}
 
 TimeTracker::TimeTracker() : 
