@@ -26,6 +26,8 @@ private:
     GLfloat lastX, lastY, changeX, changeY;
     // a flag that this is the first mouse move
     bool mouseFirstMove;
+
+    InputContainer m_input;
     
 public:
     // constructor 
@@ -45,7 +47,9 @@ public:
     void swapBuffers() { glfwSwapBuffers(mainWindow); }
 
     // process glfw input. should be called at the start of the loop
-    void pollEvents() { glfwPollEvents(); }
+    void pollEvents();
+
+    const InputContainer& input() { return m_input; }
 
 
     

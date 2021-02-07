@@ -1,6 +1,7 @@
 # unit_tests is a single executable that runs tests in all listed .cpp files
 add_executable(unit_tests
   CameraTest.cpp
+  UtilsTest.cpp
   WindowTest.cpp
 )
 

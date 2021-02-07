@@ -6,6 +6,6 @@ class SceneCrazyDisco : public Scene
 {
 public: 
 	SceneCrazyDisco();
-	void render() override;
+	void render(const InputContainer& input) override;
 	~SceneCrazyDisco() override;
 };

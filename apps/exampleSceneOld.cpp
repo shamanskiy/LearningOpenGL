@@ -91,9 +91,6 @@ int main() {
     
     // projection matrix
     glm::mat4 projection = glm::perspective(45.0f, (GLfloat)mainWindow.getBufferWidth()/(GLfloat)mainWindow.getBufferHeight(), 0.1f, 100.0f);
-
-    // time tracking for delta t
-    GLfloat lastTime = glfwGetTime();
     
     // shader switching; will move to a dedicated class
     bool useTextures = true;
@@ -104,13 +101,8 @@ int main() {
         // Get + Handle user input events
         glfwPollEvents();
 
-        // compute delta t
-        GLfloat timeNow = glfwGetTime();
-        GLfloat delta_t = timeNow - lastTime;
-        lastTime = timeNow;
-
         // pass data to the camera
-        camera.keyControl(mainWindow.getKeys(),delta_t);
+        camera.keyControl(mainWindow.getKeys(),mainWindow.input().timeStep());
         camera.mouseControl(mainWindow.getChangeX(), mainWindow.getChangeY());
         
         // shader switching
