@@ -5,8 +5,9 @@
 
 int main() {
 
-    // Create and initialize an application window with given dimensions.
+    // Create and initialize an application window with given dimensions and name
     Window window(800,600);
+    window.setWindowName("Crazy Disco");
     auto outcomeWindow = window.initialize();
     if (!outcomeWindow.ok())
     {

@@ -19,22 +19,16 @@
 #include "Light.h"
 #include "Primitive.h"
 
-#include <assimp/Importer.hpp>
-
 int main() {
-
-    // Window dimensions
-    const GLint WIDTH = 800, HEIGHT = 600;
-    // create & initialize main window
-    Window mainWindow(WIDTH,HEIGHT);
+    // Create and initialize an application window with given dimensions and name
+    Window mainWindow(800,600);
+    mainWindow.setWindowName("Example Scene");
     auto out = mainWindow.initialize();
     if (!out.ok())
     {
         std::cout << out.message() << std::endl;
         return 1;
     }
-
-    Assimp::Importer importer;
     
     // create meshes
     auto plane = makePlane();
