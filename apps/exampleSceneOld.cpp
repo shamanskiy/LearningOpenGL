@@ -99,22 +99,22 @@ int main() {
     while (!mainWindow.shouldClose())
     {
         // Get + Handle user input events
-        glfwPollEvents();
+        mainWindow.pollEvents();
 
         // pass data to the camera
-        camera.keyControl(mainWindow.getKeys(),mainWindow.events().timeStep());
+        camera.keyControl(mainWindow.events());
         camera.mouseControl(mainWindow.getChangeX(), mainWindow.getChangeY());
         
         // shader switching
-        if (mainWindow.getKeys()[GLFW_KEY_G])
+        if (mainWindow.events().keyState(GLFW_KEY_G))
         {
             useTextures = !useTextures;
-            mainWindow.getKeys()[GLFW_KEY_G] = false;
+            //mainWindow.getKeys()[GLFW_KEY_G] = false;
         }
         Shader & shader = useTextures ? shaderTexture : shaderNoTexture;
         
         // Clear window
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClearColor(0.6f, 0.6f, 0.6f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         // activate/bind a shader to use it

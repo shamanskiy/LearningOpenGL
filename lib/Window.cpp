@@ -36,12 +36,12 @@ Outcome Window::initialize()
     // OpenGL version
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    // Core Profile = No Backwards Compatibility
+    // Core Profile = No Backwards Compatibility (?)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    // Allow Forward Compatbility
+    // Allow Forward Compatibility (?)
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-    // Create the window
+    // Create a GLFW window
     mainWindow = glfwCreateWindow(width, height, "OpenGL App", nullptr, nullptr);
     if (!mainWindow)
     {
@@ -53,7 +53,7 @@ Outcome Window::initialize()
     glfwGetFramebufferSize(mainWindow, &bufferWidth, &bufferHeight);
 
     // set auxiliary pointer for the static function "handleKeys" to access the Window class instance
-    glfwSetWindowUserPointer(mainWindow,this);
+    glfwSetWindowUserPointer(mainWindow,&m_events);
 
     // set a callback function to handle keyboard events
     glfwSetKeyCallback(mainWindow, handleKeys);
@@ -95,7 +95,7 @@ void Window::handleKeys(GLFWwindow* window, int key, int code,
     // a nifty way to get the pointer to the Window class
     // associated with the GLFW window handling the event.
     // Looks a bit unsafe though
-    Window* theWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
+    EventContainer* events = static_cast<EventContainer *>(glfwGetWindowUserPointer(window));
 
     if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
         glfwSetWindowShouldClose(window, GL_TRUE);
@@ -103,9 +103,9 @@ void Window::handleKeys(GLFWwindow* window, int key, int code,
     if (key >= 0 && key < 1024)
     {
         if (action == GLFW_PRESS)
-            theWindow->keys[key] = true;
+            events->setKeyState(key, true);
         else if (action == GLFW_RELEASE)
-            theWindow->keys[key] = false;
+            events->setKeyState(key, false);
     }
 }
 
@@ -114,7 +114,7 @@ void Window::handleMouse(GLFWwindow* window, double xPos, double yPos)
     // a nifty way to get the pointer to the Window class
     // associated with the GLFW window handling the event.
     // Look a bit unsafe though
-    Window* theWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
+    /*Window* theWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
 
     if (theWindow->mouseFirstMove)
     {
@@ -126,7 +126,7 @@ void Window::handleMouse(GLFWwindow* window, double xPos, double yPos)
     theWindow->changeX = xPos - theWindow->lastX;
     theWindow->changeY = theWindow->lastY - yPos;
     theWindow->lastX = xPos;
-    theWindow->lastY = yPos;
+    theWindow->lastY = yPos;*/
 }
 
 

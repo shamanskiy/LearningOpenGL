@@ -3,6 +3,8 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
+#include <Utils.h>
+
 
 Camera::Camera(glm::vec3 initialPosition, glm::vec3 worldUp_,
               GLfloat initialYaw, GLfloat initialPitch,
@@ -25,22 +27,22 @@ Camera::~Camera()
     
 }
 
-void Camera::keyControl(bool *keys, GLfloat delta_t)
+void Camera::keyControl(const EventContainer& events)
 {
-    if (keys[GLFW_KEY_W])
-        position += front * moveSpeed * delta_t;
-    if (keys[GLFW_KEY_S])
-        position -= front * moveSpeed * delta_t;
-    if (keys[GLFW_KEY_D])
-        position += right * moveSpeed * delta_t;
-    if (keys[GLFW_KEY_A])
-        position -= right * moveSpeed * delta_t;
-    if (keys[GLFW_KEY_UP])
-        position += up * moveSpeed * delta_t;
-    if (keys[GLFW_KEY_DOWN])
-        position -= up * moveSpeed * delta_t;
+    if (events.keyState(GLFW_KEY_W))
+        position += front * moveSpeed * events.timeStep();
+    if (events.keyState(GLFW_KEY_S))
+        position -= front * moveSpeed * events.timeStep();
+    if (events.keyState(GLFW_KEY_D))
+        position += right * moveSpeed * events.timeStep();
+    if (events.keyState(GLFW_KEY_A))
+        position -= right * moveSpeed * events.timeStep();
+    if (events.keyState(GLFW_KEY_UP))
+        position += up * moveSpeed * events.timeStep();
+    if (events.keyState(GLFW_KEY_DOWN))
+        position -= up * moveSpeed * events.timeStep();
     
-    if (keys[GLFW_KEY_R])
+    if (events.keyState(GLFW_KEY_R))
     {
         position = resetPosition;
         yaw = resetYaw;

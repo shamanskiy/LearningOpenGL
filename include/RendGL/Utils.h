@@ -4,6 +4,7 @@
 #include <array>
 
 #include <GL/glew.h>
+#include <glfw/glfw3.h>
 
 // Some operations return an Outcome.
 // An outcome contains the operation status (true/false = success/fail)
@@ -73,7 +74,7 @@ public:
     // set key state. Uses GLFW key codes. True/false = down/up
     void setKeyState(int key, bool state) { m_keys[key] = state; }
     // get key state. Uses GLFW key codes. True/false = down/up
-    bool keyState(int key) { return m_keys[key]; }
+    bool keyState(int key) const { return m_keys[key]; }
 
 private:
     // time tracker computes time steps for other systems
