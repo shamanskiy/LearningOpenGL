@@ -73,6 +73,7 @@ Outcome Window::initialize()
 
 void Window::pollEvents()
 {
+    m_events.reset();
     glfwPollEvents();
     m_events.setTime(glfwGetTime());
 }

@@ -6,9 +6,14 @@ EventContainer::EventContainer() :
 	m_cursorTracker()
 {}
 
+void EventContainer::reset()
+{
+	m_cursorTracker.clearPositionChange();
+}
+
 TimeTracker::TimeTracker() : 
-	m_t(0.),
-	m_dt(0.),
+	m_t(0.0f),
+	m_dt(0.0f),
 	m_canComputeTimeStep(false)
 {}
 
@@ -24,10 +29,10 @@ void TimeTracker::setTime(GLfloat time)
 }
 
 CursorTracker::CursorTracker() :
-	m_x(0.),
-	m_y(0.),
-	m_dx(0.),
-	m_dy(0.),
+	m_x(0.0f),
+	m_y(0.0f),
+	m_dx(0.0f),
+	m_dy(0.0f),
 	m_canComputePositionChange(false)
 {}
 
@@ -48,4 +53,9 @@ void CursorTracker::setPosition(GLfloat x, GLfloat y)
 	m_y = y;
 }
 
+void CursorTracker::clearPositionChange()
+{
+	m_dx = 0.0f;
+	m_dy = 0.0f;
+}
 

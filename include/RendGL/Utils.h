@@ -73,6 +73,9 @@ public:
     // Set current cursor position and compute position change
     void setPosition(GLfloat x, GLfloat y);
 
+    // Set position change to zero to prevent cursor drifting when mouse is inactive
+    void clearPositionChange();
+
 private:
     // Current cursor position
     GLfloat m_x, m_y;
@@ -87,6 +90,10 @@ class EventContainer
 {
 public:
     EventContainer();
+
+    // Reset events before polling new events.
+    // Currently only resets cursor position change.
+    void reset();
 
     // Record current time to compute time step
     void setTime(GLfloat time) { m_timeTracker.setTime(time); }
