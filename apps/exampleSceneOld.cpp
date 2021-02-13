@@ -97,7 +97,8 @@ int main() {
 
         // pass data to the camera
         camera.keyControl(mainWindow.events());
-        camera.mouseControl(mainWindow.getChangeX(), mainWindow.getChangeY());
+        camera.mouseControl(mainWindow.events().cursorPositionChangeX(),
+            mainWindow.events().cursorPositionChangeY());
         
         // shader switching
         if (mainWindow.events().keyState(GLFW_KEY_G))

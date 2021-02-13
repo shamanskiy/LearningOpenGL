@@ -41,28 +41,15 @@ public:
     int getBufferWidth() const;
     int getBufferHeight() const;
 
-    GLfloat getChangeX();
-    GLfloat getChangeY();
-
 private:
-    // actual window
+    // GLFW window, its size and name
     GLFWwindow *m_window;
-    
-    // window size
     int m_width, m_height;
-
-    // window name (displayed on the top border)
     std::string m_name;
     
     // GLFW events processed during this frame,
     // e.g. key pressed, mouse moved, time elapsed.
     EventContainer m_events;
-
-
-    // mouse state variables: last position and position change
-    GLfloat lastX, lastY, changeX, changeY;
-    // a flag that this is the first mouse move
-    bool mouseFirstMove;
 
 private:
     // callback functions for GLFW keyboard and mouse events

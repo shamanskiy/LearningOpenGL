@@ -2,25 +2,50 @@
 
 EventContainer::EventContainer() :
 	m_timeTracker(),
-	m_keys()
-{
-	for (auto&& it : m_keys)
-		it = false;
-}
-
-
+	m_keys(),
+	m_cursorTracker()
+{}
 
 TimeTracker::TimeTracker() : 
-	m_time(0.),
-	m_timeStep(0.),
+	m_t(0.),
+	m_dt(0.),
 	m_canComputeTimeStep(false)
 {}
 
 void TimeTracker::setTime(GLfloat time)
 {
+	// We can only compute meaningful time step
+	// if current time was submitted at least twice.
 	if (m_canComputeTimeStep)
-		m_timeStep = time - m_time;
+		m_dt = time - m_t;
 	else
 		m_canComputeTimeStep = true;
-	m_time = time;
+	m_t = time;
 }
+
+CursorTracker::CursorTracker() :
+	m_x(0.),
+	m_y(0.),
+	m_dx(0.),
+	m_dy(0.),
+	m_canComputePositionChange(false)
+{}
+
+void CursorTracker::setPosition(GLfloat x, GLfloat y)
+{
+	// We can only compute meaningful position change
+	// if cursor position was submitted at least twice.
+	if (m_canComputePositionChange)
+	{
+		m_dx = x - m_x;
+		// Inverted vertical movement
+		m_dy = m_y - y;
+	}
+	else
+		m_canComputePositionChange = true;
+
+	m_x = x;
+	m_y = y;
+}
+
+

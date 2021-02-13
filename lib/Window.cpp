@@ -6,11 +6,6 @@ Window::Window(int windowWidth, int windowHeight) :
     m_width(windowWidth),
     m_height(windowHeight),
     m_name(),
-    lastX(0.0f),
-    lastY(0.0f),
-    changeX(0.0f),
-    changeY(0.0f),
-    mouseFirstMove(true),
     m_events()
 { }
 
@@ -117,35 +112,11 @@ void Window::handleKeys(GLFWwindow* window, int key, int code,
 
 void Window::handleMouse(GLFWwindow* window, double xPos, double yPos)
 {
-    // a nifty way to get the pointer to the Window class
-    // associated with the GLFW window handling the event.
-    // Look a bit unsafe though
-    /*Window* theWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
+    // Use a pointer stored inside the GLFW window to get access
+    // to the EventContainter of the Window class
+    EventContainer* events =
+        static_cast<EventContainer*>(glfwGetWindowUserPointer(window));
 
-    if (theWindow->mouseFirstMove)
-    {
-        theWindow->lastX = xPos;
-        theWindow->lastY = yPos;
-        theWindow->mouseFirstMove = false;
-    }
-
-    theWindow->changeX = xPos - theWindow->lastX;
-    theWindow->changeY = theWindow->lastY - yPos;
-    theWindow->lastX = xPos;
-    theWindow->lastY = yPos;*/
+    events->setCursorPosition(xPos, yPos);
 }
 
-
-GLfloat Window::getChangeX()
-{
-    GLfloat xChange = changeX;
-    changeX = 0.0f;
-    return xChange;
-}
-
-GLfloat Window::getChangeY()
-{
-    GLfloat yChange = changeY;
-    changeY = 0.0f;
-    return yChange;
-}
