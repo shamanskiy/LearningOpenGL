@@ -1,6 +1,8 @@
 # This variable will be used to configure Config.h.in to define path to textures
 set(TEXTURES_DIR ${PROJECT_BINARY_DIR}/data/textures)
 
+set(MODELS_DIR ${PROJECT_BINARY_DIR}/data/models)
+
 # Check if the straw file does not exist. Assume that this means that none
 # of texture/model files exists. Download all from AWS S3 where they are stored
 # and publicly accessable.

@@ -25,9 +25,12 @@ Texture::~Texture()
 void Texture::loadTexture()
 {
     // load image/texture data
-    unsigned char *textureData = stbi_load(fileLoc.c_str(), &width, &height, &bitDepth, 0);
+    unsigned char* textureData = stbi_load(fileLoc.c_str(), &width, &height, &bitDepth, 0);
     if (!textureData)
+    {
         std::cout << "Failed to find a texture in " << fileLoc << std::endl;
+        return;
+    }
     // create texture object on the GPU
     glGenTextures(1, &textureID);
     // activate/bind texture object for future operations

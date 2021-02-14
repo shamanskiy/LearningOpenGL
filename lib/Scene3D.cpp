@@ -27,15 +27,16 @@ Scene3D::Scene3D() :
     textures(),
     models(),
     shaders(),
-    shaderSwitcher(false)
+    shaderSwitcher(false),
+    model()
 {
     meshes.push_back(makePlane());
     meshes.push_back(makeCube());
     meshes.push_back(makePyramid());
 
-    textures.push_back(std::make_unique<Texture>(TEXTURES_DIR + "/grass.png"));
-    textures.push_back(std::make_unique<Texture>(TEXTURES_DIR + "/brick.png"));
-    textures.push_back(std::make_unique<Texture>(TEXTURES_DIR + "/straw.png"));
+    textures.push_back(std::make_unique<Texture>(TEXTURES_DIR + "grass.png"));
+    textures.push_back(std::make_unique<Texture>(TEXTURES_DIR + "brick.png"));
+    textures.push_back(std::make_unique<Texture>(TEXTURES_DIR + "straw.png"));
 
     // create floor
     glm::mat4 modelMatrix(1.0f); // "base" transformation matrix
@@ -61,11 +62,13 @@ Scene3D::Scene3D() :
         glm::translate(modelMatrix, glm::vec3(2.0f, 1.0f, -2.0f))));
 
     shaders.push_back(std::make_unique<Shader>(
-        SHADERS_DIR + "/vertexShader_texture.glsl",
-        SHADERS_DIR + "/fragmentShader_texture.glsl"));
+        SHADERS_DIR + "vertexShader_texture.glsl",
+        SHADERS_DIR + "fragmentShader_texture.glsl"));
     shaders.push_back(std::make_unique<Shader>(
-        SHADERS_DIR + "/vertexShader_noTexture.glsl",
-        SHADERS_DIR + "/fragmentShader_noTexture.glsl"));
+        SHADERS_DIR + "vertexShader_noTexture.glsl",
+        SHADERS_DIR + "fragmentShader_noTexture.glsl"));
+
+    model.loadModel(MODELS_DIR + "table.obj");
 
 }
 
@@ -110,6 +113,13 @@ void Scene3D::render(const EventContainer& events)
     // render models
     for (auto& it : models)
         it->render(shader);
+
+    glm::mat4 modelMat = glm::mat4(1.0f);
+    modelMat = glm::scale(modelMat, glm::vec3(0.1f, 0.1f, 0.1f));
+    modelMat = glm::translate(modelMat, glm::vec3(50.0f, -35.0f, 84.0f));
+    //modelMat = glm::scale(modelMat, glm::vec3(0.01f, 0.01f, 0.01f));
+    glUniformMatrix4fv(shader.uniModelMatrix(), 1, GL_FALSE, glm::value_ptr(modelMat));
+    model.renderModel();
 
     // deactivate/unbind shader
     glUseProgram(0);

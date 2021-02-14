@@ -5,6 +5,7 @@
 #include "Scene.h"
 #include "Light.h"
 #include "Camera.h"
+#include "Model.h"
 
 class Mesh;
 class Texture;
@@ -29,4 +30,6 @@ private:
 	std::vector<std::unique_ptr<Shader> > shaders;
 
 	bool shaderSwitcher;
+
+	Model model;
 };
