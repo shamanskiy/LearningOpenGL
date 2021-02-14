@@ -1,6 +1,3 @@
-// some funny preprocessor command to enable stb_image library
-#define STB_IMAGE_IMPLEMENTATION
-
 #include <iostream>
 #include <cmath>
 #include <vector>
@@ -22,21 +19,16 @@
 #include "Light.h"
 #include "Primitive.h"
 
-#include <assimp/Importer.hpp>
-
 int main() {
-
-    // Window dimensions
-    const GLint WIDTH = 800, HEIGHT = 600;
-    // create & initialize main window
-    Window mainWindow(WIDTH,HEIGHT);
-    if (mainWindow.initialize() != 0)
+    // Create and initialize an application window with given dimensions and name
+    Window mainWindow(800,600);
+    mainWindow.setWindowName("Example Scene");
+    auto out = mainWindow.initialize();
+    if (!out.ok())
     {
-        std::cout << "Problem creating window!\n";
+        std::cout << out.message() << std::endl;
         return 1;
     }
-
-    Assimp::Importer importer;
     
     // create meshes
     auto plane = makePlane();
@@ -76,7 +68,7 @@ int main() {
     
     // create a light object
     Light light(glm::vec3(1.0f,1.0f,1.0f), // white light
-                glm::vec3(1.0f,-1.0f,1.0f), // comming from above
+                glm::vec3(1.0f,-1.0f,1.0f), // coming from above
                 0.3f, 0.7f); // full ambient and diffuse intensity
 
     // create a camera object
@@ -93,9 +85,6 @@ int main() {
     
     // projection matrix
     glm::mat4 projection = glm::perspective(45.0f, (GLfloat)mainWindow.getBufferWidth()/(GLfloat)mainWindow.getBufferHeight(), 0.1f, 100.0f);
-
-    // time tracking for delta t
-    GLfloat lastTime = glfwGetTime();
     
     // shader switching; will move to a dedicated class
     bool useTextures = true;
@@ -104,27 +93,23 @@ int main() {
     while (!mainWindow.shouldClose())
     {
         // Get + Handle user input events
-        glfwPollEvents();
-
-        // compute delta t
-        GLfloat timeNow = glfwGetTime();
-        GLfloat delta_t = timeNow - lastTime;
-        lastTime = timeNow;
+        mainWindow.pollEvents();
 
         // pass data to the camera
-        camera.keyControl(mainWindow.getKeys(),delta_t);
-        camera.mouseControl(mainWindow.getChangeX(), mainWindow.getChangeY());
+        camera.keyControl(mainWindow.events());
+        camera.mouseControl(mainWindow.events().cursorPositionChangeX(),
+            mainWindow.events().cursorPositionChangeY());
         
         // shader switching
-        if (mainWindow.getKeys()[GLFW_KEY_G])
+        if (mainWindow.events().keyState(GLFW_KEY_G))
         {
             useTextures = !useTextures;
-            mainWindow.getKeys()[GLFW_KEY_G] = false;
+            //mainWindow.getKeys()[GLFW_KEY_G] = false;
         }
         Shader & shader = useTextures ? shaderTexture : shaderNoTexture;
         
         // Clear window
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClearColor(0.6f, 0.6f, 0.6f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         // activate/bind a shader to use it

@@ -1,4 +1,9 @@
+// some funny preprocessor command to enable stb_image library
+#define STB_IMAGE_IMPLEMENTATION
+
 #include "Texture.h"
+
+
 
 #include <iostream>
 

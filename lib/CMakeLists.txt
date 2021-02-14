@@ -4,9 +4,12 @@ set(HEADERS_LIST
   ${PROJECT_SOURCE_DIR}/include/RendGL/Light.h
   ${PROJECT_SOURCE_DIR}/include/RendGL/Mesh.h
   ${PROJECT_SOURCE_DIR}/include/RendGL/Primitive.h
+  ${PROJECT_SOURCE_DIR}/include/RendGL/Scene.h
+  ${PROJECT_SOURCE_DIR}/include/RendGL/Scene3D.h
   ${PROJECT_SOURCE_DIR}/include/RendGL/Shader.h
   ${PROJECT_SOURCE_DIR}/include/RendGL/StaticModel.h
   ${PROJECT_SOURCE_DIR}/include/RendGL/Texture.h
+  ${PROJECT_SOURCE_DIR}/include/RendGL/Utils.h
   ${PROJECT_SOURCE_DIR}/include/RendGL/Window.h
 )
 
@@ -15,9 +18,12 @@ set(SOURCES_LIST
   ${PROJECT_SOURCE_DIR}/lib/Light.cpp
   ${PROJECT_SOURCE_DIR}/lib/Mesh.cpp
   ${PROJECT_SOURCE_DIR}/lib/Primitive.cpp
+  ${PROJECT_SOURCE_DIR}/lib/Scene.cpp
+  ${PROJECT_SOURCE_DIR}/lib/Scene3D.cpp
   ${PROJECT_SOURCE_DIR}/lib/Shader.cpp
   ${PROJECT_SOURCE_DIR}/lib/StaticModel.cpp
   ${PROJECT_SOURCE_DIR}/lib/Texture.cpp
+  ${PROJECT_SOURCE_DIR}/lib/Utils.cpp
   ${PROJECT_SOURCE_DIR}/lib/Window.cpp
 )
 
@@ -45,12 +51,12 @@ target_link_libraries(RendGL
     OpenGL::GL
     GLEW::GLEW
     glfw
-    glm::glm
-    ${ASSIMP_LIBNAME}
+    glm
+    assimp::assimp
 )
 
 # require c++14 for the library and anything that depends on it
-target_compile_features(RendGL PUBLIC cxx_std_14)
+target_compile_features(RendGL PUBLIC cxx_std_17)
 
 # add include directories here so that they available in anything
 # that depends on RendGL

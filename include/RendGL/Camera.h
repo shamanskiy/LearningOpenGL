@@ -4,6 +4,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+class EventContainer;
+
 // Camera is a class for movement around and interaction with a rendered scene
 class Camera
 {
@@ -45,7 +47,7 @@ public:
     ~Camera();
 
     // process key controls (move camera)
-    void keyControl(bool * keys, GLfloat delta_t);
+    void keyControl(const EventContainer & events);
 
     // process mouse controls (rotate camera)
     void mouseControl(GLfloat xChange, GLfloat yChange);
