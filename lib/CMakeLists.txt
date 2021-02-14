@@ -5,7 +5,7 @@ set(HEADERS_LIST
   ${PROJECT_SOURCE_DIR}/include/RendGL/Mesh.h
   ${PROJECT_SOURCE_DIR}/include/RendGL/Primitive.h
   ${PROJECT_SOURCE_DIR}/include/RendGL/Scene.h
-  ${PROJECT_SOURCE_DIR}/include/RendGL/SceneCrazyDisco.h
+  ${PROJECT_SOURCE_DIR}/include/RendGL/Scene3D.h
   ${PROJECT_SOURCE_DIR}/include/RendGL/Shader.h
   ${PROJECT_SOURCE_DIR}/include/RendGL/StaticModel.h
   ${PROJECT_SOURCE_DIR}/include/RendGL/Texture.h
@@ -19,7 +19,7 @@ set(SOURCES_LIST
   ${PROJECT_SOURCE_DIR}/lib/Mesh.cpp
   ${PROJECT_SOURCE_DIR}/lib/Primitive.cpp
   ${PROJECT_SOURCE_DIR}/lib/Scene.cpp
-  ${PROJECT_SOURCE_DIR}/lib/SceneCrazyDisco.cpp
+  ${PROJECT_SOURCE_DIR}/lib/Scene3D.cpp
   ${PROJECT_SOURCE_DIR}/lib/Shader.cpp
   ${PROJECT_SOURCE_DIR}/lib/StaticModel.cpp
   ${PROJECT_SOURCE_DIR}/lib/Texture.cpp

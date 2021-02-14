@@ -3,6 +3,7 @@
 #include <iostream>
 
 Window::Window(int windowWidth, int windowHeight) :
+    m_window(nullptr),
     m_width(windowWidth),
     m_height(windowHeight),
     m_name(),

@@ -2,10 +2,10 @@
 
 #include <Scene.h>
 
-class SceneCrazyDisco : public Scene
+class Scene3D : public Scene
 {
 public: 
-	SceneCrazyDisco();
+	Scene3D();
 	void render(const EventContainer& input) override;
-	~SceneCrazyDisco() override;
+	~Scene3D() override;
 };

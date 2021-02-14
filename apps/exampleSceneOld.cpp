@@ -68,7 +68,7 @@ int main() {
     
     // create a light object
     Light light(glm::vec3(1.0f,1.0f,1.0f), // white light
-                glm::vec3(1.0f,-1.0f,1.0f), // comming from above
+                glm::vec3(1.0f,-1.0f,1.0f), // coming from above
                 0.3f, 0.7f); // full ambient and diffuse intensity
 
     // create a camera object
