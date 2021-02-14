@@ -2,7 +2,6 @@
 add_executable(unit_tests
   CameraTest.cpp
   UtilsTest.cpp
-  WindowTest.cpp
 )
 
 # gtest_main is a standard main file to launch the unit_test app.

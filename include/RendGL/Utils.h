@@ -110,6 +110,9 @@ public:
     GLfloat cursorPositionChangeX() const  {return m_cursorTracker.positionChangeX(); }
     GLfloat cursorPositionChangeY() const { return m_cursorTracker.positionChangeY(); }
 
+    GLfloat aspectRatio() const { return m_aspectRatio; }
+    void setAspectRatio(GLfloat aRatio) { m_aspectRatio = aRatio; }
+
 private:
     // Tracks time elapsed between frames
     TimeTracker m_timeTracker;
@@ -119,6 +122,9 @@ private:
 
     // Tracks relative movement of the cursor between frames
     CursorTracker m_cursorTracker;
+
+    // Current image aspect ratio
+    GLfloat m_aspectRatio;
 };
 
 

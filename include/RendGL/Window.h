@@ -1,11 +1,5 @@
 #pragma once
 
-#include <iostream>
-#include <string>
-
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
 #include "Utils.h"
 
 // Window is a class that creates an actual application window and manages GLFW
@@ -52,8 +46,10 @@ private:
     EventContainer m_events;
 
 private:
-    // callback functions for GLFW keyboard and mouse events
-    static void handleKeys(GLFWwindow* window, int key, int code,
+    // callback functions for GLFW
+    static void keyboardCallback(GLFWwindow* window, int key, int code,
                          int action, int mode);
-    static void handleMouse(GLFWwindow* window, double xPos, double yPos);
+    static void cursorCallback(GLFWwindow* window, double xPos, double yPos);
+    static void bufferResizeCallback(GLFWwindow* window, int newWidth, int newHeight);
+
 };

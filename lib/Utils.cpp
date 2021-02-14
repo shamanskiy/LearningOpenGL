@@ -3,7 +3,8 @@
 EventContainer::EventContainer() :
 	m_timeTracker(),
 	m_keys(),
-	m_cursorTracker()
+	m_cursorTracker(),
+	m_aspectRatio(0.0f)
 {}
 
 void EventContainer::reset()

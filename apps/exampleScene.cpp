@@ -7,7 +7,7 @@ int main() {
 
     // Create and initialize an application window with given dimensions and name
     Window window(800,600);
-    window.setWindowName("Crazy Disco");
+    window.setWindowName("OpenGL App");
     auto outcomeWindow = window.initialize();
     if (!outcomeWindow.ok())
     {

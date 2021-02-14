@@ -1,7 +1,5 @@
 #include "Window.h"
 
-#include <iostream>
-
 Window::Window(int windowWidth, int windowHeight) :
     m_window(nullptr),
     m_width(windowWidth),
@@ -43,8 +41,9 @@ Outcome Window::initialize()
     // Set a special pointer stored inside GLFW window which will be used
     // in the callback functions to access EventContainer to store input
     glfwSetWindowUserPointer(m_window,&m_events);
-    glfwSetKeyCallback(m_window, handleKeys);
-    glfwSetCursorPosCallback(m_window, handleMouse);
+    glfwSetKeyCallback(m_window, keyboardCallback);
+    glfwSetCursorPosCallback(m_window, cursorCallback);
+    glfwSetFramebufferSizeCallback(m_window, bufferResizeCallback);
 
     // Bind cursor to the window
     glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -68,6 +67,8 @@ Outcome Window::initialize()
     glEnable(GL_DEPTH_TEST);
     // ???
     glViewport(0, 0, getBufferWidth(), getBufferHeight());
+    // Store image aspect ratio for other systems to use
+    m_events.setAspectRatio(GLfloat(getBufferWidth())/GLfloat(getBufferHeight()));
 
     return Outcome(true);
 }
@@ -92,7 +93,7 @@ int Window::getBufferHeight() const {
     return bufferHeight;
 }
 
-void Window::handleKeys(GLFWwindow* window, int key, int code,
+void Window::keyboardCallback(GLFWwindow* window, int key, int code,
                int action, int mode)
 {
     // Use a pointer stored inside the GLFW window to get access
@@ -112,7 +113,7 @@ void Window::handleKeys(GLFWwindow* window, int key, int code,
     }
 }
 
-void Window::handleMouse(GLFWwindow* window, double xPos, double yPos)
+void Window::cursorCallback(GLFWwindow* window, double xPos, double yPos)
 {
     // Use a pointer stored inside the GLFW window to get access
     // to the EventContainter of the Window class
@@ -122,3 +123,14 @@ void Window::handleMouse(GLFWwindow* window, double xPos, double yPos)
     events->setCursorPosition(xPos, yPos);
 }
 
+void Window::bufferResizeCallback(GLFWwindow* window, int newWidth, int newHeight)
+{
+    // ???
+    glViewport(0, 0, newWidth, newHeight);
+
+    // Use a pointer stored inside the GLFW window to get access
+    // to the EventContainter of the Window class
+    EventContainer* events =
+        static_cast<EventContainer*>(glfwGetWindowUserPointer(window));
+    events->setAspectRatio(GLfloat(newWidth)/GLfloat(newHeight));
+}
