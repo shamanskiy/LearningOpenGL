@@ -38,9 +38,9 @@ void Model::loadNode(aiNode* node, const aiScene* scene)
 void Model::loadMesh(aiMesh* mesh, const aiScene* scene)
 {
 	std::vector<GLfloat> vertices;
-	std::vector<unsigned int> indices;
+	std::vector<GLuint> indices;
 
-	for (size_t i = 0; i < mesh->mNumVertices; i++)
+	for (GLuint i = 0; i < mesh->mNumVertices; i++)
 	{
 		vertices.insert(vertices.end(), { mesh->mVertices[i].x,
 			mesh->mVertices[i].y,
@@ -60,16 +60,15 @@ void Model::loadMesh(aiMesh* mesh, const aiScene* scene)
 
 	}
 
-	for (size_t i = 0; i < mesh->mNumFaces; i++)
+	for (GLuint i = 0; i < mesh->mNumFaces; i++)
 	{
 		aiFace face = mesh->mFaces[i];
-		for (size_t j = 0; j < face.mNumIndices; j++)
+		for (GLuint j = 0; j < face.mNumIndices; j++)
 			indices.push_back(face.mIndices[j]);
 
 
 	}
-	meshList.push_back(make_unique<Mesh>(&vertices[0], &indices[0],
-									     vertices.size(), indices.size()));
+	meshList.push_back(make_unique<Mesh>(vertices, indices));
 	meshToTex.push_back(mesh->mMaterialIndex);
 }
 

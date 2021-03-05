@@ -3,20 +3,26 @@
 #include "Mesh.h"
 #include <glm/glm.hpp>
 
+using namespace std;
+
 namespace
 {
 
 // compute normals at each vertex by averaging normals of every triangle
 // which the vertex belongs to, i.e. Phong normals
-void computeNormals(GLfloat * vertices, unsigned int numVertices, unsigned int * elements, unsigned int numElements)
+void computeNormals(vector<GLfloat> & vertices,
+    const vector<GLuint> & elements)
 {
+    GLuint numElements = elements.size() / 3;
+    GLuint numVertices = vertices.size() / 8;
+
     // compute normals for each triangle and add them to corresponding vertices
-    for (int i = 0; i < numElements; ++i)
+    for (GLuint i = 0; i < numElements; ++i)
     {
         // 3 vertices of a given element
-        int A = elements[i*3];
-        int B = elements[i*3+1];
-        int C = elements[i*3+2];
+        GLuint A = elements[i*3];
+        GLuint B = elements[i*3+1];
+        GLuint C = elements[i*3+2];
         glm::vec3 AB(vertices[B*8] - vertices[A*8], vertices[B*8 + 1] - vertices[A*8 + 1], vertices[B*8 + 2] - vertices[A*8 + 2] );
         glm::vec3 AC(vertices[C*8] - vertices[A*8], vertices[C*8 + 1] - vertices[A*8 + 1], vertices[C*8 + 2] - vertices[A*8 + 2] );
         
@@ -43,7 +49,7 @@ std::unique_ptr<Mesh> makePlane()
 {
     // 3 coordinates in 3D space, 2 texture coordinates, 3 normals.
     // normals are initialized with zeros and are computed later.
-    GLfloat vertices[] = {
+    std::vector<GLfloat> vertices{
         // x     y     z        u      v      nx    ny    nz
         -0.5f, 0.0f, -0.5f,   0.0f,  0.0f,  0.0f, 0.0f, 0.0f,
          0.5f, 0.0f, -0.5f,  10.0f,  0.0f,  0.0f, 0.0f, 0.0f,
@@ -51,20 +57,20 @@ std::unique_ptr<Mesh> makePlane()
          0.5f, 0.0f,  0.5f,  10.0f, 10.0f,  0.0f, 0.0f, 0.0f
     };
     
-    unsigned int elements[] = {
+    std::vector<GLuint> elements{
         0, 2, 1,
         1, 2, 3
     };
 
-    computeNormals(vertices, 4, elements, 2);
-    return std::make_unique<Mesh>(vertices, elements, 32, 6);
+    computeNormals(vertices, elements);
+    return std::make_unique<Mesh>(vertices, elements);
 }
 
 std::unique_ptr<Mesh> makeCube()
 {
     // 3 coordinates in 3D space, 2 texture coordinates, 3 normals.
     // normals are initialized with zeros and are computed later.
-    GLfloat vertices[] = {
+    std::vector<GLfloat> vertices{
         // x      y      z      u     v      nx    ny    nz
         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,  0.0f, 0.0f, 0.0f,
          0.5f, -0.5f, -0.5f,  1.0f, 0.0f,  0.0f, 0.0f, 0.0f,
@@ -76,7 +82,7 @@ std::unique_ptr<Mesh> makeCube()
          0.5f,  0.5f,  0.5f,  0.0f, 1.0f,  0.0f, 0.0f, 0.0f
     };
 
-    unsigned int elements[] = {
+    std::vector<GLuint> elements{
         0, 2, 1,
         1, 2, 3,
         1, 3, 7,
@@ -87,15 +93,15 @@ std::unique_ptr<Mesh> makeCube()
         6, 2, 4
     };
 
-    computeNormals(vertices, 8,elements, 8);
-    return  std::make_unique<Mesh>(vertices, elements, 64, 24);
+    computeNormals(vertices, elements);
+    return  std::make_unique<Mesh>(vertices, elements);
 }
 
 std::unique_ptr<Mesh> makePyramid()
 {
     // 3 coordinates in 3D space, 2 texture coordinates, 3 normals.
     // normals are initialized with zeros and are computed later.
-    GLfloat vertices[] = {
+    std::vector<GLfloat> vertices{
         // x     y      z      u     v      nx    ny    nz
         -0.5f, 0.0f,  0.5f,  0.0f, 0.0f,  0.0f, 0.0f, 0.0f,
          0.5f, 0.0f,  0.5f,  1.0f, 0.0f,  0.0f, 0.0f, 0.0f,
@@ -104,13 +110,13 @@ std::unique_ptr<Mesh> makePyramid()
          0.0f, 0.5f,  0.0f,  0.5f, 1.0f,  0.0f, 0.0f, 0.0f
     };
 
-    unsigned int elements[] = {
+    std::vector<GLuint> elements{
         0, 1, 4,
         1, 3, 4,
         3, 2, 4,
         2, 0, 4
     };
     
-    computeNormals(vertices, 5,elements, 4);
-    return std::make_unique<Mesh>(vertices, elements, 40, 12);
+    computeNormals(vertices, elements);
+    return std::make_unique<Mesh>(vertices, elements);
 }

@@ -2,14 +2,10 @@
 
 #include <iostream>
 
-Mesh::Mesh(GLfloat* vertices, unsigned int* indices,
-    unsigned int numVertices, unsigned int numIndices) :
-    m_VAO(0),
-    m_VBO(0),
-    m_EBO(0),
-    m_numIndices(numIndices)
-{ 
-    createMesh(vertices, indices, numVertices);
+Mesh::Mesh(const std::vector<GLfloat>& vertices,
+    const std::vector<GLuint>& indices) 
+{
+    createMesh(vertices, indices);
 }
 
 Mesh::~Mesh()
@@ -17,8 +13,12 @@ Mesh::~Mesh()
     deleteMesh();
 }
 
-void Mesh::createMesh(GLfloat *vertices, unsigned int *indices, unsigned int numVertices)
+void Mesh::createMesh(const vector<GLfloat> & vertices,
+    const vector<GLuint> & indices)
 {
+    GLuint numVertices = vertices.size();
+    m_numIndices = indices.size();
+
     // create a Vertex Array Object on the GPU and store its number
     glGenVertexArrays(1, &m_VAO);
     // activate VAO to add further objects to it
@@ -29,7 +29,7 @@ void Mesh::createMesh(GLfloat *vertices, unsigned int *indices, unsigned int num
     // activate VBO
     glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
     // copy vertices to the GPU
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]) * numVertices, vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]) * numVertices, &vertices[0], GL_STATIC_DRAW);
 
     // we copy 5 values per vertex: the first 3 are the coordinates in 3D, the last 2 are the corresponding texture coordinates
     // here we tell OpenGl which values are coordinates
@@ -53,7 +53,7 @@ void Mesh::createMesh(GLfloat *vertices, unsigned int *indices, unsigned int num
     // activate EBO
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
     // copy elements' indices to the GPU
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * m_numIndices, indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * m_numIndices, &indices[0], GL_STATIC_DRAW);
 
     // deactivate VAO, no need to edit this object (should it be here or after VBO and EBO?)
     glBindVertexArray(0);
