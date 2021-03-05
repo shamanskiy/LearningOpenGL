@@ -4,6 +4,8 @@
 
 #include "Config.h"
 
+using namespace std;
+
 void Model::loadModel(const std::string& fileName)
 {
 	Assimp::Importer importer;
@@ -66,10 +68,8 @@ void Model::loadMesh(aiMesh* mesh, const aiScene* scene)
 
 
 	}
-
-	Mesh* newMesh = new Mesh();
-	newMesh->createMesh(&vertices[0], &indices[0], vertices.size(), indices.size());
-	meshList.push_back(newMesh);
+	meshList.push_back(make_unique<Mesh>(&vertices[0], &indices[0],
+									     vertices.size(), indices.size()));
 	meshToTex.push_back(mesh->mMaterialIndex);
 }
 
@@ -103,14 +103,6 @@ void Model::loadMaterials(const aiScene* scene)
 
 void Model::clearModel()
 {
-	for (size_t i = 0; i < meshList.size(); i++)
-	{
-		if (meshList[i])
-		{
-			delete meshList[i];
-			meshList[i] = nullptr;
-		}
-	}
 
 	for (size_t i = 0; i < textureList.size(); i++)
 	{

@@ -2,31 +2,32 @@
 
 #include <iostream>
 
-Mesh::Mesh() :
-    VAO(0),
-    VBO(0),
-    EBO(0),
-    idxCount(0)
-{ }
+Mesh::Mesh(GLfloat* vertices, unsigned int* indices,
+    unsigned int numVertices, unsigned int numIndices) :
+    m_VAO(0),
+    m_VBO(0),
+    m_EBO(0),
+    m_numIndices(numIndices)
+{ 
+    createMesh(vertices, indices, numVertices);
+}
 
 Mesh::~Mesh()
 {
     deleteMesh();
 }
 
-void Mesh::createMesh(GLfloat *vertices, unsigned int *indices, unsigned int numVertices, unsigned int numIndices)
+void Mesh::createMesh(GLfloat *vertices, unsigned int *indices, unsigned int numVertices)
 {
-    idxCount = numIndices;
-
     // create a Vertex Array Object on the GPU and store its number
-    glGenVertexArrays(1, &VAO);
+    glGenVertexArrays(1, &m_VAO);
     // activate VAO to add further objects to it
-    glBindVertexArray(VAO);
+    glBindVertexArray(m_VAO);
 
     // create a Vertex Buffer Object on the GPU and store its number
-    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &m_VBO);
     // activate VBO
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
     // copy vertices to the GPU
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]) * numVertices, vertices, GL_STATIC_DRAW);
 
@@ -48,11 +49,11 @@ void Mesh::createMesh(GLfloat *vertices, unsigned int *indices, unsigned int num
     glEnableVertexAttribArray(2);
 
     // create a Element Buffer Object on the GPU and store its number
-    glGenBuffers(1, &EBO);
+    glGenBuffers(1, &m_EBO);
     // activate EBO
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
     // copy elements' indices to the GPU
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * numIndices, indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * m_numIndices, indices, GL_STATIC_DRAW);
 
     // deactivate VAO, no need to edit this object (should it be here or after VBO and EBO?)
     glBindVertexArray(0);
@@ -65,11 +66,11 @@ void Mesh::createMesh(GLfloat *vertices, unsigned int *indices, unsigned int num
 void Mesh::renderMesh() const
 {
     // activate VAO, VAO = object (?)
-    glBindVertexArray(VAO);
+    glBindVertexArray(m_VAO);
     // activate EBO
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,m_EBO);
     // 0 is a nullptr to smth
-    glDrawElements(GL_TRIANGLES, idxCount, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, m_numIndices, GL_UNSIGNED_INT, nullptr);
     // deactivate VAO and EBO
     glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
@@ -78,21 +79,10 @@ void Mesh::renderMesh() const
 void Mesh::deleteMesh()
 {
     // free GPU memory
-    if (EBO != 0)
-    {
-        glDeleteBuffers(1,&EBO);
-        EBO = 0;
-    }
-    if (VBO != 0)
-    {
-        glDeleteBuffers(1,&VBO);
-        VBO = 0;
-    }
-    if (VAO != 0)
-    {
-        glDeleteVertexArrays(1,&VAO);
-        VAO = 0;
-    }
-
-    idxCount = 0;
+    if (m_EBO != 0)
+        glDeleteBuffers(1,&m_EBO);
+    if (m_VBO != 0)
+        glDeleteBuffers(1,&m_VBO);
+    if (m_VAO != 0)
+        glDeleteVertexArrays(1,&m_VAO);
 }

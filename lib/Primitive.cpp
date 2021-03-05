@@ -57,9 +57,7 @@ std::unique_ptr<Mesh> makePlane()
     };
 
     computeNormals(vertices, 4, elements, 2);
-    auto plane = std::make_unique<Mesh>();
-    plane->createMesh(vertices, elements, 32, 6);
-    return plane;
+    return std::make_unique<Mesh>(vertices, elements, 32, 6);
 }
 
 std::unique_ptr<Mesh> makeCube()
@@ -90,9 +88,7 @@ std::unique_ptr<Mesh> makeCube()
     };
 
     computeNormals(vertices, 8,elements, 8);
-    auto cube = std::make_unique<Mesh>();
-    cube->createMesh(vertices, elements, 64, 24);
-    return cube;
+    return  std::make_unique<Mesh>(vertices, elements, 64, 24);
 }
 
 std::unique_ptr<Mesh> makePyramid()
@@ -116,7 +112,5 @@ std::unique_ptr<Mesh> makePyramid()
     };
     
     computeNormals(vertices, 5,elements, 4);
-    auto pyramid = std::make_unique<Mesh>();
-    pyramid->createMesh(vertices, elements, 40, 12);
-    return pyramid;
+    return std::make_unique<Mesh>(vertices, elements, 40, 12);
 }

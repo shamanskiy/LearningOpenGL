@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -26,7 +27,7 @@ private:
 	void loadMesh(aiMesh* mesh, const aiScene* scene);
 	void loadMaterials(const aiScene* scene);
 
-	std::vector<Mesh*> meshList;
+	std::vector<std::unique_ptr<Mesh> > meshList;
 	std::vector<Texture*> textureList;
 	std::vector<unsigned int> meshToTex;
 
