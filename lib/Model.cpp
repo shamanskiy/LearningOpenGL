@@ -5,6 +5,13 @@
 
 #include "Config.h"
 
+#include <GL/glew.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+#include "Shader.h"
+
 Outcome Model::loadModel(const string& fileName)
 {
 	Assimp::Importer importer;
@@ -86,7 +93,7 @@ void Model::loadMaterialsAndTextures(const aiScene* scene)
 			m_textures[i] = make_unique<Texture>(TEXTURES_DIR + "default.png");
 }
 
-void Model::renderModel()
+void Model::render() const
 {
 	for (size_t i = 0; i < m_meshes.size(); i++)
 	{
@@ -94,4 +101,25 @@ void Model::renderModel()
 		//m_materials[m_meshToMaterial[i]]->activate();
 		m_meshes[i]->renderMesh();
 	}
+}
+
+ModelInstance::ModelInstance(const Model* const model,
+	GLfloat posX, GLfloat posY, GLfloat posZ,
+	GLfloat scale) :
+	m_model(model),
+	m_modelMatrix(glm::mat4(1.0f))
+{
+	m_modelMatrix = glm::translate(m_modelMatrix,
+		glm::vec3(posX, posY, posZ));
+	m_modelMatrix = glm::scale(m_modelMatrix,
+		glm::vec3(scale, scale, scale));
+}
+
+void ModelInstance::render(const Shader& shader) const
+{
+	// send model matrix to the GPU
+	glUniformMatrix4fv(shader.uniModelMatrix(), 1, GL_FALSE,
+		glm::value_ptr(m_modelMatrix));
+	// render the model
+	m_model->render();
 }

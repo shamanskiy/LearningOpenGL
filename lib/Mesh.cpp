@@ -1,7 +1,5 @@
 #include "Mesh.h"
 
-#include <iostream>
-
 Mesh::Mesh(const std::vector<GLfloat>& vertices,
     const std::vector<GLuint>& indices) 
 {

@@ -6,6 +6,7 @@
 #include <memory>
 
 #include <assimp/scene.h>
+#include <glm/glm.hpp>
 
 #include "Mesh.h"
 #include "Texture.h"
@@ -27,7 +28,7 @@ public:
 
 	// Render all meshes stored in the model using the corresponding 
 	// textures and materials.
-	void renderModel();
+	void render() const;
 
 private:
 	// Recursive function that parses the model tree and loads meshes from each node.
@@ -50,4 +51,24 @@ private:
 	//vector<GLuint> m_meshToMaterial;
 
 	//array<GLfloat, 6> m_boundingBox;
+};
+
+class Shader;
+
+// ModelInstance represents an instance of a 3D model
+// that is scaled and located at a given position.
+class ModelInstance
+{
+public:
+	ModelInstance(const Model* const model,
+		GLfloat posX = 0.0f, GLfloat posY = 0.0f, GLfloat posZ = 0.0f,
+		GLfloat scale = 1.0f);
+
+	void render(const Shader& shader) const;
+
+private:
+	// a non-owning pointer to the Model
+	const Model* const m_model;
+	// model matrix (translation + scale)
+	glm::mat4 m_modelMatrix;
 };

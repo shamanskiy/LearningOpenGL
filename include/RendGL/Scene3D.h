@@ -6,7 +6,8 @@
 #include "Light.h"
 #include "Camera.h"
 
-class Model;;
+class Model;
+class ModelInstance;
 class Shader;
 
 class Scene3D : public Scene
@@ -18,9 +19,10 @@ public:
 
 private:
 
-	Light light;
-	Camera camera;
+	Light m_light;
+	Camera m_camera;
 
-	std::vector<std::unique_ptr<Model> > models;
-	std::vector<std::unique_ptr<Shader> > shaders;
+	std::vector<std::unique_ptr<Model> > m_models;
+	std::vector<std::unique_ptr<ModelInstance> > m_instances;
+	std::vector<std::unique_ptr<Shader> > m_shaders;
 };
