@@ -5,11 +5,8 @@
 #include "Scene.h"
 #include "Light.h"
 #include "Camera.h"
-#include "Model.h"
 
-class Mesh;
-class Texture;
-class StaticModel;
+class Model;;
 class Shader;
 
 class Scene3D : public Scene
@@ -24,12 +21,6 @@ private:
 	Light light;
 	Camera camera;
 
-	std::vector<std::unique_ptr<Mesh> > meshes;
-	std::vector<std::unique_ptr<Texture> > textures;
-	std::vector<std::unique_ptr<StaticModel> > models;
+	std::vector<std::unique_ptr<Model> > models;
 	std::vector<std::unique_ptr<Shader> > shaders;
-
-	bool shaderSwitcher;
-
-	Model model;
 };
