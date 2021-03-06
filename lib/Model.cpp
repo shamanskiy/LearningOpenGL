@@ -68,19 +68,19 @@ void Model::loadMesh(aiMesh* mesh, const aiScene* scene)
 
 
 	}
-	meshList.push_back(make_unique<Mesh>(vertices, indices));
-	meshToTex.push_back(mesh->mMaterialIndex);
+	m_meshes.push_back(make_unique<Mesh>(vertices, indices));
+	m_meshToTexture.push_back(mesh->mMaterialIndex);
 }
 
 
 void Model::loadMaterials(const aiScene* scene)
 {
-	textureList.resize(scene->mNumMaterials);
+	m_textures.resize(scene->mNumMaterials);
 
-	for (size_t i = 0; i < scene->mNumMaterials; i++)
+	for (GLuint i = 0; i < scene->mNumMaterials; i++)
 	{
 		aiMaterial* material = scene->mMaterials[i];
-		textureList[i] = nullptr;
+		m_textures[i] = nullptr;
 		if (material->GetTextureCount(aiTextureType_DIFFUSE))
 		{
 			aiString path;
@@ -91,39 +91,26 @@ void Model::loadMaterials(const aiScene* scene)
 
 				std::string texPath = TEXTURES_DIR + fileName;
 
-				textureList[i] = new Texture(texPath);
+				m_textures[i] = make_unique<Texture>(texPath);
 			}
 		}
 
-		if (textureList[i] == nullptr)
-			textureList[i] = new Texture(TEXTURES_DIR + "grass.png");
-	}
-}
-
-void Model::clearModel()
-{
-
-	for (size_t i = 0; i < textureList.size(); i++)
-	{
-		if (textureList[i])
-		{
-			delete textureList[i];
-			textureList[i] = nullptr;
-		}
+		if (m_textures[i] == nullptr)
+			m_textures[i] = make_unique<Texture>(TEXTURES_DIR + "default.png");
 	}
 }
 
 void Model::renderModel()
 {
-	for (size_t i = 0; i < meshList.size(); i++)
+	for (size_t i = 0; i < m_meshes.size(); i++)
 	{
-		unsigned int materialIndex = meshToTex[i];
+		unsigned int materialIndex = m_meshToTexture[i];
 
-		if (materialIndex < textureList.size() && textureList[materialIndex])
+		if (materialIndex < m_textures.size() && m_textures[materialIndex])
 		{
-			textureList[materialIndex]->useTexture();
+			m_textures[materialIndex]->useTexture();
 		}
 
-		meshList[i]->renderMesh();
+		m_meshes[i]->renderMesh();
 	}
 }

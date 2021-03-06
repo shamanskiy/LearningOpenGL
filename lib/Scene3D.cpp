@@ -116,7 +116,7 @@ void Scene3D::render(const EventContainer& events)
 
     glm::mat4 modelMat = glm::mat4(1.0f);
     modelMat = glm::translate(modelMat, glm::vec3(5.0f, 0.0f, 0.0f));
-    modelMat = glm::scale(modelMat, glm::vec3(0.1f, 0.1f, 0.1f));
+    //modelMat = glm::scale(modelMat, glm::vec3(0.1f, 0.1f, 0.1f));
     //modelMat = glm::scale(modelMat, glm::vec3(0.01f, 0.01f, 0.01f));
     glUniformMatrix4fv(shader.uniModelMatrix(), 1, GL_FALSE, glm::value_ptr(modelMat));
     model.renderModel();
