@@ -5,14 +5,74 @@
 #include <string>
 #include <memory>
 
+// must be here for some reason; can't move to Texture.cpp
+#include <stb_image.h>
+
 #include <assimp/scene.h>
 #include <glm/glm.hpp>
 
-#include "Mesh.h"
-#include "Texture.h"
 #include "Utils.h"
 
 using namespace std;
+
+class Shader;
+
+// Mesh represents a single 3D object. It gets an array of vertices
+// and an array of indices, copies them to the GPU and then holds
+// the pointers to the arrays of the GPU.
+class Mesh
+{
+public:
+	Mesh(const vector<GLfloat>& vertices,
+		const vector<GLuint>& indices);
+	~Mesh();
+
+	// render object
+	void render() const;
+
+private:
+	// create arrays on the GPU
+	void createMesh(const vector<GLfloat>& vertices,
+		const vector<GLuint>& indices);
+
+	// delete object from GPU memory
+	void deleteMesh();
+
+private:
+	// Vertex Array, Vertex Buffer and Element Buffer Objects
+	// hold reference numbers to data objects on GPU
+	GLuint m_VAO{ 0 }, m_VBO{ 0 }, m_EBO{ 0 };
+	// total number of indices to draw = num of elements * 3
+	GLuint m_numIndices{ 0 };
+};
+
+// Texture is a class for loading and managing textures
+class Texture
+{
+private:
+	// ID of the texture object on the GPU
+	GLuint textureID;
+	// texture image properties
+	int width, height, bitDepth;
+	// location of the texture file
+	std::string fileLoc;
+
+public:
+	// ctor: create texture on the GPU
+	Texture(const std::string& fileLocation);
+	// dtor: free memory on GPU
+	~Texture();
+	// activate/bind texture on the GPU
+	void useTexture() const;
+
+private:
+	// load texture from file
+	void loadTexture();
+	// free memory on the GPU
+	void clearTexture();
+};
+
+
 
 // Model represent a 3D model stored in a file.
 // It can contain several Meshes, one for each part of the Model.
@@ -53,7 +113,7 @@ private:
 	//array<GLfloat, 6> m_boundingBox;
 };
 
-class Shader;
+
 
 // ModelInstance represents an instance of a 3D model
 // that is scaled and located at a given position.

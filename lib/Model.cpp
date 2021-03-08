@@ -1,9 +1,10 @@
+// some funny preprocessor command to enable stb_image library
+#define STB_IMAGE_IMPLEMENTATION
+
 #include "Model.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
-
-#include "Config.h"
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
@@ -11,6 +12,11 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Shader.h"
+#include "Config.h"
+
+// ==============================================================================
+// =======================          MODEL CLASS     =============================
+// ==============================================================================
 
 Outcome Model::loadModel(const string& fileName)
 {
@@ -99,9 +105,13 @@ void Model::render() const
 	{
 		m_textures[m_meshToTexture[i]]->useTexture();
 		//m_materials[m_meshToMaterial[i]]->activate();
-		m_meshes[i]->renderMesh();
+		m_meshes[i]->render();
 	}
 }
+
+// ==============================================================================
+// ==============          MODEL INSTANCE CLASS     =============================
+// ==============================================================================
 
 ModelInstance::ModelInstance(const Model* const model,
 	GLfloat posX, GLfloat posY, GLfloat posZ,
@@ -122,4 +132,161 @@ void ModelInstance::render(const Shader& shader) const
 		glm::value_ptr(m_modelMatrix));
 	// render the model
 	m_model->render();
+}
+
+// ==============================================================================
+// =====================          MESH CLASS       ==============================
+// ==============================================================================
+
+Mesh::Mesh(const std::vector<GLfloat>& vertices,
+	const std::vector<GLuint>& indices)
+{
+	createMesh(vertices, indices);
+}
+
+Mesh::~Mesh()
+{
+	deleteMesh();
+}
+
+void Mesh::createMesh(const vector<GLfloat>& vertices,
+	const vector<GLuint>& indices)
+{
+	GLuint numVertices = vertices.size();
+	m_numIndices = indices.size();
+
+	// create a Vertex Array Object on the GPU and store its number
+	glGenVertexArrays(1, &m_VAO);
+	// activate VAO to add further objects to it
+	glBindVertexArray(m_VAO);
+
+	// create a Vertex Buffer Object on the GPU and store its number
+	glGenBuffers(1, &m_VBO);
+	// activate VBO
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	// copy vertices to the GPU
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]) * numVertices, &vertices[0], GL_STATIC_DRAW);
+
+	// we copy 5 values per vertex: the first 3 are the coordinates in 3D, the last 2 are the corresponding texture coordinates
+	// here we tell OpenGl which values are coordinates
+	// layout -> size of data (3 coordinates) -> type -> normalize -> stride -> offset
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * 8, 0);
+	// enable (layout = 0), no need to search to the vertices when using the vertex shader (?)
+	glEnableVertexAttribArray(0);
+
+	// here we tell OpenGL which values are texture coordinates
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * 8, (void*)(sizeof(vertices[0]) * 3));
+	// same as above
+	glEnableVertexAttribArray(1);
+
+	// here we tell OpenGL which values are normal components
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * 8, (void*)(sizeof(vertices[0]) * 5));
+	// same as above
+	glEnableVertexAttribArray(2);
+
+	// create a Element Buffer Object on the GPU and store its number
+	glGenBuffers(1, &m_EBO);
+	// activate EBO
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+	// copy elements' indices to the GPU
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * m_numIndices, &indices[0], GL_STATIC_DRAW);
+
+	// deactivate VAO, no need to edit this object (should it be here or after VBO and EBO?)
+	glBindVertexArray(0);
+	// deactivate VBO, no need to edit the vertex data any more
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	// deactivate EBO, no need to edit the index data any more
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+void Mesh::render() const
+{
+	// activate VAO, VAO = object (?)
+	glBindVertexArray(m_VAO);
+	// activate EBO
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+	// 0 is a nullptr to smth
+	glDrawElements(GL_TRIANGLES, m_numIndices, GL_UNSIGNED_INT, nullptr);
+	// deactivate VAO and EBO
+	glBindVertexArray(0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+void Mesh::deleteMesh()
+{
+	// free GPU memory
+	if (m_EBO != 0)
+		glDeleteBuffers(1, &m_EBO);
+	if (m_VBO != 0)
+		glDeleteBuffers(1, &m_VBO);
+	if (m_VAO != 0)
+		glDeleteVertexArrays(1, &m_VAO);
+}
+
+// ==============================================================================
+// =====================       TEXTURE CLASS       ==============================
+// ==============================================================================
+
+Texture::Texture(const std::string& fileLocation) :
+	textureID(0),
+	width(0),
+	height(0),
+	bitDepth(0),
+	fileLoc(fileLocation)
+{
+	loadTexture();
+}
+
+Texture::~Texture()
+{
+	clearTexture();
+}
+
+void Texture::loadTexture()
+{
+	// load image/texture data
+	unsigned char* textureData = stbi_load(fileLoc.c_str(), &width, &height, &bitDepth, 0);
+	if (!textureData)
+	{
+		//std::cout << "Failed to find a texture in " << fileLoc << std::endl;
+		return;
+	}
+	// create texture object on the GPU
+	glGenTextures(1, &textureID);
+	// activate/bind texture object for future operations
+	glBindTexture(GL_TEXTURE_2D, textureID);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT); // x-wrap option (s is x for textures) GL_REPEAT GL_MIRRORED_REPEAT GL_CLAMP_TO_EDGE GL_CLAMP_TO_BORDER
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT); // y-wrap option (t is y for textures)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // texture scaling on zoom-out (related to mipmaps?) GL_LINEAR or GL_NEAREST
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // texture scaling on zoom-in (related to mipmaps?)
+
+	glTexImage2D(GL_TEXTURE_2D, 0, // mipmap level
+		GL_RGBA, width, height, // original image properties
+		0, // this zero is a legacy parameter for handling borders
+		GL_RGBA, // image format again (why?)
+		GL_UNSIGNED_BYTE, textureData); // data type and data itself
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	stbi_image_free(textureData);
+}
+
+void Texture::useTexture() const
+{
+	// texture unit - this guy will access texture data. 0 is default, so this is line is not necessary.
+	// by using several different texture units we can bind several textures (?)
+	glActiveTexture(GL_TEXTURE0);
+
+	// bind this texture to the texture unit 0
+	glBindTexture(GL_TEXTURE_2D, textureID);
+}
+
+void Texture::clearTexture()
+{
+	glDeleteTextures(1, &textureID);
+	textureID = 0;
+	width = 0;
+	height = 0;
+	bitDepth = 0;
 }
