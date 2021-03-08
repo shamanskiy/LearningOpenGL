@@ -51,15 +51,11 @@ class Texture
 {
 private:
 	// ID of the texture object on the GPU
-	GLuint textureID;
-	// texture image properties
-	int width, height, bitDepth;
-	// location of the texture file
-	std::string fileLoc;
+	GLuint m_textureID;
 
 public:
 	// ctor: create texture on the GPU
-	Texture(const std::string& fileLocation);
+	Texture(const string& fileName);
 	// dtor: free memory on GPU
 	~Texture();
 	// activate/bind texture on the GPU
@@ -67,7 +63,7 @@ public:
 
 private:
 	// load texture from file
-	void loadTexture();
+	void loadTexture(const string& fileName);
 	// free memory on the GPU
 	void clearTexture();
 };
@@ -84,7 +80,7 @@ public:
 	// to actually load the model to be able to return error objects
 	// without using exceptions.
 	Model() = default;
-	Outcome loadModel(const string& fileName);
+	Outcome loadModel(const string& modelName);
 
 	// Render all meshes stored in the model using the corresponding 
 	// textures and materials.
@@ -99,6 +95,8 @@ private:
 	void loadMaterialsAndTextures(const aiScene* scene);
 
 private:
+	// name of the folder where the model files are stored
+	string m_name;
 	// List of Meshes (parts) that form the Model
 	vector<unique_ptr<Mesh> > m_meshes;
 	// List of Textures to use for different Meshes

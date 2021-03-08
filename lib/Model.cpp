@@ -3,6 +3,8 @@
 
 #include "Model.h"
 
+#include <stdexcept>
+
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 
@@ -18,15 +20,16 @@
 // =======================          MODEL CLASS     =============================
 // ==============================================================================
 
-Outcome Model::loadModel(const string& fileName)
+Outcome Model::loadModel(const string& modelName)
 {
+	m_name = modelName;
+
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(fileName,
+	const aiScene* scene = importer.ReadFile(MODELS_DIR + m_name + "/" + m_name + ".obj",
 		aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals |
 		aiProcess_JoinIdenticalVertices);
 	if (!scene)
-		return Outcome(false, "Model " + fileName + " failed to load: "
-			+ importer.GetErrorString());
+		throw runtime_error("Failed to load a model: " + string(importer.GetErrorString()));
 
 	loadNode(scene->mRootNode, scene);
 	loadMaterialsAndTextures(scene);
@@ -93,10 +96,14 @@ void Model::loadMaterialsAndTextures(const aiScene* scene)
 		{
 			aiString path;
 			scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &path);
-			m_textures[i] = make_unique<Texture>(TEXTURES_DIR + path.data);
+			m_textures[i] = make_unique<Texture>(MODELS_DIR + m_name + "/" + path.data);
 		}
 		else // otherwise, use a default white texture
+		{
+			debugOutput(m_name + "/" + string(scene->mMaterials[i]->GetName().data) + 
+				": no texture found. Using a default texture.");
 			m_textures[i] = make_unique<Texture>(TEXTURES_DIR + "default.png");
+		}
 }
 
 void Model::render() const
@@ -227,14 +234,10 @@ void Mesh::deleteMesh()
 // =====================       TEXTURE CLASS       ==============================
 // ==============================================================================
 
-Texture::Texture(const std::string& fileLocation) :
-	textureID(0),
-	width(0),
-	height(0),
-	bitDepth(0),
-	fileLoc(fileLocation)
+Texture::Texture(const string& fileName) :
+	m_textureID(0)
 {
-	loadTexture();
+	loadTexture(fileName);
 }
 
 Texture::~Texture()
@@ -242,19 +245,20 @@ Texture::~Texture()
 	clearTexture();
 }
 
-void Texture::loadTexture()
+void Texture::loadTexture(const string& fileName)
 {
+	// image properties
+	GLint width, height, bitDepth;
+
 	// load image/texture data
-	unsigned char* textureData = stbi_load(fileLoc.c_str(), &width, &height, &bitDepth, 0);
+	unsigned char* textureData = stbi_load(fileName.c_str(), &width, &height, &bitDepth, 0);
 	if (!textureData)
-	{
-		//std::cout << "Failed to find a texture in " << fileLoc << std::endl;
-		return;
-	}
+		throw runtime_error("Failed to open a texture file: " + fileName);
+	
 	// create texture object on the GPU
-	glGenTextures(1, &textureID);
+	glGenTextures(1, &m_textureID);
 	// activate/bind texture object for future operations
-	glBindTexture(GL_TEXTURE_2D, textureID);
+	glBindTexture(GL_TEXTURE_2D, m_textureID);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT); // x-wrap option (s is x for textures) GL_REPEAT GL_MIRRORED_REPEAT GL_CLAMP_TO_EDGE GL_CLAMP_TO_BORDER
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT); // y-wrap option (t is y for textures)
@@ -279,14 +283,11 @@ void Texture::useTexture() const
 	glActiveTexture(GL_TEXTURE0);
 
 	// bind this texture to the texture unit 0
-	glBindTexture(GL_TEXTURE_2D, textureID);
+	glBindTexture(GL_TEXTURE_2D, m_textureID);
 }
 
 void Texture::clearTexture()
 {
-	glDeleteTextures(1, &textureID);
-	textureID = 0;
-	width = 0;
-	height = 0;
-	bitDepth = 0;
+	if (m_textureID != 0)
+		glDeleteTextures(1, &m_textureID);
 }

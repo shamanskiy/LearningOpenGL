@@ -8,29 +8,26 @@ set(MODELS_DIR ${PROJECT_BINARY_DIR}/data/models)
 # of texture/model files exists. Download all from AWS S3 where they are stored
 # and publicly accessable.
 
+set(MODEL_LIST floor sphere)
+
 if(NOT EXISTS ${PROJECT_BINARY_DIR}/data/textures/straw.png)
-  message("-- Downloading content from AWS...")
   
-  # Textures
-  file(DOWNLOAD https://learning-open-gl.s3.eu-central-1.amazonaws.com/textures/straw.png
-	   ${PROJECT_BINARY_DIR}/data/textures/straw.png)
-  file(DOWNLOAD https://learning-open-gl.s3.eu-central-1.amazonaws.com/textures/grass.png
-	   ${PROJECT_BINARY_DIR}/data/textures/grass.png)
-  file(DOWNLOAD https://learning-open-gl.s3.eu-central-1.amazonaws.com/textures/brick.png
-	   ${PROJECT_BINARY_DIR}/data/textures/brick.png)
-  file(DOWNLOAD https://learning-open-gl.s3.eu-central-1.amazonaws.com/textures/default.png 
-	   ${PROJECT_BINARY_DIR}/data/textures/default.png)
-  file(DOWNLOAD https://learning-open-gl.s3.eu-central-1.amazonaws.com/textures/checkerboard.png 
-	   ${PROJECT_BINARY_DIR}/data/textures/checkerboard.png)
+	# Textures
+	message("-- Downloading textures...")
+	file(DOWNLOAD https://learning-open-gl.s3.eu-central-1.amazonaws.com/textures.tar.gz
+       ${PROJECT_BINARY_DIR}/data/textures.tar.gz)
+	file(ARCHIVE_EXTRACT INPUT ${PROJECT_BINARY_DIR}/data/textures.tar.gz
+	   DESTINATION ${PROJECT_BINARY_DIR}/data/)
+	file(REMOVE ${PROJECT_BINARY_DIR}/data/textures.tar.gz)
   
-  # Models
-  file(DOWNLOAD https://learning-open-gl.s3.eu-central-1.amazonaws.com/models/sphere.mtl 
-       ${PROJECT_BINARY_DIR}/data/models/sphere.mtl)
-  file(DOWNLOAD https://learning-open-gl.s3.eu-central-1.amazonaws.com/models/sphere.obj
-	   ${PROJECT_BINARY_DIR}/data/models/sphere.obj)
-  file(DOWNLOAD https://learning-open-gl.s3.eu-central-1.amazonaws.com/models/floor.mtl 
-       ${PROJECT_BINARY_DIR}/data/models/floor.mtl)
-  file(DOWNLOAD https://learning-open-gl.s3.eu-central-1.amazonaws.com/models/floor.obj
-	   ${PROJECT_BINARY_DIR}/data/models/floor.obj)
+	# Models
+	message("-- Downloading 3D models...")
+	foreach(MODEL_NAME ${MODEL_LIST})	
+		file(DOWNLOAD https://learning-open-gl.s3.eu-central-1.amazonaws.com/models/${MODEL_NAME}.tar.gz
+			${PROJECT_BINARY_DIR}/data/models/${MODEL_NAME}.tar.gz)
+		file(ARCHIVE_EXTRACT INPUT ${PROJECT_BINARY_DIR}/data/models/${MODEL_NAME}.tar.gz 
+			DESTINATION ${PROJECT_BINARY_DIR}/data/models)
+		file(REMOVE ${PROJECT_BINARY_DIR}/data/models/${MODEL_NAME}.tar.gz)
+  endforeach()
   
 endif()

@@ -11,6 +11,7 @@ std::pair<std::unique_ptr<Scene>, Outcome> Scene::loadScene(const std::string& f
 	return std::make_pair(std::make_unique<Scene3D>(), Outcome(true));
 }
 
+
 Scene3D::Scene3D() :
     m_light(glm::vec3(1.0f, 1.0f, 1.0f), // white light
         glm::vec3(1.0f, -1.0f, 1.0f), // coming from above
@@ -32,15 +33,31 @@ Scene3D::Scene3D() :
         SHADERS_DIR + "vertexShader_noTexture.glsl",
         SHADERS_DIR + "fragmentShader_noTexture.glsl"));
 
-    m_models.push_back(make_unique<Model>());
-    m_models[0]->loadModel(MODELS_DIR + "sphere.obj");
-    m_models.push_back(make_unique<Model>());
-    m_models[1]->loadModel(MODELS_DIR + "floor.obj");
+    m_models["sphere"] = make_unique<Model>();
+    try
+    {
+        m_models["sphere"]->loadModel("sphere");
+        m_instances.push_back(make_unique<ModelInstance>(m_models["sphere"].get(),
+            0.0f, 1.0f, 0.0f));
+    }
+    catch (const std::exception& e)
+    {
+        debugOutput(e.what());
+        m_models.erase("sphere");
+    }
 
-    m_instances.push_back(make_unique<ModelInstance>(m_models[0].get(),
-        0.0f, 1.0f, 0.0f));
-    m_instances.push_back(make_unique<ModelInstance>(m_models[1].get(),
-        0.0f, 0.0f, 0.0f, 3.0f));
+    m_models["floor"] = make_unique<Model>();
+    try
+    {
+        m_models["floor"]->loadModel("floor");
+        m_instances.push_back(make_unique<ModelInstance>(m_models["floor"].get(),
+            0.0f, 0.0f, 0.0f, 3.0f));
+    }
+    catch (const std::exception& e)
+    {
+        debugOutput(e.what());
+        m_models.erase("floor");
+    }
 }
 
 void Scene3D::render(const EventContainer& events)
