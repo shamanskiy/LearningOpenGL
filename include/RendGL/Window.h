@@ -6,15 +6,10 @@
 class Window
 {
 public:
-    Window(int windowWidth = 600, int windowHeight = 800);
+    Window(int windowWidth = 600, int windowHeight = 800,
+        const std::string& windowName = "MyApp");
     ~Window();
 
-    // Only has effect if called before initialize()
-    void setWindowName(const std::string& windowName) { m_name = windowName; }
-    void setWindowName(std::string&& windowName) { m_name = std::move(windowName); }
-
-    // Initialize GLFW and GLEW, and create the window (constructor does nothing)
-    Outcome initialize();
 
     // Process GLFW input. Should be called at the start of the loop
     void pollEvents();
@@ -36,6 +31,16 @@ public:
     int getBufferHeight() const;
 
 private:
+    // callback functions for GLFW
+    static void keyboardCallback(GLFWwindow* window, int key, int code,
+        int action, int mode);
+    static void cursorCallback(GLFWwindow* window, double xPos, double yPos);
+    static void bufferResizeCallback(GLFWwindow* window, int newWidth, int newHeight);
+
+    // Initialize GLFW and GLEW, and create the window
+    void initialize();
+
+private:
     // GLFW window, its size and name
     GLFWwindow *m_window;
     int m_width, m_height;
@@ -44,12 +49,4 @@ private:
     // GLFW events processed during this frame,
     // e.g. key pressed, mouse moved, time elapsed.
     EventContainer m_events;
-
-private:
-    // callback functions for GLFW
-    static void keyboardCallback(GLFWwindow* window, int key, int code,
-                         int action, int mode);
-    static void cursorCallback(GLFWwindow* window, double xPos, double yPos);
-    static void bufferResizeCallback(GLFWwindow* window, int newWidth, int newHeight);
-
 };

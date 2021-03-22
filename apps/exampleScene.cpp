@@ -6,14 +6,7 @@
 int main() {
 
     // Create and initialize an application window with given dimensions and name
-    Window window(800,600);
-    window.setWindowName("OpenGL App");
-    auto outcomeWindow = window.initialize();
-    if (!outcomeWindow.ok())
-    {
-        std::cout << outcomeWindow.message() << std::endl;
-        return 1;
-    }
+    Window window(800,600, "OpenGL App");
 
     // Scene holds all information about models, textures and lights to render
     // as well as the camera.
