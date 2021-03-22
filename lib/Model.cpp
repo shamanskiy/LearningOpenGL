@@ -17,6 +17,21 @@
 #include "Config.h"
 
 // ==============================================================================
+// =======================          Helpers     =============================
+// ==============================================================================
+
+namespace
+{
+	struct TextureException : public std::exception
+	{
+		const char* what() const
+		{
+			return "Texture file not found";
+		}
+	};
+}
+
+// ==============================================================================
 // =======================          MODEL CLASS     =============================
 // ==============================================================================
 
@@ -90,7 +105,6 @@ void Model::loadMesh(aiMesh* mesh, const aiScene* scene)
 	m_meshToTexture.push_back(mesh->mMaterialIndex);
 }
 
-
 void Model::loadMaterialsAndTextures(const aiScene* scene)
 {
 	m_textures.resize(scene->mNumMaterials);
@@ -101,7 +115,15 @@ void Model::loadMaterialsAndTextures(const aiScene* scene)
 		{
 			aiString path;
 			scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &path);
-			m_textures[i] = make_unique<Texture>(MODELS_DIR + m_name + "/" + path.data);
+			try
+			{
+				m_textures[i] = make_unique<Texture>(MODELS_DIR + m_name + "/" + path.data);
+			}
+			catch(const TextureException & ex)
+			{
+				debugOutput(m_name + "/" + path.data + ": file not found. Using a default texture.");
+				m_textures[i] = make_unique<Texture>(TEXTURES_DIR + "default.png");
+			}
 		}
 		else // otherwise, use a default white texture
 		{
@@ -258,7 +280,7 @@ void Texture::loadTexture(const string& fileName)
 	// load image/texture data
 	unsigned char* textureData = stbi_load(fileName.c_str(), &width, &height, &bitDepth, 0);
 	if (!textureData)
-		throw runtime_error("Failed to open a texture file: " + fileName);
+		throw TextureException();
 	
 	// create texture object on the GPU
 	glGenTextures(1, &m_textureID);

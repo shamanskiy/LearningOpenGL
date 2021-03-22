@@ -4,6 +4,7 @@
 #include <array>
 #include <string>
 #include <memory>
+#include <exception>
 
 // must be here for some reason; can't move to Texture.cpp
 #include <stb_image.h>
@@ -131,3 +132,4 @@ private:
 	// model matrix (translation + scale)
 	glm::mat4 m_modelMatrix;
 };
+
