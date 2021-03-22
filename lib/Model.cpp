@@ -20,10 +20,17 @@
 // =======================          MODEL CLASS     =============================
 // ==============================================================================
 
-Outcome Model::loadModel(const string& modelName)
+Model::Model(const string& modelName) :
+	m_name(modelName),
+	m_meshes(),
+	m_textures(),
+	m_meshToTexture()
 {
-	m_name = modelName;
+	loadModel();
+}
 
+void Model::loadModel()
+{
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(MODELS_DIR + m_name + "/" + m_name + ".obj",
 		aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals |
@@ -33,8 +40,6 @@ Outcome Model::loadModel(const string& modelName)
 
 	loadNode(scene->mRootNode, scene);
 	loadMaterialsAndTextures(scene);
-
-	return Outcome(true);
 }
 
 void Model::loadNode(aiNode* node, const aiScene* scene)

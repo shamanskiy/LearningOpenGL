@@ -5,18 +5,14 @@
 
 int main() {
 
-    // Create and initialize an application window with given dimensions and name
+    // Create and initialize an application window with given dimensions and name.
+    // Can throw if initialization goes wrong.
     Window window(800,600, "OpenGL App");
 
     // Scene holds all information about models, textures and lights to render
     // as well as the camera.
-    auto [scene, outcomeLoad] = Scene::loadScene("fileNamePlaceHolder");
-    if (!outcomeLoad.ok())
-    {
-        std::cout << outcomeLoad.message() << std::endl;
-        return 1;
-    }
-
+    auto scene = Scene::loadScene("fileNamePlaceHolder");
+    
     // Loop until the window is closed.
     while (!window.shouldClose())
     {

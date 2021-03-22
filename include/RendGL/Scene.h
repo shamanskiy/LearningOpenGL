@@ -18,7 +18,7 @@ public:
 	virtual ~Scene() {}
 
 	// Factory that loads a scene from a file
-	static pair<std::unique_ptr<Scene>, Outcome> loadScene(const std::string& fileName);
+	static std::unique_ptr<Scene> loadScene(const std::string& fileName);
 };
 
 class Model;

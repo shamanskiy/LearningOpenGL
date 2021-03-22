@@ -6,9 +6,9 @@
 #include "Shader.h"
 #include "Model.h"
 
-std::pair<std::unique_ptr<Scene>, Outcome> Scene::loadScene(const std::string& fileName)
+std::unique_ptr<Scene> Scene::loadScene(const std::string& fileName)
 {
-	return std::make_pair(std::make_unique<Scene3D>(), Outcome(true));
+	return std::make_unique<Scene3D>();
 }
 
 
@@ -33,30 +33,26 @@ Scene3D::Scene3D() :
         SHADERS_DIR + "vertexShader_noTexture.glsl",
         SHADERS_DIR + "fragmentShader_noTexture.glsl"));
 
-    m_models["sphere"] = make_unique<Model>();
     try
     {
-        m_models["sphere"]->loadModel("sphere");
+        m_models["sphere"] = make_unique<Model>("sphere");
         m_instances.push_back(make_unique<ModelInstance>(m_models["sphere"].get(),
             0.0f, 1.0f, 0.0f));
     }
     catch (const std::exception& e)
     {
         debugOutput(e.what());
-        m_models.erase("sphere");
     }
 
-    m_models["floor"] = make_unique<Model>();
     try
     {
-        m_models["floor"]->loadModel("floor");
+        m_models["floor"] = make_unique<Model>("floor");
         m_instances.push_back(make_unique<ModelInstance>(m_models["floor"].get(),
             0.0f, 0.0f, 0.0f, 3.0f));
     }
     catch (const std::exception& e)
     {
         debugOutput(e.what());
-        m_models.erase("floor");
     }
 }
 

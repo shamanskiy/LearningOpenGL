@@ -79,14 +79,15 @@ public:
 	// Constructor doesn't do anything. I use a separate function
 	// to actually load the model to be able to return error objects
 	// without using exceptions.
-	Model() = default;
-	Outcome loadModel(const string& modelName);
+	Model(const string& modelName);
 
 	// Render all meshes stored in the model using the corresponding 
 	// textures and materials.
 	void render() const;
 
 private:
+	// open model file and start loading nodes
+	void loadModel();
 	// Recursive function that parses the model tree and loads meshes from each node.
 	void loadNode(aiNode* node, const aiScene* scene);
 	// Load a mesh

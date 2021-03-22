@@ -21,7 +21,6 @@ Window::~Window()
 
 void Window::initialize()
 {
-    throw std::runtime_error("AAAA, exception!");
     // ================================ GLFW ============================//
     if (!glfwInit())
     {
