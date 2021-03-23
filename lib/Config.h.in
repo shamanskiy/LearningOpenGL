@@ -1,4 +1,5 @@
 // the configured options and settings
 #cmakedefine SHADERS_DIR std::string("@SHADERS_DIR@/")
 #cmakedefine TEXTURES_DIR std::string("@TEXTURES_DIR@/")
-#define MODELS_DIR std::string("@MODELS_DIR@/")
+#cmakedefine SCENES_DIR std::string("@SCENES_DIR@/")
+#cmakedefine MODELS_DIR std::string("@MODELS_DIR@/")

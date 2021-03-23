@@ -1,16 +1,30 @@
 #include "Scene.h"
 
+#include <fstream>
+#include <iostream>
+
 #include <glm/gtc/type_ptr.hpp>
+#include <json.hpp>
 
 #include "Config.h"
 #include "Shader.h"
 #include "Model.h"
 
+
 std::unique_ptr<Scene> Scene::loadScene(const std::string& fileName)
 {
-	return std::make_unique<Scene3D>();
-}
+    std::ifstream inputFile(SCENES_DIR + "exampleScene.json");
+    nlohmann::json sceneJson;
+    inputFile >> sceneJson;
 
+    if (sceneJson["sceneType"].get<std::string>() == "3D")
+    {
+        debugOutput("3D scene");
+        return std::make_unique<Scene3D>();
+    }
+    else
+        return std::make_unique<Scene3D>();
+}
 
 Scene3D::Scene3D() :
     m_light(glm::vec3(1.0f, 1.0f, 1.0f), // white light

@@ -2,16 +2,16 @@
 
 #include "Window.h"
 #include "Scene.h"
+#include "Config.h"
 
 int main() {
 
     // Create and initialize an application window with given dimensions and name.
-    // Can throw if initialization goes wrong.
-    Window window(800,600, "OpenGL App");
+    Window window(800, 600, "OpenGL App");
 
     // Scene holds all information about models, textures and lights to render
     // as well as the camera.
-    auto scene = Scene::loadScene("fileNamePlaceHolder");
+    auto scene = Scene::loadScene(SCENES_DIR + "exampleScene.json");
     
     // Loop until the window is closed.
     while (!window.shouldClose())
@@ -29,6 +29,4 @@ int main() {
         // Now swap the buffers to update the image.
         window.swapBuffers();
     }
-
-    return 0;
 }

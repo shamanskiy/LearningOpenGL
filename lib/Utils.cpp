@@ -64,6 +64,6 @@ void CursorTracker::clearPositionChange()
 
 void debugOutput(const std::string& message)
 {
-	std::cout << message << std::endl;
+	std::cout << message << "\n";
 }
 

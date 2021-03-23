@@ -1,0 +1,21 @@
+{
+	"sceneType" : "3D",
+	"sceneName": "exampleScene",
+	"models" : ["floor", "sphere"],
+	"instances" : [
+		{
+			"modelName" : "floor",
+			"x_origin" : 0.0,
+			"y_origin" : 0.0,
+			"z_origin" : 0.0,
+			"scale" : 1.0
+		},
+		{
+			"modelName" : "sphere",
+			"x_origin" : 0.0,
+			"y_origin" : 1.0,
+			"z_origin" : 0.0,
+			"scale" : 1.0
+		}
+	]
+}
