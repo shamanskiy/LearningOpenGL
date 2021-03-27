@@ -2,6 +2,8 @@
 
 #include <fstream>
 #include <iostream>
+#include <vector>
+#include <unordered_map>
 
 #include <glm/gtc/type_ptr.hpp>
 #include <json.hpp>
@@ -9,7 +11,41 @@
 #include "Config.h"
 #include "Shader.h"
 #include "Model.h"
+#include "Light.h"
+#include "Camera.h"
+#include "Utils.h"
 
+namespace
+{
+
+    class Scene3D : public Scene
+    {
+    public:
+        Scene3D(const nlohmann::json& sceneJson);
+        ~Scene3D() override;
+
+        // Get fresh events and render the scene
+        void render(const EventContainer& events) override;
+
+    private:
+        void loadJsonScene(const nlohmann::json& sceneJson);
+
+    private:
+        // Interactive camera
+        Camera m_camera;
+        // List of shaders that can be used to render the scene.
+        // Can be cycled through.
+        vector<unique_ptr<Shader> > m_shaders{};
+
+        // List of Models used in the Scene
+        unordered_map<string, Model> m_models{};
+        // Instances of Models that are scaled and translated to positions
+        vector<ModelInstance> m_instances{};
+
+        // Ambient + directional light
+        Light m_light;
+    };
+}
 
 std::unique_ptr<Scene> Scene::loadScene(const std::string& fileName)
 {
@@ -20,13 +56,11 @@ std::unique_ptr<Scene> Scene::loadScene(const std::string& fileName)
     if (sceneJson["sceneType"].get<std::string>() == "3D")
     {
         debugOutput("3D scene");
-        return std::make_unique<Scene3D>();
+        return std::make_unique<Scene3D>(sceneJson);
     }
-    else
-        return std::make_unique<Scene3D>();
 }
 
-Scene3D::Scene3D() :
+Scene3D::Scene3D(const nlohmann::json& sceneJson) :
     m_light(glm::vec3(1.0f, 1.0f, 1.0f), // white light
         glm::vec3(1.0f, -1.0f, 1.0f), // coming from above
         0.3f, 0.7f),// full ambient and diffuse intensity
@@ -35,10 +69,7 @@ Scene3D::Scene3D() :
         -110.0f, // pitch: rotation in XY plane from the X axis
         -20.0f, // yaw: rotation up-down from the horizontal
         10.0f,  // linear move speed pixel/sec
-        0.05f),// rotational move speed a.k.a. mouse sensitivity
-    m_models(),
-    m_instances(),
-    m_shaders()
+        0.05f)// rotational move speed a.k.a. mouse sensitivity
 {
     m_shaders.push_back(std::make_unique<Shader>(
         SHADERS_DIR + "vertexShader_texture.glsl",
@@ -47,10 +78,12 @@ Scene3D::Scene3D() :
         SHADERS_DIR + "vertexShader_noTexture.glsl",
         SHADERS_DIR + "fragmentShader_noTexture.glsl"));
 
+    loadJsonScene(sceneJson);
+
     try
     {
-        m_models["sphere"] = make_unique<Model>("sphere");
-        m_instances.push_back(make_unique<ModelInstance>(m_models["sphere"].get(),
+        m_models["sphere"] = Model("sphere");
+        m_instances.push_back(ModelInstance(m_models["sphere"],
             0.0f, 1.0f, 0.0f));
     }
     catch (const std::exception& e)
@@ -60,14 +93,20 @@ Scene3D::Scene3D() :
 
     try
     {
-        m_models["floor"] = make_unique<Model>("floor");
-        m_instances.push_back(make_unique<ModelInstance>(m_models["floor"].get(),
+        m_models["floor"] = Model("floor");
+        m_instances.push_back(ModelInstance(m_models["floor"],
             0.0f, 0.0f, 0.0f, 3.0f));
     }
     catch (const std::exception& e)
     {
         debugOutput(e.what());
     }
+}
+
+void Scene3D::loadJsonScene(const nlohmann::json& sceneJson)
+{
+    for (auto& el : sceneJson["models"])
+        std::cout << el.get<std::string>();
 }
 
 void Scene3D::render(const EventContainer& events)
@@ -103,7 +142,7 @@ void Scene3D::render(const EventContainer& events)
     glUniform1f(shader.uniSpecularIntensity(), 4.0);
 
     for (auto& it : m_instances)
-        it->render(shader);
+        it.render(shader);
 
     // deactivate/unbind shader
     glUseProgram(0);
