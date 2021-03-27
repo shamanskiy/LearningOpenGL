@@ -42,6 +42,10 @@ private:
     // compile shader code on GPU
     void compileShader(const std::string & shaderCode, GLenum shaderType);
 
+    void linkShaders();
+    void validateShaders();
+    void getUniforms();
+
     // free memory on GPU
     void deleteShaders();
    

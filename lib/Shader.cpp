@@ -39,17 +39,11 @@ std::string Shader::readShaderCode(const std::string& filename)
     std::ifstream fileStream(filename);
 
     if (!fileStream.is_open())
-    {
-        std::cout << "File " << filename << " does not exist\n";
-        return "";
-    }
+        throw std::runtime_error("Failed to open " + filename);
 
-    std::string line = "";
-    while (!fileStream.eof())
-    {
-        std::getline(fileStream, line);
+    std::string line;
+    while (std::getline(fileStream, line))
         fileContent.append(line + "\n");
-    }
 
     fileStream.close();
     return fileContent;
@@ -59,54 +53,17 @@ void Shader::createShaders(const std::string &vShader, const std::string &fShade
 {
     m_id = glCreateProgram();
 
-    if (!m_id)
-    {
-        std::cout << "Error creating shader program\n";
-        return;
-    }
-
     compileShader(vShader, GL_VERTEX_SHADER);
     compileShader(fShader, GL_FRAGMENT_SHADER);
+    linkShaders();
+    validateShaders();
 
-    GLint result = 0;
-    GLchar eLog[1024] = { 0 };
-
-    glLinkProgram(m_id);
-    glGetProgramiv(m_id, GL_LINK_STATUS, &result);
-    if (!result)
-    {
-        glGetProgramInfoLog(m_id, sizeof(eLog), NULL, eLog);
-        std::cout << "Error linking shader program: " << eLog << std::endl;
-        return;
-    }
-
-    m_uniforms.cameraPosition = glGetUniformLocation(m_id, "cameraPosition");
-    m_uniforms.modelMatrix = glGetUniformLocation(m_id, "model");
-    m_uniforms.viewMatrix = glGetUniformLocation(m_id, "view");
-    m_uniforms.projectionMatrix = glGetUniformLocation(m_id, "projection");
-    m_uniforms.lightColor = glGetUniformLocation(m_id, "light.color");
-    m_uniforms.lightDirection = glGetUniformLocation(m_id, "light.direction");
-    m_uniforms.ambientIntensity = glGetUniformLocation(m_id, "light.ambientIntensity");
-    m_uniforms.diffuseIntensity = glGetUniformLocation(m_id, "light.diffuseIntensity");
-    m_uniforms.materialShininess = glGetUniformLocation(m_id, "material.shininess");
-    m_uniforms.specularIntensity = glGetUniformLocation(m_id, "material.specularIntensity");
-
-    //========== Validation ===//
-
-    glValidateProgram(m_id);
-    glGetProgramiv(m_id, GL_VALIDATE_STATUS, &result);
-    if (!result)
-    {
-        glGetProgramInfoLog(m_id, sizeof(eLog), NULL, eLog);
-        std::cout << "Error validating shader program: " << eLog << std::endl;
-        return;
-    }
-    glBindVertexArray(0);
+    getUniforms();
 }
 
 void Shader::compileShader(const std::string &shaderCode, GLenum shaderType)
 {
-    GLuint shader = glCreateShader(shaderType);
+    auto shader = glCreateShader(shaderType);
 
     const char* codes[1];
     codes[0] = shaderCode.c_str();
@@ -124,11 +81,55 @@ void Shader::compileShader(const std::string &shaderCode, GLenum shaderType)
     if (!result)
     {
         glGetShaderInfoLog(shader, sizeof(eLog), NULL, eLog);
-        std::cout << "Error compiling " << shaderType << " shader program: " << eLog << std::endl;
-        return;
+        throw std::runtime_error("Error compiling shader program: "
+                                 + std::string(eLog));
     }
 
     glAttachShader(m_id,shader);
+}
+
+void Shader::linkShaders()
+{
+    glLinkProgram(m_id);
+
+    GLint result = 0;
+    GLchar eLog[1024] = { 0 };
+    glGetProgramiv(m_id, GL_LINK_STATUS, &result);
+    if (!result)
+    {
+        glGetProgramInfoLog(m_id, sizeof(eLog), NULL, eLog);
+        throw std::runtime_error("Error linking shader program: " +
+                                 std::string(eLog));
+    }
+}
+
+void Shader::validateShaders()
+{
+    glValidateProgram(m_id);
+ 
+    GLint result = 0;
+    GLchar eLog[1024] = { 0 };
+    glGetProgramiv(m_id, GL_VALIDATE_STATUS, &result);
+    if (!result)
+    {
+        glGetProgramInfoLog(m_id, sizeof(eLog), NULL, eLog);
+        throw std::runtime_error("Error validating shader program: " +
+            std::string(eLog));
+    }
+}
+
+void Shader::getUniforms()
+{
+    m_uniforms.cameraPosition = glGetUniformLocation(m_id, "cameraPosition");
+    m_uniforms.modelMatrix = glGetUniformLocation(m_id, "model");
+    m_uniforms.viewMatrix = glGetUniformLocation(m_id, "view");
+    m_uniforms.projectionMatrix = glGetUniformLocation(m_id, "projection");
+    m_uniforms.lightColor = glGetUniformLocation(m_id, "light.color");
+    m_uniforms.lightDirection = glGetUniformLocation(m_id, "light.direction");
+    m_uniforms.ambientIntensity = glGetUniformLocation(m_id, "light.ambientIntensity");
+    m_uniforms.diffuseIntensity = glGetUniformLocation(m_id, "light.diffuseIntensity");
+    m_uniforms.materialShininess = glGetUniformLocation(m_id, "material.shininess");
+    m_uniforms.specularIntensity = glGetUniformLocation(m_id, "material.specularIntensity");
 }
 
 void Shader::deleteShaders()
