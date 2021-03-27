@@ -1,5 +1,7 @@
 #include "Utils.h"
 
+#include <iostream>
+
 EventContainer::EventContainer() :
 	m_timeTracker(),
 	m_keys(),
@@ -58,5 +60,10 @@ void CursorTracker::clearPositionChange()
 {
 	m_dx = 0.0f;
 	m_dy = 0.0f;
+}
+
+void debugOutput(const std::string& message)
+{
+	std::cout << message << "\n";
 }
 

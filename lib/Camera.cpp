@@ -6,9 +6,10 @@
 #include <Utils.h>
 
 
-Camera::Camera(glm::vec3 initialPosition, glm::vec3 worldUp_,
+Camera::Camera(glm::vec3 initialPosition,
               GLfloat initialYaw, GLfloat initialPitch,
-              GLfloat moveSpeed_, GLfloat turnSpeed_) :
+              GLfloat moveSpeed_, GLfloat turnSpeed_,
+              glm::vec3 worldUp_) :
     position(initialPosition),
     resetPosition(initialPosition),
     worldUp(worldUp_),
@@ -20,11 +21,6 @@ Camera::Camera(glm::vec3 initialPosition, glm::vec3 worldUp_,
     turnSpeed(turnSpeed_)
 {
     update();
-}
-
-Camera::~Camera()
-{
-    
 }
 
 void Camera::keyControl(const EventContainer& events)

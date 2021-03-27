@@ -127,4 +127,5 @@ private:
     GLfloat m_aspectRatio;
 };
 
-
+// TODO: prints a message to the console in the debug build only
+void debugOutput(const std::string& message);

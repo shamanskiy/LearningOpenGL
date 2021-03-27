@@ -1,12 +1,17 @@
 #include "Window.h"
 
-Window::Window(int windowWidth, int windowHeight) :
+#include <stdexcept>
+
+Window::Window(int windowWidth, int windowHeight,
+    const std::string& windowName) :
     m_window(nullptr),
     m_width(windowWidth),
     m_height(windowHeight),
-    m_name(),
+    m_name(windowName),
     m_events()
-{ }
+{
+    initialize();
+}
 
 Window::~Window()
 {
@@ -14,13 +19,13 @@ Window::~Window()
     glfwTerminate();
 }
 
-Outcome Window::initialize()
+void Window::initialize()
 {
     // ================================ GLFW ============================//
     if (!glfwInit())
     {
         glfwTerminate();
-        return Outcome(false, "GLFW initialization failed");
+        throw std::runtime_error("GLFW initialization failed!");
     }
 
     // Set OpenGL version
@@ -35,7 +40,7 @@ Outcome Window::initialize()
     if (!m_window)
     {
         glfwTerminate();
-        return Outcome(false, "GLFW window creation failed");
+        throw std::runtime_error("GLFW window creation failed!");
     }
 
     // Set a special pointer stored inside GLFW window which will be used
@@ -59,7 +64,7 @@ Outcome Window::initialize()
     {
         glfwDestroyWindow(m_window);
         glfwTerminate();
-        return Outcome(false, "GLEW initialization failed!");
+        throw std::runtime_error("GLEW initialization failed!");
     }
 
     // ================================ OpenGL ============================//
@@ -69,8 +74,6 @@ Outcome Window::initialize()
     glViewport(0, 0, getBufferWidth(), getBufferHeight());
     // Store image aspect ratio for other systems to use
     m_events.setAspectRatio(GLfloat(getBufferWidth())/GLfloat(getBufferHeight()));
-
-    return Outcome(true);
 }
 
 void Window::pollEvents()

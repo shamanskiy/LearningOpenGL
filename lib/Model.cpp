@@ -3,135 +3,29 @@
 
 #include "Model.h"
 
+
+#include <assimp/scene.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 
-#include <GL/glew.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include "Shader.h"
 #include "Config.h"
 
 // ==============================================================================
-// =======================          MODEL CLASS     =============================
+// =======================          Helpers     =============================
 // ==============================================================================
 
-Outcome Model::loadModel(const string& fileName)
+namespace
 {
-	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(fileName,
-		aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals |
-		aiProcess_JoinIdenticalVertices);
-	if (!scene)
-		return Outcome(false, "Model " + fileName + " failed to load: "
-			+ importer.GetErrorString());
-
-	loadNode(scene->mRootNode, scene);
-	loadMaterialsAndTextures(scene);
-
-	return Outcome(true);
-}
-
-void Model::loadNode(aiNode* node, const aiScene* scene)
-{
-	for (GLuint i = 0; i < node->mNumMeshes; i++)
-		loadMesh(scene->mMeshes[node->mMeshes[i]], scene);
-
-	for (size_t i = 0; i < node->mNumChildren; i++)
-		loadNode(node->mChildren[i], scene);
-}
-
-
-void Model::loadMesh(aiMesh* mesh, const aiScene* scene)
-{
-	vector<GLfloat> vertices;
-	vector<GLuint> indices;
-
-	// scan vertices (3 3D-coordinates, 2 uv-coordinates, 3 normals)
-	vertices.resize(8 * mesh->mNumVertices, 0.);
-	for (GLuint i = 0; i < mesh->mNumVertices; i++)
+	struct TextureException : public std::exception
 	{
-		vertices[8 * i] = mesh->mVertices[i].x;
-		vertices[8 * i + 1] = mesh->mVertices[i].y;
-		vertices[8 * i + 2] = mesh->mVertices[i].z;
-		
-		// get uv coordinates if provided
-		if (mesh->mTextureCoords[0])
+		const char* what() const
 		{
-			vertices[8 * i + 3] = mesh->mTextureCoords[0][i].x;
-			vertices[8 * i + 4] = mesh->mTextureCoords[0][i].y;
+			return "Texture file not found";
 		}
-		
-		// get vertex normals
-		vertices[8 * i + 5] = mesh->mNormals[i].x;
-		vertices[8 * i + 6] = mesh->mNormals[i].y;
-		vertices[8 * i + 7] = mesh->mNormals[i].z;
-	}
-
-	// scan faces (triplets of vertex indices)
-	indices.resize(3 * mesh->mNumFaces);
-	for (GLuint i = 0; i < mesh->mNumFaces; i++)
-		for (GLuint j = 0; j < 3; j++)
-			indices[3 * i + j] = mesh->mFaces[i].mIndices[j];
-
-	// create a Mesh from vertices and indices
-	m_meshes.push_back(make_unique<Mesh>(vertices, indices));
-	// save a texture index that this Mesh uses
-	m_meshToTexture.push_back(mesh->mMaterialIndex);
-}
-
-
-void Model::loadMaterialsAndTextures(const aiScene* scene)
-{
-	m_textures.resize(scene->mNumMaterials);
-
-	for (GLuint i = 0; i < scene->mNumMaterials; i++)
-		// Load texture file if provided
-		if (scene->mMaterials[i]->GetTextureCount(aiTextureType_DIFFUSE))
-		{
-			aiString path;
-			scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &path);
-			m_textures[i] = make_unique<Texture>(TEXTURES_DIR + path.data);
-		}
-		else // otherwise, use a default white texture
-			m_textures[i] = make_unique<Texture>(TEXTURES_DIR + "default.png");
-}
-
-void Model::render() const
-{
-	for (size_t i = 0; i < m_meshes.size(); i++)
-	{
-		m_textures[m_meshToTexture[i]]->useTexture();
-		//m_materials[m_meshToMaterial[i]]->activate();
-		m_meshes[i]->render();
-	}
-}
-
-// ==============================================================================
-// ==============          MODEL INSTANCE CLASS     =============================
-// ==============================================================================
-
-ModelInstance::ModelInstance(const Model* const model,
-	GLfloat posX, GLfloat posY, GLfloat posZ,
-	GLfloat scale) :
-	m_model(model),
-	m_modelMatrix(glm::mat4(1.0f))
-{
-	m_modelMatrix = glm::translate(m_modelMatrix,
-		glm::vec3(posX, posY, posZ));
-	m_modelMatrix = glm::scale(m_modelMatrix,
-		glm::vec3(scale, scale, scale));
-}
-
-void ModelInstance::render(const Shader& shader) const
-{
-	// send model matrix to the GPU
-	glUniformMatrix4fv(shader.uniModelMatrix(), 1, GL_FALSE,
-		glm::value_ptr(m_modelMatrix));
-	// render the model
-	m_model->render();
+	};
 }
 
 // ==============================================================================
@@ -147,6 +41,31 @@ Mesh::Mesh(const std::vector<GLfloat>& vertices,
 Mesh::~Mesh()
 {
 	deleteMesh();
+}
+
+Mesh::Mesh(Mesh&& other) noexcept :
+	m_VAO(other.m_VAO),
+	m_VBO(other.m_VBO),
+	m_EBO(other.m_EBO),
+	m_numIndices(other.m_numIndices)
+{
+	other.m_VAO = 0;
+	other.m_VBO = 0;
+	other.m_EBO = 0;
+}
+
+Mesh& Mesh::operator=(Mesh&& other) & noexcept
+{
+	m_VAO = other.m_VAO;
+	m_VBO = other.m_VBO;
+	m_EBO = other.m_EBO;
+	m_numIndices = other.m_numIndices;
+
+	other.m_VAO = 0;
+	other.m_VBO = 0;
+	other.m_EBO = 0;
+
+	return *this;
 }
 
 void Mesh::createMesh(const vector<GLfloat>& vertices,
@@ -227,34 +146,44 @@ void Mesh::deleteMesh()
 // =====================       TEXTURE CLASS       ==============================
 // ==============================================================================
 
-Texture::Texture(const std::string& fileLocation) :
-	textureID(0),
-	width(0),
-	height(0),
-	bitDepth(0),
-	fileLoc(fileLocation)
+Texture::Texture(const string& fileName) :
+	m_textureID(0)
 {
-	loadTexture();
+	loadTexture(fileName);
 }
 
 Texture::~Texture()
 {
-	clearTexture();
+	deleteTexture();
 }
 
-void Texture::loadTexture()
+Texture::Texture(Texture&& other) noexcept :
+	m_textureID(other.m_textureID)
 {
+	other.m_textureID = 0;
+}
+
+Texture& Texture::operator=(Texture&& other) & noexcept
+{
+	m_textureID = other.m_textureID;
+	other.m_textureID = 0;
+	return *this;
+}
+
+void Texture::loadTexture(const string& fileName)
+{
+	// image properties
+	GLint width, height, bitDepth;
+
 	// load image/texture data
-	unsigned char* textureData = stbi_load(fileLoc.c_str(), &width, &height, &bitDepth, 0);
+	unsigned char* textureData = stbi_load(fileName.c_str(), &width, &height, &bitDepth, 0);
 	if (!textureData)
-	{
-		//std::cout << "Failed to find a texture in " << fileLoc << std::endl;
-		return;
-	}
+		throw TextureException();
+
 	// create texture object on the GPU
-	glGenTextures(1, &textureID);
+	glGenTextures(1, &m_textureID);
 	// activate/bind texture object for future operations
-	glBindTexture(GL_TEXTURE_2D, textureID);
+	glBindTexture(GL_TEXTURE_2D, m_textureID);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT); // x-wrap option (s is x for textures) GL_REPEAT GL_MIRRORED_REPEAT GL_CLAMP_TO_EDGE GL_CLAMP_TO_BORDER
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT); // y-wrap option (t is y for textures)
@@ -272,21 +201,157 @@ void Texture::loadTexture()
 	stbi_image_free(textureData);
 }
 
-void Texture::useTexture() const
+void Texture::activateTexture() const
 {
 	// texture unit - this guy will access texture data. 0 is default, so this is line is not necessary.
 	// by using several different texture units we can bind several textures (?)
 	glActiveTexture(GL_TEXTURE0);
 
 	// bind this texture to the texture unit 0
-	glBindTexture(GL_TEXTURE_2D, textureID);
+	glBindTexture(GL_TEXTURE_2D, m_textureID);
 }
 
-void Texture::clearTexture()
+void Texture::deleteTexture()
 {
-	glDeleteTextures(1, &textureID);
-	textureID = 0;
-	width = 0;
-	height = 0;
-	bitDepth = 0;
+	if (m_textureID != 0)
+		glDeleteTextures(1, &m_textureID);
 }
+
+
+// ==============================================================================
+// =======================          MODEL CLASS     =============================
+// ==============================================================================
+
+Model::Model(const string& modelName) :
+	m_name(modelName),
+	m_meshes(),
+	m_textures(),
+	m_meshToTexture()
+{
+	loadModel();
+}
+
+void Model::loadModel()
+{
+	Assimp::Importer importer;
+	const aiScene* scene = importer.ReadFile(MODELS_DIR + m_name + "/" + m_name + ".obj",
+		aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals |
+		aiProcess_JoinIdenticalVertices);
+	if (!scene)
+		throw ModelException("Failed to load a model: " + string(importer.GetErrorString()));
+
+	loadNode(scene->mRootNode, scene);
+	loadMaterialsAndTextures(scene);
+}
+
+void Model::loadNode(aiNode* node, const aiScene* scene)
+{
+	for (GLuint i = 0; i < node->mNumMeshes; i++)
+		loadMesh(scene->mMeshes[node->mMeshes[i]], scene);
+
+	for (size_t i = 0; i < node->mNumChildren; i++)
+		loadNode(node->mChildren[i], scene);
+}
+
+
+void Model::loadMesh(aiMesh* mesh, const aiScene* scene)
+{
+	vector<GLfloat> vertices;
+	vector<GLuint> indices;
+
+	// scan vertices (3 3D-coordinates, 2 uv-coordinates, 3 normals)
+	vertices.resize(8 * mesh->mNumVertices, 0.);
+	for (GLuint i = 0; i < mesh->mNumVertices; i++)
+	{
+		vertices[8 * i] = mesh->mVertices[i].x;
+		vertices[8 * i + 1] = mesh->mVertices[i].y;
+		vertices[8 * i + 2] = mesh->mVertices[i].z;
+		
+		// get uv coordinates if provided
+		if (mesh->mTextureCoords[0])
+		{
+			vertices[8 * i + 3] = mesh->mTextureCoords[0][i].x;
+			vertices[8 * i + 4] = mesh->mTextureCoords[0][i].y;
+		}
+		
+		// get vertex normals
+		vertices[8 * i + 5] = mesh->mNormals[i].x;
+		vertices[8 * i + 6] = mesh->mNormals[i].y;
+		vertices[8 * i + 7] = mesh->mNormals[i].z;
+	}
+
+	// scan faces (triplets of vertex indices)
+	indices.resize(3 * mesh->mNumFaces);
+	for (GLuint i = 0; i < mesh->mNumFaces; i++)
+		for (GLuint j = 0; j < 3; j++)
+			indices[3 * i + j] = mesh->mFaces[i].mIndices[j];
+
+	// create a Mesh from vertices and indices
+	m_meshes.push_back(Mesh(vertices, indices));
+	// save a texture index that this Mesh uses
+	m_meshToTexture.push_back(mesh->mMaterialIndex);
+}
+
+void Model::loadMaterialsAndTextures(const aiScene* scene)
+{
+	m_textures.resize(scene->mNumMaterials);
+
+	for (GLuint i = 0; i < scene->mNumMaterials; i++)
+		// Load texture file if provided
+		if (scene->mMaterials[i]->GetTextureCount(aiTextureType_DIFFUSE))
+		{
+			aiString path;
+			scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &path);
+			try
+			{
+				m_textures[i] = Texture(MODELS_DIR + m_name + "/" + path.data);
+			}
+			catch(const TextureException & ex)
+			{
+				debugOutput(m_name + "/" + path.data + ": file not found. Using a default texture.");
+				m_textures[i] = Texture(TEXTURES_DIR + "default.png");
+			}
+		}
+		else // otherwise, use a default white texture
+		{
+			debugOutput(m_name + "/" + string(scene->mMaterials[i]->GetName().data) + 
+				": no texture found. Using a default texture.");
+			m_textures[i] = Texture(TEXTURES_DIR + "default.png");
+		}
+}
+
+void Model::render() const
+{
+	for (size_t i = 0; i < m_meshes.size(); i++)
+	{
+		m_textures[m_meshToTexture[i]].activateTexture();
+		//m_materials[m_meshToMaterial[i]]->activate();
+		m_meshes[i].render();
+	}
+}
+
+// ==============================================================================
+// ==============          MODEL INSTANCE CLASS     =============================
+// ==============================================================================
+
+ModelInstance::ModelInstance(const Model& model,
+	GLfloat posX, GLfloat posY, GLfloat posZ,
+	GLfloat scale) :
+	m_model(model),
+	m_modelMatrix(glm::mat4(1.0f))
+{
+	m_modelMatrix = glm::translate(m_modelMatrix,
+		glm::vec3(posX, posY, posZ));
+	m_modelMatrix = glm::scale(m_modelMatrix,
+		glm::vec3(scale, scale, scale));
+}
+
+void ModelInstance::render(const Shader& shader) const
+{
+	// send model matrix to the GPU
+	glUniformMatrix4fv(shader.uniModelMatrix(), 1, GL_FALSE,
+		glm::value_ptr(m_modelMatrix));
+	// render the model
+	m_model.render();
+}
+

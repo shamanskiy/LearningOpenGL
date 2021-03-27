@@ -8,9 +8,6 @@ Light::Light(glm::vec3 lightColor, glm::vec3 lightDirection,
     dIntensity(diffuseIntensity)
 {}
 
-Light::~Light()
-{}
-
 void Light::useLight(GLuint uniColor, GLuint uniDirection,
               GLuint uniAmbientIntensity, GLuint uniDiffuseIntensity) const
 {
