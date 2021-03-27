@@ -8,66 +8,77 @@
 
 Camera::Camera(glm::vec3 initialPosition,
               GLfloat initialYaw, GLfloat initialPitch,
-              GLfloat moveSpeed_, GLfloat turnSpeed_,
-              glm::vec3 worldUp_) :
-    position(initialPosition),
-    resetPosition(initialPosition),
-    worldUp(worldUp_),
-    yaw(initialYaw),
-    resetYaw(initialYaw),
-    pitch(initialPitch),
-    resetPitch(initialPitch),
-    moveSpeed(moveSpeed_),
-    turnSpeed(turnSpeed_)
+              GLfloat moveSpeed, GLfloat turnSpeed,
+              glm::vec3 worldUp) :
+    m_state{ initialPosition, initialYaw, initialPitch },
+    m_initialState{ m_state },
+    m_worldUp(worldUp),
+    m_moveSpeed(moveSpeed),
+    m_turnSpeed(turnSpeed)
 {
-    update();
+    updateOrientation();
 }
 
-void Camera::keyControl(const EventContainer& events)
+void Camera::processEvents(const EventContainer& events)
 {
+    processKeys(events);
+    processMouse(events);
+}
+
+glm::mat4 Camera::viewMatrix() const 
+{ 
+    return glm::lookAt(m_state.pos, m_state.pos + m_front, m_up); 
+}
+
+
+void Camera::updatePosition(const glm::vec3& direction, GLfloat timeStep)
+{
+    m_state.pos += direction * timeStep * m_moveSpeed;
+}
+
+void Camera::processKeys(const EventContainer& events)
+{
+    auto dt = events.timeStep();
     if (events.keyState(GLFW_KEY_W))
-        position += front * moveSpeed * events.timeStep();
+        updatePosition(m_front, dt);
     if (events.keyState(GLFW_KEY_S))
-        position -= front * moveSpeed * events.timeStep();
+        updatePosition(m_front, -dt);
     if (events.keyState(GLFW_KEY_D))
-        position += right * moveSpeed * events.timeStep();
+        updatePosition(m_right, dt);
     if (events.keyState(GLFW_KEY_A))
-        position -= right * moveSpeed * events.timeStep();
+        updatePosition(m_right, -dt);
     if (events.keyState(GLFW_KEY_UP))
-        position += up * moveSpeed * events.timeStep();
+        updatePosition(m_up, dt);
     if (events.keyState(GLFW_KEY_DOWN))
-        position -= up * moveSpeed * events.timeStep();
+        updatePosition(m_up, -dt);
     
     if (events.keyState(GLFW_KEY_R))
     {
-        position = resetPosition;
-        yaw = resetYaw;
-        pitch = resetPitch;
-        update();
+        m_state = m_initialState;
+        updateOrientation();
     }
 }
 
-void Camera::mouseControl(GLfloat xChange, GLfloat yChange)
+void Camera::processMouse(const EventContainer& events)
 {
-    yaw += xChange * turnSpeed;
-    
-    pitch += yChange * turnSpeed;
+    m_state.yaw += events.cursorPositionChangeX() * m_turnSpeed;
+    m_state.pitch += events.cursorPositionChangeY() * m_turnSpeed;
     // limit pitch
-    if (pitch > 89.0f)
-        pitch = 89.0f;
-    if (pitch < -89.0f)
-        pitch = -89.0f;
+    if (m_state.pitch > 89.0f)
+        m_state.pitch = 89.0f;
+    if (m_state.pitch < -89.0f)
+        m_state.pitch = -89.0f;
     
-    update();
+    updateOrientation();
 }
 
-void Camera::update()
+void Camera::updateOrientation()
 {
-    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    front.y = sin(glm::radians(pitch));
-    front = glm::normalize(front);
+    m_front.x = cos(glm::radians(m_state.yaw)) * cos(glm::radians(m_state.pitch));
+    m_front.z = sin(glm::radians(m_state.yaw)) * cos(glm::radians(m_state.pitch));
+    m_front.y = sin(glm::radians(m_state.pitch));
+    m_front = glm::normalize(m_front);
     
-    right = glm::normalize(glm::cross(front,worldUp));
-    up = glm::normalize(glm::cross(right,front));
+    m_right = glm::normalize(glm::cross(m_front,m_worldUp));
+    m_up = glm::normalize(glm::cross(m_right,m_front));
 }

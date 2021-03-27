@@ -155,9 +155,7 @@ void Scene3D::render(const EventContainer& events)
     glm::mat4 projection = glm::perspective(45.0f, events.aspectRatio(), 0.1f, 100.0f);
 
     // pass data to the camera
-    m_camera.keyControl(events);
-    m_camera.mouseControl(events.cursorPositionChangeX(),
-        events.cursorPositionChangeY());
+    m_camera.processEvents(events);
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -176,7 +174,7 @@ void Scene3D::render(const EventContainer& events)
     m_light.useLight(shader.uniLightColor(), shader.uniLightDirection(), shader.uniAmbientIntensity(), shader.uniDiffuseIntensity());
 
 
-    glUniform3f(shader.uniCameraPosition(), m_camera.cameraPosition().x, m_camera.cameraPosition().y, m_camera.cameraPosition().z);
+    glUniform3f(shader.uniCameraPosition(), m_camera.position().x, m_camera.position().y, m_camera.position().z);
 
     glUniform1f(shader.uniMaterialShininess(), 32);
     glUniform1f(shader.uniSpecularIntensity(), 4.0);

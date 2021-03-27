@@ -1,63 +1,63 @@
 #pragma once
 
+#include <utility>
+
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 class EventContainer;
 
-// Camera is a class for movement around and interaction with a rendered scene
+// Camera receives user input from mouse and keyboard and
+// lets one navigate the scene
 class Camera
 {
-private:
-    // camera position in 3D space
-    glm::vec3 position;
-    // original position for camera reset
-    glm::vec3 resetPosition;
-    // camera Z-vector in the global coordinates
-    glm::vec3 front;
-    // camera Y-vector in the global coordinates
-    glm::vec3 up;
-    // camera X-vector in the global coordinates
-    glm::vec3 right;
-    // global Y-direction
-    glm::vec3 worldUp;
-
-    // current yaw angle (left-right)
-    GLfloat yaw;
-    // original yaw for camera reset
-    GLfloat resetYaw;
-    // current pitch angle (bottom-top)
-    GLfloat pitch;
-    // original pitch for camera reset
-    GLfloat resetPitch;
-
-    // moving speed (keyboard)
-    GLfloat moveSpeed;
-    // turning speed (mouse)
-    GLfloat turnSpeed;
-
 public:
-    // constructor
     Camera(glm::vec3 initialPosition = glm::vec3(0.0f,0.0f,0.0f),
-           GLfloat initialYaw = -90.0f, GLfloat initialPitch = 0.0f,
-           GLfloat moveSpeed_ = 10.0f, GLfloat turnSpeed_ = 0.05f,
+           GLfloat initialYaw = 0.0f, GLfloat initialPitch = 0.0f,
+           GLfloat moveSpeed = 1.0f, GLfloat turnSpeed = 1.0f,
            glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f));
 
-    // process key controls (move camera)
-    void keyControl(const EventContainer & events);
+    void processEvents(const EventContainer& events);
 
-    // process mouse controls (rotate camera)
-    void mouseControl(GLfloat xChange, GLfloat yChange);
-
-    // return a view matrix corresponding to the current camera's position and orientation
-    glm::mat4 viewMatrix() { return glm::lookAt(position, position+front, up); }
-    
-    const glm::vec3 & cameraPosition() const { return position; }
+    glm::vec3 position() const { return m_state.pos; }
+    glm::vec3 front() const { return m_front; }
+    glm::vec3 up() const { return m_up; }
+    glm::vec3 right() const { return m_right; }
+    // compute view matrix from the current position and orientation
+    glm::mat4 viewMatrix() const;
 
 private:
+    void processKeys(const EventContainer& events);
+    void processMouse(const EventContainer& events);
 
-    // update camera position and orientation provided new yaw and pitch
-    void update();
+    void updatePosition(const glm::vec3& direction, GLfloat timeStep);
+    // compute new orientation from yaw and pitch
+    void updateOrientation();
 
+private:
+    struct CameraState
+    {
+        glm::vec3 pos;
+        GLfloat yaw;
+        GLfloat pitch;
+    };
+
+private:
+    CameraState m_state;
+    // this state is used for camera reset
+    CameraState m_initialState;
+    
+    // current orientation
+    glm::vec3 m_front;
+    glm::vec3 m_up;
+    glm::vec3 m_right;
+
+    // global Y-direction
+    glm::vec3 m_worldUp;
+
+    // movement speed used for keys
+    GLfloat m_moveSpeed;
+    // turning speed used for mouse
+    GLfloat m_turnSpeed;
 };

@@ -1,16 +1,92 @@
 #include "gtest/gtest.h"
 #include "Camera.h"
+#include "Utils.h"
 
 #include <glm/glm.hpp>
-TEST(CameraTest, canCreate)
+#include <glm/gtx/string_cast.hpp>
+
+namespace {
+    std::pair<Camera, EventContainer> setup()
+    {
+        auto result = std::make_pair(Camera(), EventContainer());
+        result.second.setTime(0.0f);
+        result.second.setTime(1.0f);
+        return result;
+    }
+}
+
+TEST(CameraTest, moveForwardUpRight)
 {
-    Camera camera(glm::vec3(1.5f, 2.5f, 3.5f), // initial location
-        glm::vec3(0.0f, 1.0f, 0.0f), // up direction
-        -110.0f, // pitch: rotation in XY plane from the X axis
-        -20.0f, // yaw: rotation up-down from the horizontal
-        10.0f,  // linear move speed pixel/sec
-        0.05f); // rotational move speed a.k.a. mouse sensitivity
-    ASSERT_TRUE(true);
+    auto [camera, events] = setup();
+
+    events.setKeyState(GLFW_KEY_W, true);
+    events.setKeyState(GLFW_KEY_D, true);
+    events.setKeyState(GLFW_KEY_UP, true);
+
+    camera.processEvents(events);
+
+    ASSERT_FLOAT_EQ(camera.position().x, 1.0f);
+    ASSERT_FLOAT_EQ(camera.position().y, 1.0f);
+    ASSERT_FLOAT_EQ(camera.position().z, 1.0f);
+}
+
+TEST(CameraTest, moveBackLeftDown)
+{
+    auto [camera, events] = setup();
+
+    events.setKeyState(GLFW_KEY_S, true);
+    events.setKeyState(GLFW_KEY_A, true);
+    events.setKeyState(GLFW_KEY_DOWN, true);
+
+    camera.processEvents(events);
+
+    ASSERT_FLOAT_EQ(camera.position().x, -1.0f);
+    ASSERT_FLOAT_EQ(camera.position().y, -1.0f);
+    ASSERT_FLOAT_EQ(camera.position().z, -1.0f);
+}
+
+TEST(CameraTest, rotate45DegRight)
+{
+    auto [camera, events] = setup();
+
+    events.setCursorPosition(0.0f, 0.0f);
+    events.setCursorPosition(45.0f, 0.0f);
+
+    camera.processEvents(events);
+
+    auto frontDir = camera.front();
+    ASSERT_FLOAT_EQ(frontDir.x, 1.0f/sqrt(2.0f));
+    ASSERT_FLOAT_EQ(frontDir.y, 0.0f);
+    ASSERT_FLOAT_EQ(frontDir.z, 1.0f/ sqrt(2.0f));
+}
+
+TEST(CameraTest, rotate45DegUp)
+{
+    auto [camera, events] = setup();
+
+    events.setCursorPosition(0.0, 0.0);
+    events.setCursorPosition(0.0, -45.0); // vertical inversion
+
+    camera.processEvents(events);
+
+    auto frontDir = camera.front();
+    ASSERT_FLOAT_EQ(frontDir.x, 1.0f / sqrt(2.0f));
+    ASSERT_FLOAT_EQ(frontDir.y, 1.0f / sqrt(2.0f));
+    ASSERT_FLOAT_EQ(frontDir.z, 0.0f);
+}
+
+TEST(CameraTest, verticalRotationIsLimited)
+{
+    auto [camera, events] = setup();
+
+    events.setCursorPosition(0.0, 0.0);
+    events.setCursorPosition(0.0, -90.0); // vertical inversion
+
+    camera.processEvents(events);
+
+    auto frontDir = camera.front();
+    ASSERT_TRUE(frontDir.x > 0.0f);
+    ASSERT_TRUE(frontDir.y < 1.0f);
 }
 
 
