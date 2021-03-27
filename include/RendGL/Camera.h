@@ -21,7 +21,7 @@ private:
     // camera X-vector in the global coordinates
     glm::vec3 right;
     // global Y-direction
-    const glm::vec3 worldUp;
+    glm::vec3 worldUp;
 
     // current yaw angle (left-right)
     GLfloat yaw;
@@ -33,18 +33,16 @@ private:
     GLfloat resetPitch;
 
     // moving speed (keyboard)
-    const GLfloat moveSpeed;
+    GLfloat moveSpeed;
     // turning speed (mouse)
-    const GLfloat turnSpeed;
+    GLfloat turnSpeed;
 
 public:
     // constructor
     Camera(glm::vec3 initialPosition = glm::vec3(0.0f,0.0f,0.0f),
-           glm::vec3 worldUp = glm::vec3(0.0f,1.0f,0.0f),
            GLfloat initialYaw = -90.0f, GLfloat initialPitch = 0.0f,
-           GLfloat moveSpeed_ = 10.0f, GLfloat turnSpeed_ = 0.05f);
-    // destructor
-    ~Camera();
+           GLfloat moveSpeed_ = 10.0f, GLfloat turnSpeed_ = 0.05f,
+           glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f));
 
     // process key controls (move camera)
     void keyControl(const EventContainer & events);

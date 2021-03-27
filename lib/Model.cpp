@@ -3,7 +3,6 @@
 
 #include "Model.h"
 
-#include <stdexcept>
 
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
@@ -239,7 +238,7 @@ void Model::loadModel()
 		aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals |
 		aiProcess_JoinIdenticalVertices);
 	if (!scene)
-		throw runtime_error("Failed to load a model: " + string(importer.GetErrorString()));
+		throw ModelException("Failed to load a model: " + string(importer.GetErrorString()));
 
 	loadNode(scene->mRootNode, scene);
 	loadMaterialsAndTextures(scene);

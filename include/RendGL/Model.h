@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <stdexcept>
 
 // must be here for some reason; can't move to Texture.cpp
 #include <stb_image.h>
@@ -129,5 +130,20 @@ private:
 	const Model& m_model;
 	// model matrix (translation + scale)
 	glm::mat4 m_modelMatrix;
+};
+
+struct ModelException : public std::exception
+{
+	ModelException(const string& message) :
+		m_message(message)
+	{}
+
+	const char* what() const
+	{
+		return m_message.c_str();
+	}
+
+private:
+	string m_message;
 };
 
