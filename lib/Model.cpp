@@ -3,7 +3,6 @@
 
 #include "Model.h"
 
-
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
@@ -349,7 +348,7 @@ ModelInstance::ModelInstance(const Model& model,
 void ModelInstance::render(const Shader& shader) const
 {
 	// send model matrix to the GPU
-	glUniformMatrix4fv(shader.uniModelMatrix(), 1, GL_FALSE,
+	glUniformMatrix4fv(shader.uniforms().modelMatrix, 1, GL_FALSE,
 		glm::value_ptr(m_modelMatrix));
 	// render the model
 	m_model.render();
