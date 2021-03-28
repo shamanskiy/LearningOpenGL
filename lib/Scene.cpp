@@ -79,8 +79,6 @@ void Scene3D::render(const EventContainer& events)
 
     m_light.talkToShader(m_shader);
 
-    glUniform1f(m_shader.uniforms().materialShininess, 32);
-    glUniform1f(m_shader.uniforms().specularIntensity, 4.0);
     for (auto& it : m_instances)
         it.render(m_shader);
 }

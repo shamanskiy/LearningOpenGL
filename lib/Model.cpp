@@ -200,7 +200,7 @@ void Texture::loadTexture(const string& fileName)
 	stbi_image_free(textureData);
 }
 
-void Texture::activateTexture() const
+void Texture::activate() const
 {
 	// texture unit - this guy will access texture data. 0 is default, so this is line is not necessary.
 	// by using several different texture units we can bind several textures (?)
@@ -247,7 +247,7 @@ void Model::loadModel()
 		throw ModelException("Failed to load a model: " + string(importer.GetErrorString()));
 
 	loadNode(scene->mRootNode, scene);
-	loadMaterialsAndTextures(scene);
+	loadMaterials(scene);
 }
 
 void Model::loadNode(aiNode* node, const aiScene* scene)
@@ -269,7 +269,7 @@ void Model::updateBoundingBox(GLfloat x, int dim)
 
 string Model::boundingBoxAsString() const
 {
-	string result = m_name + ": bounding box\n";
+	string result = m_name + "/BoundingBox\n";
 	result += "x: " + to_string(m_boundingBox[0]) + " " + to_string(m_boundingBox[1]) + "\n";
 	result += "y: " + to_string(m_boundingBox[2]) + " " + to_string(m_boundingBox[3]) + "\n";
 	result += "z: " + to_string(m_boundingBox[4]) + " " + to_string(m_boundingBox[5]);
@@ -315,45 +315,62 @@ void Model::loadMesh(aiMesh* mesh, const aiScene* scene)
 	// create a Mesh from vertices and indices
 	m_meshes.push_back(Mesh(vertices, indices));
 	// save a texture index that this Mesh uses
-	m_meshToTexture.push_back(mesh->mMaterialIndex);
+	m_meshToMaterial.push_back(mesh->mMaterialIndex);
 }
 
-void Model::loadMaterialsAndTextures(const aiScene* scene)
+Texture Model::loadTexture(aiMaterial* material) const
 {
-	m_textures.resize(scene->mNumMaterials);
-
-	for (GLuint i = 0; i < scene->mNumMaterials; i++)
-		// Load texture file if provided
-		if (scene->mMaterials[i]->GetTextureCount(aiTextureType_DIFFUSE))
+	if (material->GetTextureCount(aiTextureType_DIFFUSE))
+	{
+		aiString path;
+		material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
+		try
 		{
-			aiString path;
-			scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &path);
-			try
-			{
-				m_textures[i] = Texture(MODELS_DIR + m_name + "/" + path.data);
-			}
-			catch(const TextureException & ex)
-			{
-				debugOutput(m_name + "/" + path.data + ": file not found. Using a default texture.");
-				m_textures[i] = Texture(TEXTURES_DIR + "default.png");
-			}
+			return Texture(MODELS_DIR + m_name + "/" + path.data);
 		}
-		else // otherwise, use a default white texture
+		catch (const TextureException& ex)
 		{
-			debugOutput(m_name + "/" + string(scene->mMaterials[i]->GetName().data) + 
-				": no texture found. Using a default texture.");
-			m_textures[i] = Texture(TEXTURES_DIR + "default.png");
+			debugOutput(m_name + "/" + path.data + ": file not found.");
 		}
+	}
+	
+	debugOutput(m_name + "/" + string(material->GetName().data) +
+			": using default texture.");
+	return Texture(TEXTURES_DIR + "default.png");
 }
 
-void Model::render() const
+void Model::loadMaterials(const aiScene* scene)
+{
+	m_materials.resize(scene->mNumMaterials);
+	
+	for (GLuint i = 0; i < scene->mNumMaterials; i++)
+	{
+		aiMaterial* material = scene->mMaterials[i];
+		Texture texture = loadTexture(material);
+		m_materials[i] = Material{ move(texture),glm::vec3{1.0f,1.0f,1.0f},1.0f };
+	}
+}
+
+void Model::render(const Shader& shader) const
 {
 	for (size_t i = 0; i < m_meshes.size(); i++)
 	{
-		m_textures[m_meshToTexture[i]].activateTexture();
+		m_materials[m_meshToMaterial[i]].activate(shader);
 		//m_materials[m_meshToMaterial[i]]->activate();
 		m_meshes[i].render();
 	}
+}
+
+// ==============================================================================
+// ==============          MATERIAL CLASS     ===================================
+// ==============================================================================
+
+void Material::activate(const Shader& shader) const
+{
+	m_texture.activate();
+	glUniform1f(shader.uniforms().materialShininess, m_shininess);
+	glUniform3f(shader.uniforms().materialColor,
+		m_diffuseColor.x, m_diffuseColor.y, m_diffuseColor.z);
 }
 
 // ==============================================================================
@@ -378,6 +395,6 @@ void ModelInstance::render(const Shader& shader) const
 	glUniformMatrix4fv(shader.uniforms().modelMatrix, 1, GL_FALSE,
 		glm::value_ptr(m_modelMatrix));
 	// render the model
-	m_model.render();
+	m_model.render(shader);
 }
 

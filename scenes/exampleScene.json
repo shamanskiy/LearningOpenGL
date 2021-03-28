@@ -10,7 +10,7 @@
 	},
 	"light" : {
 		"color" : [1.0, 1.0, 1.0],
-		"direction" : [1.0, -1.0, 1.0],
+		"direction" : [-1.0, -1.0, -1.0],
 		"ambientIntensity" : 0.3,
 		"diffuseIntensity" : 1.0
 	},
@@ -23,13 +23,8 @@
 		},
 		{
 			"modelName" : "sphere",
-			"origin" : [2.0, 2.0, 0.0],
-			"scale" : 1.0
-		},
-		{
-			"modelName" : "sphere",
-			"origin" : [2.3, 1.0, 0.0],
-			"scale" : 0.1
+			"origin" : [-2.0, 3.0, -2.0],
+			"scale" : 0.5
 		},
 		{
 			"modelName" : "tree",

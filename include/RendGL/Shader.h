@@ -16,7 +16,7 @@ struct UniformVariables {
     GLuint diffuseIntensity{ 0 };
 
     GLuint materialShininess{ 0 };
-    GLuint specularIntensity{ 0 };
+    GLuint materialColor{ 0 };
 };
 
 

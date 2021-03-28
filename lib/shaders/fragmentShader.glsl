@@ -17,7 +17,7 @@ struct Light
 struct Material
 {
     float shininess;
-    float specularIntensity;
+    vec3 diffuseColor;
 };
 
 uniform sampler2D texSampler;
@@ -28,7 +28,7 @@ uniform vec3 cameraPosition;
 void main()
 {
     vec4 ambientColor = vec4(light.color * light.ambientIntensity, 1.0f);
-
+    vec4 matColor = vec4(material.diffuseColor, 1.0f);
     // light direction is normalized at creation
     float diffuseFactor = max(-1*dot(normalize(normal),light.direction),0.0f);
     vec4 diffuseColor = vec4(light.color * light.diffuseIntensity * diffuseFactor, 1.0);
@@ -41,9 +41,9 @@ void main()
         float specularFactor = dot(reflectedLight,dirToCamera);
         if (specularFactor > 0.0f)
         {
-            specularColor = vec4(light.color * pow(specularFactor,material.shininess) * material.specularIntensity, 1.0f);
+            specularColor = vec4(light.color * pow(specularFactor,material.shininess), 1.0f);
         }
     }
     
-    colour = texture(texSampler, texCoord) * (ambientColor + diffuseColor + specularColor);
+    colour = matColor * texture(texSampler, texCoord) * (ambientColor + diffuseColor + specularColor);
 }
