@@ -85,6 +85,9 @@ public:
 
 	void render() const;
 
+	const array<GLfloat, 6>& boundingBox() const { return m_boundingBox; }
+	string boundingBoxAsString() const;
+
 private:
 	// open model file and start loading nodes
 	void loadModel();
@@ -94,6 +97,9 @@ private:
 	void loadMesh(aiMesh* mesh, const aiScene* scene);
 	// Load all materials and textures stored in the model.
 	void loadMaterialsAndTextures(const aiScene* scene);
+
+	void resetBoundingBox();
+	void updateBoundingBox(GLfloat x, int dim);
 
 private:
 	// name of the folder where the model files are stored
@@ -109,7 +115,7 @@ private:
 	// Mapping between Mesh and Material indices
 	//vector<GLuint> m_meshToMaterial;
 
-	//array<GLfloat, 6> m_boundingBox;
+	array<GLfloat, 6> m_boundingBox;
 };
 
 

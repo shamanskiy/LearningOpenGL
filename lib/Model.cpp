@@ -222,12 +222,19 @@ void Texture::deleteTexture()
 // ==============================================================================
 
 Model::Model(const string& modelName) :
-	m_name(modelName),
-	m_meshes(),
-	m_textures(),
-	m_meshToTexture()
+	m_name(modelName)
 {
 	loadModel();
+}
+
+void Model::resetBoundingBox()
+{
+	m_boundingBox[0] = numeric_limits<GLfloat>::max();
+	m_boundingBox[1] = numeric_limits<GLfloat>::min();
+	m_boundingBox[2] = numeric_limits<GLfloat>::max();
+	m_boundingBox[3] = numeric_limits<GLfloat>::min();
+	m_boundingBox[4] = numeric_limits<GLfloat>::max();
+	m_boundingBox[5] = numeric_limits<GLfloat>::min();
 }
 
 void Model::loadModel()
@@ -252,6 +259,23 @@ void Model::loadNode(aiNode* node, const aiScene* scene)
 		loadNode(node->mChildren[i], scene);
 }
 
+void Model::updateBoundingBox(GLfloat x, int dim)
+{
+	if (x < m_boundingBox[2 * dim])
+		m_boundingBox[2 * dim] = x;
+	if (x > m_boundingBox[2 * dim + 1])
+		m_boundingBox[2 * dim + 1] = x;
+}
+
+string Model::boundingBoxAsString() const
+{
+	string result = m_name + ": bounding box\n";
+	result += "x: " + to_string(m_boundingBox[0]) + " " + to_string(m_boundingBox[1]) + "\n";
+	result += "y: " + to_string(m_boundingBox[2]) + " " + to_string(m_boundingBox[3]) + "\n";
+	result += "z: " + to_string(m_boundingBox[4]) + " " + to_string(m_boundingBox[5]);
+
+	return result;
+}
 
 void Model::loadMesh(aiMesh* mesh, const aiScene* scene)
 {
@@ -263,8 +287,11 @@ void Model::loadMesh(aiMesh* mesh, const aiScene* scene)
 	for (GLuint i = 0; i < mesh->mNumVertices; i++)
 	{
 		vertices[8 * i] = mesh->mVertices[i].x;
+		updateBoundingBox(vertices[8 * i], 0);
 		vertices[8 * i + 1] = mesh->mVertices[i].y;
+		updateBoundingBox(vertices[8 * i + 1], 1);
 		vertices[8 * i + 2] = mesh->mVertices[i].z;
+		updateBoundingBox(vertices[8 * i + 2], 2);
 		
 		// get uv coordinates if provided
 		if (mesh->mTextureCoords[0])
