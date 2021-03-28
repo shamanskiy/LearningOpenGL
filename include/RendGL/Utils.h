@@ -6,37 +6,6 @@
 #include <GL/glew.h>
 #include <glfw/glfw3.h>
 
-// Some operations return an Outcome.
-// An outcome contains the operation status (true/false = success/fail)
-// and a message if the operation has failed. 
-class Outcome
-{
-
-public:
-    // Constructor to use with no message (usually if ok)
-    explicit Outcome(bool ok) :
-        m_ok(ok), 
-        m_message("") {}
-
-    Outcome(bool ok, const std::string& message) :
-        m_ok(ok),
-        m_message(message) {}
-
-    Outcome(bool ok, std::string&& message) :
-        m_ok(ok),
-        m_message(std::move(message)) {}
-
-    // Operation status (true/false = success/fail)
-    bool ok() const { return m_ok; }
-    // Operation message if failed (empty if success)
-    const std::string& message() const { return m_message; }
-
-private:
-    // True/false = success/fail
-    bool m_ok;
-    // Message if fail
-    std::string m_message;
-};
 
 // TimeKeeper records current time and returns how much time has passed
 // since the last time record. Returns zero time steps until the second time record.

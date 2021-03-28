@@ -4,53 +4,53 @@
 
 #include <GL/glew.h>
 
-// Shader is a class that manages creation and usage of OpenGL shader programs on a GPU
+struct UniformVariables {
+    GLuint cameraPosition{ 0 };
+    GLuint modelMatrix{ 0 };
+    GLuint viewMatrix{ 0 };
+    GLuint projectionMatrix{ 0 };
+
+    GLuint lightColor{ 0 };
+    GLuint lightDirection{ 0 };
+    GLuint ambientIntensity{ 0 };
+    GLuint diffuseIntensity{ 0 };
+
+    GLuint materialShininess{ 0 };
+    GLuint specularIntensity{ 0 };
+};
+
+
+// Shader loads shader glsl code and compiles it on the GPU.
+// It then serves as a handle for the shader variables.
 class Shader
 {
-private:
-    // shader ID on GPU and IDs of uniform variables
-    GLuint shaderID,
-    uniModel, uniView, uniProjection,
-    uniLightClr, uniLightDir, uniAmbientInt, uniDiffuseInt,
-    uniMaterialShine, uniSpecularInt, uniCameraPos;
-
 public:
-    // default constructor, does not initialize anything on GPU
-    Shader(const std::string & vertexShaderFilename,
-           const std::string & fragmentShaderFilename);
+    // move-only
+    Shader();
     ~Shader();
+    Shader(Shader&& other) noexcept;
+    Shader& operator=(Shader&& other) & noexcept;
 
-    // get IDs of uniform variables to set model, view and projection matrices
-    GLuint uniModelMatrix() const { return uniModel; }
-    GLuint uniViewMatrix() const { return uniView; }
-    GLuint uniProjMatrix() const { return uniProjection; }
-    GLuint uniLightColor() const { return uniLightClr; }
-    GLuint uniLightDirection() const { return uniLightDir; }
-    GLuint uniAmbientIntensity() const { return uniAmbientInt; }
-    GLuint uniDiffuseIntensity() const { return uniDiffuseInt; }
-    GLuint uniMaterialShininess() const { return uniMaterialShine; }
-    GLuint uniSpecularIntensity() const { return uniSpecularInt; }
-    GLuint uniCameraPosition() const { return uniCameraPos; }
-
-    // activate shader for further use
-    void useShader() const { glUseProgram(shaderID); }
+    const UniformVariables& uniforms() const { return m_uniforms; }
+    void activateShader() const { glUseProgram(m_id); }
     
 private:
-    // compile shader on GPU
-    void compileShader(const std::string & vShader,
+    std::string readShaderCode(const std::string& filename);
+
+    void createShaders(const std::string & vShader,
                       const std::string & fShader);
-    // add shader component
-    void addShader(const std::string & shaderCode, GLenum shaderType);
-    // read shader code from the file
-    std::string readFile(const std::string & shaderCodeFilename);
-    
+    // compile shader code on GPU
+    void compileShader(const std::string & shaderCode, GLenum shaderType);
+
+    void linkShaders();
+    void validateShaders();
+    void getUniforms();
+
     // free memory on GPU
-    void deleteShader();
-    
-    // pass shader codes as C strings
-    void createFromString(const std::string & vertexShaderCode,
-                        const std::string & fragmentShaderCode);
-    // read shader codes from files
-    void createFromFile(const std::string & vertexShaderFilename,
-                       const std::string & fragmentShaderFilename);
+    void deleteShaders();
+   
+private:
+    GLuint m_id{0};
+    // uniform variables
+    UniformVariables m_uniforms;
 };

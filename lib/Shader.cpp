@@ -4,99 +4,66 @@
 #include <fstream>
 #include <stdio.h>
 #include <cstring>
+#include "Config.h"
 
-Shader::Shader(const std::string & vertexShaderFilename,
-               const std::string & fragmentShaderFilename) :
-    shaderID(0),
-    uniModel(0),
-    uniProjection(0),
-    uniLightClr(0),
-    uniAmbientInt(0)
+Shader::Shader()
 {
-    createFromFile(vertexShaderFilename, fragmentShaderFilename);
+    auto vertexStr = readShaderCode(SHADERS_DIR + "vertexShader.glsl");
+    auto fragmentStr = readShaderCode(SHADERS_DIR + "fragmentShader.glsl");
+    createShaders(vertexStr, fragmentStr);
 }
 
 Shader::~Shader()
 {
-    deleteShader();
+    deleteShaders();
 }
 
-void Shader::createFromString(const std::string &vertexShader, const std::string &fragmentShader)
+Shader::Shader(Shader&& other) noexcept :
+    m_id(other.m_id),
+    m_uniforms(other.m_uniforms)
 {
-    compileShader(vertexShader, fragmentShader);
+    other.m_id = 0;
 }
 
-void Shader::createFromFile(const std::string &vertexShaderFilename, const std::string &fragmentShaderFilename)
+Shader& Shader::operator=(Shader&& other) & noexcept
 {
-    std::string vertexStr = readFile(vertexShaderFilename);
-    std::string fragmentStr = readFile(fragmentShaderFilename);
-    compileShader(vertexStr, fragmentStr);
+    m_id = other.m_id;
+    other.m_id = 0;
+    m_uniforms = other.m_uniforms;
+    return *this;
 }
 
-void Shader::deleteShader()
+std::string Shader::readShaderCode(const std::string& filename)
 {
-    if (shaderID != 0)
-    {
-        glDeleteProgram(shaderID);
-        shaderID = 0;
-    }
+    std::string fileContent;
+    std::ifstream fileStream(filename);
 
-    uniModel = 0;
-    uniProjection = 0;
+    if (!fileStream.is_open())
+        throw std::runtime_error("Failed to open " + filename);
+
+    std::string line;
+    while (std::getline(fileStream, line))
+        fileContent.append(line + "\n");
+
+    fileStream.close();
+    return fileContent;
 }
 
-void Shader::compileShader(const std::string &vShader, const std::string &fShader)
+void Shader::createShaders(const std::string &vShader, const std::string &fShader)
 {
-    shaderID = glCreateProgram();
+    m_id = glCreateProgram();
 
-    if (!shaderID)
-    {
-        std::cout << "Error creating shader program\n";
-        return;
-    }
+    compileShader(vShader, GL_VERTEX_SHADER);
+    compileShader(fShader, GL_FRAGMENT_SHADER);
+    linkShaders();
+    validateShaders();
 
-    addShader(vShader, GL_VERTEX_SHADER);
-    addShader(fShader, GL_FRAGMENT_SHADER);
-
-    GLint result = 0;
-    GLchar eLog[1024] = { 0 };
-
-    glLinkProgram(shaderID);
-    glGetProgramiv(shaderID, GL_LINK_STATUS, &result);
-    if (!result)
-    {
-        glGetProgramInfoLog(shaderID, sizeof(eLog), NULL, eLog);
-        std::cout << "Error linking shader program: " << eLog << std::endl;
-        return;
-    }
-
-    uniModel = glGetUniformLocation(shaderID, "model");
-    uniView = glGetUniformLocation(shaderID, "view");
-    uniProjection = glGetUniformLocation(shaderID, "projection");
-    uniLightClr = glGetUniformLocation(shaderID, "light.color");
-    uniLightDir = glGetUniformLocation(shaderID, "light.direction");
-    uniAmbientInt = glGetUniformLocation(shaderID, "light.ambientIntensity");
-    uniDiffuseInt = glGetUniformLocation(shaderID, "light.diffuseIntensity");
-    uniMaterialShine = glGetUniformLocation(shaderID, "material.shininess");
-    uniSpecularInt = glGetUniformLocation(shaderID, "material.specularIntensity");
-    uniCameraPos = glGetUniformLocation(shaderID, "cameraPosition");
-
-    //========== Validation ===//
-
-    glValidateProgram(shaderID);
-    glGetProgramiv(shaderID, GL_VALIDATE_STATUS, &result);
-    if (!result)
-    {
-        glGetProgramInfoLog(shaderID, sizeof(eLog), NULL, eLog);
-        std::cout << "Error validating shader program: " << eLog << std::endl;
-        return;
-    }
-    glBindVertexArray(0);
+    getUniforms();
 }
 
-void Shader::addShader(const std::string &shaderCode, GLenum shaderType)
+void Shader::compileShader(const std::string &shaderCode, GLenum shaderType)
 {
-    GLuint shader = glCreateShader(shaderType);
+    auto shader = glCreateShader(shaderType);
 
     const char* codes[1];
     codes[0] = shaderCode.c_str();
@@ -114,31 +81,62 @@ void Shader::addShader(const std::string &shaderCode, GLenum shaderType)
     if (!result)
     {
         glGetShaderInfoLog(shader, sizeof(eLog), NULL, eLog);
-        std::cout << "Error compiling " << shaderType << " shader program: " << eLog << std::endl;
-        return;
+        throw std::runtime_error("Error compiling shader program: "
+                                 + std::string(eLog));
     }
 
-    glAttachShader(shaderID,shader);
+    glAttachShader(m_id,shader);
 }
 
-std::string Shader::readFile(const std::string &shaderCodeFilename)
+void Shader::linkShaders()
 {
-    std::string fileContent;
-    std::ifstream fileStream(shaderCodeFilename,std::ios::in);
+    glLinkProgram(m_id);
 
-    if (!fileStream.is_open())
+    GLint result = 0;
+    GLchar eLog[1024] = { 0 };
+    glGetProgramiv(m_id, GL_LINK_STATUS, &result);
+    if (!result)
     {
-        std::cout << "File " << shaderCodeFilename << " does not exist\n";
-        return "";
+        glGetProgramInfoLog(m_id, sizeof(eLog), NULL, eLog);
+        throw std::runtime_error("Error linking shader program: " +
+                                 std::string(eLog));
     }
+}
 
-    std::string line = "";
-    while (!fileStream.eof())
+void Shader::validateShaders()
+{
+    glValidateProgram(m_id);
+ 
+    GLint result = 0;
+    GLchar eLog[1024] = { 0 };
+    glGetProgramiv(m_id, GL_VALIDATE_STATUS, &result);
+    if (!result)
     {
-        std::getline(fileStream,line);
-        fileContent.append(line + "\n");
+        glGetProgramInfoLog(m_id, sizeof(eLog), NULL, eLog);
+        throw std::runtime_error("Error validating shader program: " +
+            std::string(eLog));
     }
+}
 
-    fileStream.close();
-    return fileContent;
+void Shader::getUniforms()
+{
+    m_uniforms.cameraPosition = glGetUniformLocation(m_id, "cameraPosition");
+    m_uniforms.modelMatrix = glGetUniformLocation(m_id, "model");
+    m_uniforms.viewMatrix = glGetUniformLocation(m_id, "view");
+    m_uniforms.projectionMatrix = glGetUniformLocation(m_id, "projection");
+    m_uniforms.lightColor = glGetUniformLocation(m_id, "light.color");
+    m_uniforms.lightDirection = glGetUniformLocation(m_id, "light.direction");
+    m_uniforms.ambientIntensity = glGetUniformLocation(m_id, "light.ambientIntensity");
+    m_uniforms.diffuseIntensity = glGetUniformLocation(m_id, "light.diffuseIntensity");
+    m_uniforms.materialShininess = glGetUniformLocation(m_id, "material.shininess");
+    m_uniforms.specularIntensity = glGetUniformLocation(m_id, "material.specularIntensity");
+}
+
+void Shader::deleteShaders()
+{
+    if (m_id != 0)
+    {
+        glDeleteProgram(m_id);
+        m_id = 0;
+    }
 }

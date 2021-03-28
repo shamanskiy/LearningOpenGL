@@ -19,25 +19,26 @@ namespace
     class Scene3D : public Scene
     {
     public:
-        Scene3D();
+        Scene3D() = default;
         Scene3D(const nlohmann::json& sceneJson);
 
         // Get fresh events and render the scene
         void render(const EventContainer& events) override;
 
     private:
-        void loadJsonScene(const nlohmann::json& sceneJson);
         void loadJsonModels(const nlohmann::json& sceneJson);
         void loadJsonCamera(const nlohmann::json& sceneJson);
         void loadJsonLight(const nlohmann::json& sceneJson);
         void loadJsonInstances(const nlohmann::json& sceneJson);
+
+        void resetFrame(GLfloat aspectRatio) const;
 
     private:
         // Interactive camera
         Camera m_camera;
         // List of shaders that can be used to render the scene.
         // Can be cycled through.
-        vector<unique_ptr<Shader> > m_shaders;
+        Shader m_shader;
 
         // List of Models used in the Scene
         unordered_map<string, Model> m_models;
@@ -51,9 +52,12 @@ namespace
 
 std::unique_ptr<Scene> Scene::loadScene(const std::string& fileName)
 {
-    std::ifstream inputFile(SCENES_DIR + "exampleScene.json");
+    std::ifstream inputFile(fileName);
+    if (!inputFile.is_open())
+        throw std::runtime_error("Failed to open " + fileName);
     nlohmann::json sceneJson;
     inputFile >> sceneJson;
+    inputFile.close();
 
     if (sceneJson["sceneType"].get<std::string>() == "3D")
         return std::make_unique<Scene3D>(sceneJson);
@@ -63,26 +67,12 @@ std::unique_ptr<Scene> Scene::loadScene(const std::string& fileName)
 
 Scene::~Scene() = default;
 
-Scene3D::Scene3D()
-{
-    m_shaders.push_back(std::make_unique<Shader>(
-        SHADERS_DIR + "vertexShader_texture.glsl",
-        SHADERS_DIR + "fragmentShader_texture.glsl"));
-    m_shaders.push_back(std::make_unique<Shader>(
-        SHADERS_DIR + "vertexShader_noTexture.glsl",
-        SHADERS_DIR + "fragmentShader_noTexture.glsl"));
-}
-
 Scene3D::Scene3D(const nlohmann::json& sceneJson)
 {
-    m_shaders.push_back(std::make_unique<Shader>(
-        SHADERS_DIR + "vertexShader_texture.glsl",
-        SHADERS_DIR + "fragmentShader_texture.glsl"));
-    m_shaders.push_back(std::make_unique<Shader>(
-        SHADERS_DIR + "vertexShader_noTexture.glsl",
-        SHADERS_DIR + "fragmentShader_noTexture.glsl"));
-
-    loadJsonScene(sceneJson);
+    loadJsonModels(sceneJson);
+    loadJsonInstances(sceneJson);
+    loadJsonCamera(sceneJson);
+    loadJsonLight(sceneJson);
 }
 
 void Scene3D::loadJsonModels(const nlohmann::json& sceneJson)
@@ -98,12 +88,17 @@ void Scene3D::loadJsonModels(const nlohmann::json& sceneJson)
         }
 }
 
-void Scene3D::loadJsonScene(const nlohmann::json& sceneJson)
+void Scene3D::loadJsonInstances(const nlohmann::json& sceneJson)
 {
-    loadJsonModels(sceneJson);
-    loadJsonInstances(sceneJson);
-    loadJsonCamera(sceneJson);
-    loadJsonLight(sceneJson);
+    for (auto& instance : sceneJson["instances"])
+        if (m_models.find(instance["modelName"]) != m_models.end())
+            m_instances.push_back(
+                ModelInstance(
+                    m_models[instance["modelName"]],
+                    instance["origin"][0],
+                    instance["origin"][1],
+                    instance["origin"][2],
+                    instance["scale"]));
 }
 
 void Scene3D::loadJsonCamera(const nlohmann::json& sceneJson)
@@ -136,54 +131,30 @@ void Scene3D::loadJsonLight(const nlohmann::json& sceneJson)
     );
 }
 
-void Scene3D::loadJsonInstances(const nlohmann::json& sceneJson)
+void Scene3D::resetFrame(GLfloat aspectRatio) const
 {
-    for (auto& instance : sceneJson["instances"])
-        if (m_models.find(instance["modelName"]) != m_models.end())
-            m_instances.push_back(
-                ModelInstance(
-                    m_models[instance["modelName"]],
-                    instance["origin"][0],
-                    instance["origin"][1],
-                    instance["origin"][2],
-                    instance["scale"]));
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glm::mat4 projection = glm::perspective(45.0f, aspectRatio, 0.1f, 100.0f);
+    glUniformMatrix4fv(m_shader.uniforms().projectionMatrix, 1, GL_FALSE,
+        glm::value_ptr(projection));
 }
 
 void Scene3D::render(const EventContainer& events)
 {
-    // projection matrix
-    glm::mat4 projection = glm::perspective(45.0f, events.aspectRatio(), 0.1f, 100.0f);
+    m_shader.activateShader();
 
-    // pass data to the camera
-    m_camera.keyControl(events);
-    m_camera.mouseControl(events.cursorPositionChangeX(),
-        events.cursorPositionChangeY());
+    // clear frame and pass projection matrix to shader
+    resetFrame(events.aspectRatio());
 
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    m_camera.processEvents(events);
+    m_camera.talkToShader(m_shader);
 
-    // activate/bind a shader to use it
-    Shader& shader = *m_shaders[0];
-    shader.useShader();
+    m_light.talkToShader(m_shader);
 
-    // copy view and projection matrices to the GPU
-    glUniformMatrix4fv(shader.uniViewMatrix(), 1, GL_FALSE,
-        glm::value_ptr(m_camera.viewMatrix()));
-    glUniformMatrix4fv(shader.uniProjMatrix(), 1, GL_FALSE,
-        glm::value_ptr(projection));
-
-    // activate Light
-    m_light.useLight(shader.uniLightColor(), shader.uniLightDirection(), shader.uniAmbientIntensity(), shader.uniDiffuseIntensity());
-
-
-    glUniform3f(shader.uniCameraPosition(), m_camera.cameraPosition().x, m_camera.cameraPosition().y, m_camera.cameraPosition().z);
-
-    glUniform1f(shader.uniMaterialShininess(), 32);
-    glUniform1f(shader.uniSpecularIntensity(), 4.0);
-
+    glUniform1f(m_shader.uniforms().materialShininess, 32);
+    glUniform1f(m_shader.uniforms().specularIntensity, 4.0);
     for (auto& it : m_instances)
-        it.render(shader);
-
-    // deactivate/unbind shader
-    glUseProgram(0);
+        it.render(m_shader);
 }

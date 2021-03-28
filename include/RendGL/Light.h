@@ -3,6 +3,8 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
+class Shader;
+
 class Light
 {
 private:
@@ -17,6 +19,5 @@ public:
           glm::vec3 lightDirection = glm::vec3(0.0f,1.0f,0.0f),
           GLfloat ambientIntensity = 1.0f, GLfloat diffuseIntensity = 1.0f);
 
-    void useLight(GLuint uniColor, GLuint uniDirection,
-                 GLuint uniAmbientIntensity, GLuint uniDiffuseIntensity) const;
+    void talkToShader(const Shader & shader) const;
 };
