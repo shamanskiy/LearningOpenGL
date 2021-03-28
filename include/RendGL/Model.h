@@ -16,6 +16,7 @@ class Shader;
 class aiNode;
 class aiMesh;
 class aiScene;
+class aiMaterial;
 
 // Mesh represents a single 3D object. It gets an array of vertices
 // and an array of indices, copies them to the GPU and then holds
@@ -61,7 +62,7 @@ public:
 	Texture& operator=(Texture&& other) & noexcept;
 
 	// Activates texture. Any object rendered by the GPU will use this texture
-	void activateTexture() const;
+	void activate() const;
 
 private:
 	// load from file to GPU
@@ -74,6 +75,15 @@ private:
 	GLuint m_textureID;
 };
 
+struct Material
+{
+	Texture m_texture;
+	glm::vec3 m_diffuseColor;
+	GLfloat m_shininess;
+
+	void activate(const Shader& shader) const;
+};
+
 // Model represent a 3D model stored in a file.
 // It can contain several Meshes, one for each part of the Model.
 // For each Mesh, there is a Texture and a Material.
@@ -83,7 +93,10 @@ public:
 	Model() = default;
 	Model(const string& modelName);
 
-	void render() const;
+	void render(const Shader& shader) const;
+
+	const array<GLfloat, 6>& boundingBox() const { return m_boundingBox; }
+	string boundingBoxAsString() const;
 
 private:
 	// open model file and start loading nodes
@@ -93,23 +106,23 @@ private:
 	// Load a mesh
 	void loadMesh(aiMesh* mesh, const aiScene* scene);
 	// Load all materials and textures stored in the model.
-	void loadMaterialsAndTextures(const aiScene* scene);
+	void loadMaterials(const aiScene* scene);
+	Texture loadTexture(aiMaterial* material) const;
+
+	void resetBoundingBox();
+	void updateBoundingBox(GLfloat x, int dim);
 
 private:
 	// name of the folder where the model files are stored
 	string m_name;
 	// List of Meshes (parts) that form the Model
 	vector<Mesh> m_meshes;
-	// List of Textures to use for different Meshes
-	vector<Texture> m_textures;
-	// Mapping between Mesh and Texture indices
-	vector<GLuint> m_meshToTexture;
-	// List of Materials to use for different Meshes
-	//vector<unique_ptr<Material> > m_materials;
+	// List of Materials for different meshes
+	vector<Material> m_materials;
 	// Mapping between Mesh and Material indices
-	//vector<GLuint> m_meshToMaterial;
-
-	//array<GLfloat, 6> m_boundingBox;
+	vector<GLuint> m_meshToMaterial;
+	
+	array<GLfloat, 6> m_boundingBox;
 };
 
 

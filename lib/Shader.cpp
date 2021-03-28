@@ -129,7 +129,7 @@ void Shader::getUniforms()
     m_uniforms.ambientIntensity = glGetUniformLocation(m_id, "light.ambientIntensity");
     m_uniforms.diffuseIntensity = glGetUniformLocation(m_id, "light.diffuseIntensity");
     m_uniforms.materialShininess = glGetUniformLocation(m_id, "material.shininess");
-    m_uniforms.specularIntensity = glGetUniformLocation(m_id, "material.specularIntensity");
+    m_uniforms.materialColor = glGetUniformLocation(m_id, "material.diffuseColor");
 }
 
 void Shader::deleteShaders()

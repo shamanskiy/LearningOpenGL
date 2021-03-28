@@ -67,6 +67,22 @@ std::unique_ptr<Scene> Scene::loadScene(const std::string& fileName)
 
 Scene::~Scene() = default;
 
+void Scene3D::render(const EventContainer& events)
+{
+    m_shader.activateShader();
+
+    // clear frame and pass projection matrix to shader
+    resetFrame(events.aspectRatio());
+
+    m_camera.processEvents(events);
+    m_camera.talkToShader(m_shader);
+
+    m_light.talkToShader(m_shader);
+
+    for (auto& it : m_instances)
+        it.render(m_shader);
+}
+
 Scene3D::Scene3D(const nlohmann::json& sceneJson)
 {
     loadJsonModels(sceneJson);
@@ -81,6 +97,7 @@ void Scene3D::loadJsonModels(const nlohmann::json& sceneJson)
         try
         {
             m_models[model] = Model(model);
+            debugOutput(m_models[model].boundingBoxAsString());
         }
         catch (const ModelException& e)
         {
@@ -139,22 +156,4 @@ void Scene3D::resetFrame(GLfloat aspectRatio) const
     glm::mat4 projection = glm::perspective(45.0f, aspectRatio, 0.1f, 100.0f);
     glUniformMatrix4fv(m_shader.uniforms().projectionMatrix, 1, GL_FALSE,
         glm::value_ptr(projection));
-}
-
-void Scene3D::render(const EventContainer& events)
-{
-    m_shader.activateShader();
-
-    // clear frame and pass projection matrix to shader
-    resetFrame(events.aspectRatio());
-
-    m_camera.processEvents(events);
-    m_camera.talkToShader(m_shader);
-
-    m_light.talkToShader(m_shader);
-
-    glUniform1f(m_shader.uniforms().materialShininess, 32);
-    glUniform1f(m_shader.uniforms().specularIntensity, 4.0);
-    for (auto& it : m_instances)
-        it.render(m_shader);
 }

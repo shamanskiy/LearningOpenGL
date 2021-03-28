@@ -20,10 +20,8 @@ set(SOURCES_LIST
 )
 
 set(SHADERS_LIST
-  ${PROJECT_SOURCE_DIR}/lib/shaders/fragmentShader_texture.glsl
-  ${PROJECT_SOURCE_DIR}/lib/shaders/fragmentShader_noTexture.glsl
-  ${PROJECT_SOURCE_DIR}/lib/shaders/vertexShader_texture.glsl
-  ${PROJECT_SOURCE_DIR}/lib/shaders/vertexShader_noTexture.glsl
+  ${PROJECT_SOURCE_DIR}/lib/shaders/fragmentShader.glsl
+  ${PROJECT_SOURCE_DIR}/lib/shaders/vertexShader.glsl
 )
 
 # define a library to compile
