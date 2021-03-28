@@ -31,6 +31,8 @@ namespace
         void loadJsonLight(const nlohmann::json& sceneJson);
         void loadJsonInstances(const nlohmann::json& sceneJson);
 
+        void resetFrame(GLfloat aspectRatio) const;
+
     private:
         // Interactive camera
         Camera m_camera;
@@ -129,43 +131,30 @@ void Scene3D::loadJsonLight(const nlohmann::json& sceneJson)
     );
 }
 
-void Scene3D::render(const EventContainer& events)
+void Scene3D::resetFrame(GLfloat aspectRatio) const
 {
-    // projection matrix
-    glm::mat4 projection = glm::perspective(45.0f, events.aspectRatio(), 0.1f, 100.0f);
-
-    // pass data to the camera
-    m_camera.processEvents(events);
-
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // activate/bind a shader to use it
-    m_shader.activateShader();
-
-    // copy view and projection matrices to the GPU
-    glUniformMatrix4fv(m_shader.uniforms().viewMatrix, 1, GL_FALSE,
-        glm::value_ptr(m_camera.viewMatrix()));
+    glm::mat4 projection = glm::perspective(45.0f, aspectRatio, 0.1f, 100.0f);
     glUniformMatrix4fv(m_shader.uniforms().projectionMatrix, 1, GL_FALSE,
         glm::value_ptr(projection));
+}
 
-    // activate Light
-    m_light.useLight(
-        m_shader.uniforms().lightColor,
-        m_shader.uniforms().lightDirection,
-        m_shader.uniforms().ambientIntensity,
-        m_shader.uniforms().diffuseIntensity);
+void Scene3D::render(const EventContainer& events)
+{
+    m_shader.activateShader();
 
+    // clear frame and pass projection matrix to shader
+    resetFrame(events.aspectRatio());
 
-    glUniform3f(
-        m_shader.uniforms().cameraPosition,
-        m_camera.position().x,
-        m_camera.position().y,
-        m_camera.position().z);
+    m_camera.processEvents(events);
+    m_camera.talkToShader(m_shader);
+
+    m_light.talkToShader(m_shader);
 
     glUniform1f(m_shader.uniforms().materialShininess, 32);
     glUniform1f(m_shader.uniforms().specularIntensity, 4.0);
-
     for (auto& it : m_instances)
         it.render(m_shader);
 }

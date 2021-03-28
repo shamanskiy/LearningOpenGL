@@ -8,8 +8,8 @@
 
 Shader::Shader()
 {
-    auto vertexStr = readShaderCode(SHADERS_DIR + "vertexShader_texture.glsl");
-    auto fragmentStr = readShaderCode(SHADERS_DIR + "fragmentShader_texture.glsl");
+    auto vertexStr = readShaderCode(SHADERS_DIR + "vertexShader.glsl");
+    auto fragmentStr = readShaderCode(SHADERS_DIR + "fragmentShader.glsl");
     createShaders(vertexStr, fragmentStr);
 }
 

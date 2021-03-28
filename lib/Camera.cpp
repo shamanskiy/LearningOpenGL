@@ -2,8 +2,10 @@
 
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <glm/gtc/type_ptr.hpp>
 
-#include <Utils.h>
+#include "Shader.h"
+#include "Utils.h"
 
 
 Camera::Camera(glm::vec3 initialPosition,
@@ -81,4 +83,15 @@ void Camera::updateOrientation()
     
     m_right = glm::normalize(glm::cross(m_front,m_worldUp));
     m_up = glm::normalize(glm::cross(m_right,m_front));
+}
+
+void Camera::talkToShader(const Shader& shader) const
+{
+    glUniform3f(shader.uniforms().cameraPosition,
+        m_state.pos.x,
+        m_state.pos.y,
+        m_state.pos.z);
+
+    glUniformMatrix4fv(shader.uniforms().viewMatrix, 1, GL_FALSE,
+        glm::value_ptr(viewMatrix()));
 }

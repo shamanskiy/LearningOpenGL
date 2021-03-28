@@ -7,6 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 class EventContainer;
+class Shader;
 
 // Camera receives user input from mouse and keyboard and
 // lets one navigate the scene
@@ -19,13 +20,12 @@ public:
            glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f));
 
     void processEvents(const EventContainer& events);
+    void talkToShader(const Shader& shader) const;
 
     glm::vec3 position() const { return m_state.pos; }
     glm::vec3 front() const { return m_front; }
     glm::vec3 up() const { return m_up; }
     glm::vec3 right() const { return m_right; }
-    // compute view matrix from the current position and orientation
-    glm::mat4 viewMatrix() const;
 
 private:
     void processKeys(const EventContainer& events);
@@ -34,6 +34,9 @@ private:
     void updatePosition(const glm::vec3& direction, GLfloat timeStep);
     // compute new orientation from yaw and pitch
     void updateOrientation();
+
+    // compute view matrix from the current position and orientation
+    glm::mat4 viewMatrix() const;
 
 private:
     struct CameraState
