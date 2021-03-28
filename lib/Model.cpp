@@ -347,7 +347,17 @@ void Model::loadMaterials(const aiScene* scene)
 	{
 		aiMaterial* material = scene->mMaterials[i];
 		Texture texture = loadTexture(material);
-		m_materials[i] = Material{ move(texture),glm::vec3{1.0f,1.0f,1.0f},1.0f };
+
+		aiColor3D color;
+		material->Get(AI_MATKEY_COLOR_DIFFUSE, color);
+
+		GLfloat shininess;
+		material->Get(AI_MATKEY_SHININESS, shininess);
+
+		m_materials[i] = Material{ 
+			move(texture),
+			glm::vec3{color.r,color.g,color.b},
+			shininess };
 	}
 }
 
