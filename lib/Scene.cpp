@@ -46,7 +46,7 @@ namespace
         vector<ModelInstance> m_instances;
 
         // Ambient + directional light
-        Light m_light;
+        LightDirectional m_light;
     };
 }
 
@@ -134,7 +134,7 @@ void Scene3D::loadJsonCamera(const nlohmann::json& sceneJson)
 
 void Scene3D::loadJsonLight(const nlohmann::json& sceneJson)
 {
-    m_light = Light(
+    m_light = LightDirectional(
         glm::vec3(
             sceneJson["light"]["color"][0],
             sceneJson["light"]["color"][1],
