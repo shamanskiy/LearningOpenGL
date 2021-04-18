@@ -40,10 +40,12 @@ class LightPoint : public Light
 {
 public:
     LightPoint(glm::vec3 color, glm::vec3 position,
-        GLfloat intensity);
+        glm::vec3 attenuation, GLfloat intensity);
 
     void talkToShader(const Shader& shader) const override;
 
 private:
     glm::vec3 m_position;
+    // attenuation a*D^2 + b*D + c
+    glm::vec3 m_attenuation;
 };

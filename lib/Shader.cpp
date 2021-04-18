@@ -134,6 +134,7 @@ void Shader::getUniforms()
 
     m_uniforms.lightPointColor = glGetUniformLocation(m_id, "lightP.color");
     m_uniforms.lightPointIntensity = glGetUniformLocation(m_id, "lightP.intensity");
+    m_uniforms.lightPointAttenuation = glGetUniformLocation(m_id, "lightP.attenuation");
     m_uniforms.lightPointPosition = glGetUniformLocation(m_id, "lightP.position");
 
     m_uniforms.materialShininess = glGetUniformLocation(m_id, "material.shininess");

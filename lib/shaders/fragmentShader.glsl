@@ -4,7 +4,7 @@ in vec2 posUV;
 in vec3 normal;
 in vec3 pos3D;
 
-out vec4 colour;
+out vec4 color;
 
 struct LightAmbient
 {
@@ -23,6 +23,7 @@ struct LightPoint
 {
     vec3 color;
     vec3 position;
+    vec3 attenuation;
     float intensity;
 };
 
@@ -32,35 +33,67 @@ struct Material
     vec3 diffuseColor;
 };
 
-
 uniform sampler2D texSampler;
+uniform vec3 cameraPosition;
+
 uniform LightAmbient lightA;
 uniform LightDirectional lightD;
 uniform LightPoint lightP;
+
 uniform Material material;
-uniform vec3 cameraPosition;
 
-void main()
+vec3 computeAmbientLight()
 {
-    vec4 materialColor = vec4(material.diffuseColor, 1.0f);
+    return lightA.color * lightA.intensity;
+}
 
-    // Phong lighting = ambient + diffuse + specular
-    vec4 phongColor = vec4(lightA.color * lightA.intensity, 1.0f);
-
-    // Compute diffuse light
-    // Light direction is normalized at creation
-    float incidentAngle = max(-1*dot(normalize(normal),lightD.direction),0.0f);
-    phongColor += vec4(lightD.color * lightD.intensity * incidentAngle, 1.0);
+vec3 computeLightFromDirection(vec3 color, vec3 direction, float intensity)
+{
+    // Assume light direction is normalized
+    vec3 normalizedNormal = normalize(normal);
+    float incidentAngle = max(-1 * dot(normalizedNormal, direction), 0.0f);
+    float lightFactor = intensity * incidentAngle;
     
-    // Compute specular light
+    // Compute specular
     if (incidentAngle > 0.0f)
     {
         vec3 dirToCamera = normalize(cameraPosition - pos3D);
-        vec3 reflectedLight = reflect(lightD.direction,normalize(normal));
-        float specularAngle = dot(reflectedLight,dirToCamera);
+        vec3 reflectedLight = reflect(direction, normalizedNormal);
+        float specularAngle = dot(reflectedLight, dirToCamera);
         if (specularAngle > 0.0f)
-            phongColor += vec4(lightD.color * pow(specularAngle,material.shininess), 1.0f);
+            lightFactor += pow(specularAngle,material.shininess);
     }
-    
-    colour = materialColor * texture(texSampler, posUV) * phongColor;
+
+    return color * lightFactor;
+}
+
+vec3 computeDirectionalLight()
+{
+    return computeLightFromDirection(lightD.color, lightD.direction,
+                                     lightD.intensity);
+}
+
+float computeAttenuation(vec3 coeffs, float dist)
+{
+    return (coeffs.x * dist + coeffs.y) * dist + coeffs.z;
+}
+
+vec3 computePointLights()
+{
+    vec3 direction = pos3D - lightP.position;
+    float distance = length(direction);
+    float attenuation = computeAttenuation(lightP.attenuation, distance);
+
+    return computeLightFromDirection(lightP.color, normalize(direction),
+        lightP.intensity / attenuation);
+}
+
+void main()
+{
+    vec4 materialColor = vec4(material.diffuseColor, 1.0);
+    vec4 lightColor = vec4(computeAmbientLight() + 
+                      computeDirectionalLight() + 
+                      computePointLights(), 1.0);
+
+    color = materialColor * texture(texSampler, posUV) * lightColor;
 }

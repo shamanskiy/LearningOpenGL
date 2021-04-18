@@ -20,6 +20,7 @@ struct UniformVariables {
     GLuint lightPointColor{ 0 };
     GLuint lightPointIntensity{ 0 };
     GLuint lightPointPosition{ 0 };
+    GLuint lightPointAttenuation{ 0 };
     
     GLuint materialShininess{ 0 };
     GLuint materialColor{ 0 };

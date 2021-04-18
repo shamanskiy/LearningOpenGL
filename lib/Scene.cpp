@@ -160,9 +160,24 @@ void Scene3D::loadJsonLight(const nlohmann::json& sceneJson)
                 light["intensity"]
                 ));
         }
-
-    m_lights.push_back(make_unique<LightPoint>(glm::vec3(0.0f, 0.0f, 1.0f),
-        glm::vec3(-2.0f, 0.2f, 2.0f), 1.0f));
+        else if (light["type"] == "point")
+        {
+            m_lights.push_back(make_unique<LightPoint>(
+                glm::vec3(
+                    light["color"][0],
+                    light["color"][1],
+                    light["color"][2]),
+                glm::vec3(
+                    light["position"][0],
+                    light["position"][1],
+                    light["position"][2]),
+                glm::vec3(
+                    light["attenuation"][0],
+                    light["attenuation"][1],
+                    light["attenuation"][2]),
+                light["intensity"]
+                ));
+        }
 }
 
 void Scene3D::resetFrame(GLfloat aspectRatio) const

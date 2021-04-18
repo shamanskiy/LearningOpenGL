@@ -20,5 +20,5 @@ void main()
     
     normal = mat3(transpose(inverse(model)))*norm;
     
-    pos3D = mat3(model) * pos;
+    pos3D = (model * vec4(pos, 1.0)).xyz; 
 }

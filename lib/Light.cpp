@@ -34,9 +34,10 @@ void LightDirectional::talkToShader(const Shader& shader) const
 }
 
 LightPoint::LightPoint(glm::vec3 color, glm::vec3 position,
-    GLfloat intensity) :
+    glm::vec3 attenuation, GLfloat intensity) :
     Light(color, intensity),
-    m_position(position)
+    m_position(position),
+    m_attenuation(attenuation)
 {}
 
 void LightPoint::talkToShader(const Shader& shader) const
@@ -45,5 +46,7 @@ void LightPoint::talkToShader(const Shader& shader) const
         m_color.x, m_color.y, m_color.z);
     glUniform3f(shader.uniforms().lightPointPosition,
         m_position.x, m_position.y, m_position.z);
+    glUniform3f(shader.uniforms().lightPointAttenuation,
+        m_attenuation.x, m_attenuation.y, m_attenuation.z);
     glUniform1f(shader.uniforms().lightPointIntensity, m_intensity);
 }
