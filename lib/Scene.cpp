@@ -160,6 +160,9 @@ void Scene3D::loadJsonLight(const nlohmann::json& sceneJson)
                 light["intensity"]
                 ));
         }
+
+    m_lights.push_back(make_unique<LightPoint>(glm::vec3(0.0f, 0.0f, 1.0f),
+        glm::vec3(-2.0f, 0.2f, 2.0f), 1.0f));
 }
 
 void Scene3D::resetFrame(GLfloat aspectRatio) const

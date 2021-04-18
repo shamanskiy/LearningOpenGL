@@ -19,6 +19,13 @@ struct LightDirectional
     float intensity;
 };
 
+struct LightPoint
+{
+    vec3 color;
+    vec3 position;
+    float intensity;
+};
+
 struct Material
 {
     float shininess;
@@ -29,6 +36,7 @@ struct Material
 uniform sampler2D texSampler;
 uniform LightAmbient lightA;
 uniform LightDirectional lightD;
+uniform LightPoint lightP;
 uniform Material material;
 uniform vec3 cameraPosition;
 
