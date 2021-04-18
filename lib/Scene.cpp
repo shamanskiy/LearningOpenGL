@@ -109,10 +109,10 @@ void Scene3D::loadJsonModels(const nlohmann::json& sceneJson)
 void Scene3D::loadJsonInstances(const nlohmann::json& sceneJson)
 {
     for (auto& instance : sceneJson["instances"])
-        if (m_models.find(instance["modelName"]) != m_models.end())
+        if (m_models.find(instance["model"]) != m_models.end())
             m_instances.push_back(
                 ModelInstance(
-                    m_models[instance["modelName"]],
+                    m_models[instance["model"]],
                     instance["origin"][0],
                     instance["origin"][1],
                     instance["origin"][2],
@@ -135,26 +135,31 @@ void Scene3D::loadJsonCamera(const nlohmann::json& sceneJson)
 
 void Scene3D::loadJsonLight(const nlohmann::json& sceneJson)
 {
-    m_lights.push_back(make_unique<LightAmbient>(
-        glm::vec3(
-            sceneJson["lightAmbient"]["color"][0],
-            sceneJson["lightAmbient"]["color"][1],
-            sceneJson["lightAmbient"]["color"][2]),
-        sceneJson["lightAmbient"]["intensity"]
-        ));
-
-
-    m_lights.push_back(make_unique<LightDirectional>(
-        glm::vec3(
-            sceneJson["lightDiffuse"]["color"][0],
-            sceneJson["lightDiffuse"]["color"][1],
-            sceneJson["lightDiffuse"]["color"][2]),
-        glm::vec3(
-            sceneJson["lightDiffuse"]["direction"][0],
-            sceneJson["lightDiffuse"]["direction"][1],
-            sceneJson["lightDiffuse"]["direction"][2]),
-        sceneJson["lightDiffuse"]["intensity"]
-    ));
+    for (auto & light : sceneJson["lights"])
+        if (light["type"] == "ambient")
+        {
+            m_lights.push_back(make_unique<LightAmbient>(
+                glm::vec3(
+                    light["color"][0],
+                    light["color"][1],
+                    light["color"][2]),
+                light["intensity"]
+                ));
+        }
+        else if (light["type"] == "diffuse")
+        {
+            m_lights.push_back(make_unique<LightDirectional>(
+                glm::vec3(
+                    light["color"][0],
+                    light["color"][1],
+                    light["color"][2]),
+                glm::vec3(
+                    light["direction"][0],
+                    light["direction"][1],
+                    light["direction"][2]),
+                light["intensity"]
+                ));
+        }
 }
 
 void Scene3D::resetFrame(GLfloat aspectRatio) const
