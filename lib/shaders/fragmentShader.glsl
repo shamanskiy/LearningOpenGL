@@ -1,8 +1,8 @@
 #version 330
 
-in vec2 texCoord;
+in vec2 posUV;
 in vec3 normal;
-in vec3 worldPosition;
+in vec3 pos3D;
 
 out vec4 colour;
 
@@ -20,6 +20,7 @@ struct Material
     vec3 diffuseColor;
 };
 
+
 uniform sampler2D texSampler;
 uniform Light light;
 uniform Material material;
@@ -27,23 +28,25 @@ uniform vec3 cameraPosition;
 
 void main()
 {
-    vec4 ambientColor = vec4(light.color * light.ambientIntensity, 1.0f);
-    vec4 matColor = vec4(material.diffuseColor, 1.0f);
-    // light direction is normalized at creation
-    float diffuseFactor = max(-1*dot(normalize(normal),light.direction),0.0f);
-    vec4 diffuseColor = vec4(light.color * light.diffuseIntensity * diffuseFactor, 1.0);
+    vec4 materialColor = vec4(material.diffuseColor, 1.0f);
+
+    // Phong lighting = ambient + diffuse + specular
+    vec4 phongColor = vec4(light.color * light.ambientIntensity, 1.0f);
+
+    // Compute diffuse light
+    // Light direction is normalized at creation
+    float incidentAngle = max(-1*dot(normalize(normal),light.direction),0.0f);
+    phongColor += vec4(light.color * light.diffuseIntensity * incidentAngle, 1.0);
     
-    vec4 specularColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
-    if (diffuseFactor > 0.0f)
+    // Compute specular light
+    if (incidentAngle > 0.0f)
     {
-        vec3 dirToCamera = normalize(cameraPosition - worldPosition);
+        vec3 dirToCamera = normalize(cameraPosition - pos3D);
         vec3 reflectedLight = reflect(light.direction,normalize(normal));
-        float specularFactor = dot(reflectedLight,dirToCamera);
-        if (specularFactor > 0.0f)
-        {
-            specularColor = vec4(light.color * pow(specularFactor,material.shininess), 1.0f);
-        }
+        float specularAngle = dot(reflectedLight,dirToCamera);
+        if (specularAngle > 0.0f)
+            phongColor += vec4(light.color * pow(specularAngle,material.shininess), 1.0f);
     }
     
-    colour = matColor * texture(texSampler, texCoord) * (ambientColor + diffuseColor + specularColor);
+    colour = materialColor * texture(texSampler, posUV) * phongColor;
 }
