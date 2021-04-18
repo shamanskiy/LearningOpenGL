@@ -135,18 +135,25 @@ void Scene3D::loadJsonCamera(const nlohmann::json& sceneJson)
 
 void Scene3D::loadJsonLight(const nlohmann::json& sceneJson)
 {
-    m_lights.push_back(make_unique<LightAmbient>(glm::vec3(1.0f, 1.0f, 1.0f), 0.3));
+    m_lights.push_back(make_unique<LightAmbient>(
+        glm::vec3(
+            sceneJson["lightAmbient"]["color"][0],
+            sceneJson["lightAmbient"]["color"][1],
+            sceneJson["lightAmbient"]["color"][2]),
+        sceneJson["lightAmbient"]["intensity"]
+        ));
+
 
     m_lights.push_back(make_unique<LightDirectional>(
         glm::vec3(
-            sceneJson["light"]["color"][0],
-            sceneJson["light"]["color"][1],
-            sceneJson["light"]["color"][2]),
+            sceneJson["lightDiffuse"]["color"][0],
+            sceneJson["lightDiffuse"]["color"][1],
+            sceneJson["lightDiffuse"]["color"][2]),
         glm::vec3(
-            sceneJson["light"]["direction"][0],
-            sceneJson["light"]["direction"][1],
-            sceneJson["light"]["direction"][2]),
-        sceneJson["light"]["diffuseIntensity"]
+            sceneJson["lightDiffuse"]["direction"][0],
+            sceneJson["lightDiffuse"]["direction"][1],
+            sceneJson["lightDiffuse"]["direction"][2]),
+        sceneJson["lightDiffuse"]["intensity"]
     ));
 }
 
