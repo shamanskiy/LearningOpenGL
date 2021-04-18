@@ -10,11 +10,13 @@ struct UniformVariables {
     GLuint viewMatrix{ 0 };
     GLuint projectionMatrix{ 0 };
 
-    GLuint lightColor{ 0 };
-    GLuint lightDirection{ 0 };
-    GLuint ambientIntensity{ 0 };
-    GLuint diffuseIntensity{ 0 };
+    GLuint lightAmbientColor{ 0 };
+    GLuint lightAmbientIntensity{ 0 };
 
+    GLuint lightDiffuseColor{ 0 };
+    GLuint lightDiffuseIntensity{ 0 };
+    GLuint lightDiffuseDirection{ 0 };
+    
     GLuint materialShininess{ 0 };
     GLuint materialColor{ 0 };
 };

@@ -46,7 +46,7 @@ namespace
         vector<ModelInstance> m_instances;
 
         // Ambient + directional light
-        LightDirectional m_light;
+        vector<unique_ptr<Light>> m_lights;
     };
 }
 
@@ -77,7 +77,8 @@ void Scene3D::render(const EventContainer& events)
     m_camera.processEvents(events);
     m_camera.talkToShader(m_shader);
 
-    m_light.talkToShader(m_shader);
+    for (auto& it : m_lights)
+        it->talkToShader(m_shader);
 
     for (auto& it : m_instances)
         it.render(m_shader);
@@ -134,7 +135,9 @@ void Scene3D::loadJsonCamera(const nlohmann::json& sceneJson)
 
 void Scene3D::loadJsonLight(const nlohmann::json& sceneJson)
 {
-    m_light = LightDirectional(
+    m_lights.push_back(make_unique<LightAmbient>(glm::vec3(1.0f, 1.0f, 1.0f), 0.3));
+
+    m_lights.push_back(make_unique<LightDirectional>(
         glm::vec3(
             sceneJson["light"]["color"][0],
             sceneJson["light"]["color"][1],
@@ -143,9 +146,8 @@ void Scene3D::loadJsonLight(const nlohmann::json& sceneJson)
             sceneJson["light"]["direction"][0],
             sceneJson["light"]["direction"][1],
             sceneJson["light"]["direction"][2]),
-        sceneJson["light"]["ambientIntensity"],
         sceneJson["light"]["diffuseIntensity"]
-    );
+    ));
 }
 
 void Scene3D::resetFrame(GLfloat aspectRatio) const

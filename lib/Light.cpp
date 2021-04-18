@@ -2,20 +2,33 @@
 
 #include "Shader.h"
 
-LightDirectional::LightDirectional(glm::vec3 lightColor, glm::vec3 lightDirection,
-                                   GLfloat ambientIntensity, GLfloat diffuseIntensity) :
-    m_color(lightColor),
-    m_lightDirection(glm::normalize(lightDirection)),
-    m_ambientIntensity(ambientIntensity),
-    m_diffuseIntensity(diffuseIntensity)
+Light::Light(glm::vec3 color, GLfloat intensity) :
+    m_color(color),
+    m_intensity(intensity)
+{}
+
+LightAmbient::LightAmbient(glm::vec3 color, GLfloat intensity) :
+    Light(color,intensity)
+{}
+
+void LightAmbient::talkToShader(const Shader& shader) const
+{
+    glUniform3f(shader.uniforms().lightAmbientColor,
+        m_color.x, m_color.y, m_color.z);
+    glUniform1f(shader.uniforms().lightAmbientIntensity, m_intensity);
+}
+
+LightDirectional::LightDirectional(glm::vec3 color, glm::vec3 direction,
+                                   GLfloat intensity) :
+    Light(color, intensity),
+    m_direction(glm::normalize(direction))
 {}
 
 void LightDirectional::talkToShader(const Shader& shader) const
 {
-    glUniform3f(shader.uniforms().lightColor,
+    glUniform3f(shader.uniforms().lightDiffuseColor,
         m_color.x, m_color.y, m_color.z);
-    glUniform3f(shader.uniforms().lightDirection,
-        m_lightDirection.x, m_lightDirection.y, m_lightDirection.z);
-    glUniform1f(shader.uniforms().ambientIntensity, m_ambientIntensity);
-    glUniform1f(shader.uniforms().diffuseIntensity, m_diffuseIntensity);
+    glUniform3f(shader.uniforms().lightDiffuseDirection,
+        m_direction.x, m_direction.y, m_direction.z);
+    glUniform1f(shader.uniforms().lightDiffuseIntensity, m_intensity);
 }

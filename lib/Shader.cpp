@@ -124,10 +124,11 @@ void Shader::getUniforms()
     m_uniforms.modelMatrix = glGetUniformLocation(m_id, "model");
     m_uniforms.viewMatrix = glGetUniformLocation(m_id, "view");
     m_uniforms.projectionMatrix = glGetUniformLocation(m_id, "projection");
-    m_uniforms.lightColor = glGetUniformLocation(m_id, "light.color");
-    m_uniforms.lightDirection = glGetUniformLocation(m_id, "light.direction");
-    m_uniforms.ambientIntensity = glGetUniformLocation(m_id, "light.ambientIntensity");
-    m_uniforms.diffuseIntensity = glGetUniformLocation(m_id, "light.diffuseIntensity");
+    m_uniforms.lightAmbientColor = glGetUniformLocation(m_id, "lightA.color");
+    m_uniforms.lightAmbientIntensity = glGetUniformLocation(m_id, "lightA.intensity");
+    m_uniforms.lightDiffuseColor = glGetUniformLocation(m_id, "lightD.color");
+    m_uniforms.lightDiffuseIntensity = glGetUniformLocation(m_id, "lightD.intensity");
+    m_uniforms.lightDiffuseDirection = glGetUniformLocation(m_id, "lightD.direction");
     m_uniforms.materialShininess = glGetUniformLocation(m_id, "material.shininess");
     m_uniforms.materialColor = glGetUniformLocation(m_id, "material.diffuseColor");
 }
