@@ -6,6 +6,8 @@
 #include <cstring>
 #include "Config.h"
 
+using namespace std;
+
 Shader::Shader()
 {
     auto vertexStr = readShaderCode(SHADERS_DIR + "vertexShader.glsl");
@@ -39,10 +41,10 @@ std::string Shader::readShaderCode(const std::string& filename)
     std::ifstream fileStream(filename);
 
     if (!fileStream.is_open())
-        throw std::runtime_error("Failed to open " + filename);
+        throw runtime_error("Failed to open " + filename);
 
     std::string line;
-    while (std::getline(fileStream, line))
+    while (getline(fileStream, line))
         fileContent.append(line + "\n");
 
     fileStream.close();
@@ -81,8 +83,8 @@ void Shader::compileShader(const std::string &shaderCode, GLenum shaderType)
     if (!result)
     {
         glGetShaderInfoLog(shader, sizeof(eLog), NULL, eLog);
-        throw std::runtime_error("Error compiling shader program: "
-                                 + std::string(eLog));
+        throw runtime_error("Error compiling shader program: "
+                                 + string(eLog));
     }
 
     glAttachShader(m_id,shader);
@@ -98,8 +100,8 @@ void Shader::linkShaders()
     if (!result)
     {
         glGetProgramInfoLog(m_id, sizeof(eLog), NULL, eLog);
-        throw std::runtime_error("Error linking shader program: " +
-                                 std::string(eLog));
+        throw runtime_error("Error linking shader program: " +
+                                 string(eLog));
     }
 }
 
@@ -113,8 +115,8 @@ void Shader::validateShaders()
     if (!result)
     {
         glGetProgramInfoLog(m_id, sizeof(eLog), NULL, eLog);
-        throw std::runtime_error("Error validating shader program: " +
-            std::string(eLog));
+        throw runtime_error("Error validating shader program: " +
+            string(eLog));
     }
 }
 
@@ -132,16 +134,21 @@ void Shader::getUniforms()
     m_uniforms.diffuseLight.intensity = glGetUniformLocation(m_id, "lightD.intensity");
     m_uniforms.diffuseLight.direction = glGetUniformLocation(m_id, "lightD.direction");
 
-    for (int i = 0; i < 1; i++)
+    m_uniforms.numPointLights = glGetUniformLocation(m_id, "numPointLights");
+    for (int i = 0; i < MAX_POINT_LIGHTS; i++)
     {
         m_uniforms.pointLights[i].color =
-            glGetUniformLocation(m_id, "lightP[0].color");
+            glGetUniformLocation(m_id, (string("lightP[") + 
+                to_string(i) + string("].color")).c_str());
         m_uniforms.pointLights[i].intensity =
-            glGetUniformLocation(m_id, "lightP[0].intensity");
+            glGetUniformLocation(m_id, (string("lightP[") +
+                to_string(i) + string("].intensity")).c_str());
         m_uniforms.pointLights[i].attenuation =
-            glGetUniformLocation(m_id, "lightP[0].attenuation");
+            glGetUniformLocation(m_id, (string("lightP[") +
+                to_string(i) + string("].attenuation")).c_str());
         m_uniforms.pointLights[i].position =
-            glGetUniformLocation(m_id, "lightP[0].position");
+            glGetUniformLocation(m_id, (string("lightP[") +
+                to_string(i) + string("].position")).c_str());
     }
 
     m_uniforms.material.shininess = glGetUniformLocation(m_id, "material.shininess");

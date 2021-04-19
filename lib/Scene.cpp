@@ -79,6 +79,7 @@ void Scene3D::render(const EventContainer& events)
 
     for (auto& it : m_lights)
         it->talkToShader(m_shader);
+    glUniform1i(m_shader.uniforms().numPointLights, 1);
 
     for (auto& it : m_instances)
         it.render(m_shader);

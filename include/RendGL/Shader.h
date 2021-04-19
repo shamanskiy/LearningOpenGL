@@ -29,6 +29,8 @@ struct UniformVariables {
         GLuint position{ 0 };
         GLuint attenuation{ 0 };
     } pointLights[MAX_POINT_LIGHTS];
+
+    GLuint numPointLights{ 0 };
     
     struct {
         GLuint shininess{ 0 };

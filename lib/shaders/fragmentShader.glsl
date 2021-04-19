@@ -40,6 +40,7 @@ uniform vec3 cameraPosition;
 
 uniform LightAmbient lightA;
 uniform LightDirectional lightD;
+uniform int numPointLights;
 uniform LightPoint lightP[MAX_POINT_LIGHTS];
 
 uniform Material material;
@@ -82,12 +83,18 @@ float computeAttenuation(vec3 coeffs, float dist)
 
 vec3 computePointLights()
 {
-    vec3 direction = pos3D - lightP[0].position;
-    float distance = length(direction);
-    float attenuation = computeAttenuation(lightP[0].attenuation, distance);
+    vec3 pointLightsColor = vec3(0.0,0.0,0.0);
 
-    return computeLightFromDirection(lightP[0].color, normalize(direction),
-        lightP[0].intensity / attenuation);
+    for (int i = 0; i < numPointLights; i++)
+    {
+        vec3 direction = pos3D - lightP[0].position;
+        float distance = length(direction);
+        float attenuation = computeAttenuation(lightP[0].attenuation, distance);
+        pointLightsColor += computeLightFromDirection(lightP[0].color, normalize(direction),
+                            lightP[0].intensity / attenuation);
+    }
+
+    return pointLightsColor;
 }
 
 void main()
