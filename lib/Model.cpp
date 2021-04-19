@@ -384,8 +384,8 @@ void Model::render(const Shader& shader) const
 void Material::activate(const Shader& shader) const
 {
 	m_texture.activate();
-	glUniform1f(shader.uniforms().materialShininess, m_shininess);
-	glUniform3f(shader.uniforms().materialColor,
+	glUniform1f(shader.uniforms().material.shininess, m_shininess);
+	glUniform3f(shader.uniforms().material.color,
 		m_diffuseColor.x, m_diffuseColor.y, m_diffuseColor.z);
 }
 

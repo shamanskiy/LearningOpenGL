@@ -4,26 +4,36 @@
 
 #include <GL/glew.h>
 
+const int MAX_POINT_LIGHTS = 5;
+
 struct UniformVariables {
     GLuint cameraPosition{ 0 };
     GLuint modelMatrix{ 0 };
     GLuint viewMatrix{ 0 };
     GLuint projectionMatrix{ 0 };
 
-    GLuint lightAmbientColor{ 0 };
-    GLuint lightAmbientIntensity{ 0 };
+    struct {
+        GLuint color{ 0 };
+        GLuint intensity{ 0 };
+    } ambientLight;
 
-    GLuint lightDiffuseColor{ 0 };
-    GLuint lightDiffuseIntensity{ 0 };
-    GLuint lightDiffuseDirection{ 0 };
+    struct {
+        GLuint color{ 0 };
+        GLuint intensity{ 0 };
+        GLuint direction{ 0 };
+    } diffuseLight;
 
-    GLuint lightPointColor{ 0 };
-    GLuint lightPointIntensity{ 0 };
-    GLuint lightPointPosition{ 0 };
-    GLuint lightPointAttenuation{ 0 };
+    struct {
+        GLuint color{ 0 };
+        GLuint intensity{ 0 };
+        GLuint position{ 0 };
+        GLuint attenuation{ 0 };
+    } pointLights[MAX_POINT_LIGHTS];
     
-    GLuint materialShininess{ 0 };
-    GLuint materialColor{ 0 };
+    struct {
+        GLuint shininess{ 0 };
+        GLuint color{ 0 };
+    } material;
 };
 
 

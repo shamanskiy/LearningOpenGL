@@ -125,20 +125,27 @@ void Shader::getUniforms()
     m_uniforms.viewMatrix = glGetUniformLocation(m_id, "view");
     m_uniforms.projectionMatrix = glGetUniformLocation(m_id, "projection");
 
-    m_uniforms.lightAmbientColor = glGetUniformLocation(m_id, "lightA.color");
-    m_uniforms.lightAmbientIntensity = glGetUniformLocation(m_id, "lightA.intensity");
+    m_uniforms.ambientLight.color = glGetUniformLocation(m_id, "lightA.color");
+    m_uniforms.ambientLight.intensity = glGetUniformLocation(m_id, "lightA.intensity");
 
-    m_uniforms.lightDiffuseColor = glGetUniformLocation(m_id, "lightD.color");
-    m_uniforms.lightDiffuseIntensity = glGetUniformLocation(m_id, "lightD.intensity");
-    m_uniforms.lightDiffuseDirection = glGetUniformLocation(m_id, "lightD.direction");
+    m_uniforms.diffuseLight.color = glGetUniformLocation(m_id, "lightD.color");
+    m_uniforms.diffuseLight.intensity = glGetUniformLocation(m_id, "lightD.intensity");
+    m_uniforms.diffuseLight.direction = glGetUniformLocation(m_id, "lightD.direction");
 
-    m_uniforms.lightPointColor = glGetUniformLocation(m_id, "lightP.color");
-    m_uniforms.lightPointIntensity = glGetUniformLocation(m_id, "lightP.intensity");
-    m_uniforms.lightPointAttenuation = glGetUniformLocation(m_id, "lightP.attenuation");
-    m_uniforms.lightPointPosition = glGetUniformLocation(m_id, "lightP.position");
+    for (int i = 0; i < 1; i++)
+    {
+        m_uniforms.pointLights[i].color =
+            glGetUniformLocation(m_id, "lightP[0].color");
+        m_uniforms.pointLights[i].intensity =
+            glGetUniformLocation(m_id, "lightP[0].intensity");
+        m_uniforms.pointLights[i].attenuation =
+            glGetUniformLocation(m_id, "lightP[0].attenuation");
+        m_uniforms.pointLights[i].position =
+            glGetUniformLocation(m_id, "lightP[0].position");
+    }
 
-    m_uniforms.materialShininess = glGetUniformLocation(m_id, "material.shininess");
-    m_uniforms.materialColor = glGetUniformLocation(m_id, "material.diffuseColor");
+    m_uniforms.material.shininess = glGetUniformLocation(m_id, "material.shininess");
+    m_uniforms.material.color = glGetUniformLocation(m_id, "material.diffuseColor");
 }
 
 void Shader::deleteShaders()
