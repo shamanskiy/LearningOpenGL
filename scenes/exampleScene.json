@@ -8,26 +8,47 @@
 		"move_speed" : 10.0,
 		"rotation_speed" : 0.05
 	},
-	"light" : {
-		"color" : [1.0, 1.0, 1.0],
-		"direction" : [-1.0, -1.0, -1.0],
-		"ambientIntensity" : 0.3,
-		"diffuseIntensity" : 1.0
-	},
+	"lights" : [
+		{
+			"type" : "ambient",
+			"color" : [1.0, 1.0, 1.0],
+			"intensity" : 0.5
+		},
+		{
+			"type" : "directional",
+			"color" : [1.0, 1.0, 1.0],
+			"direction" : [-1.0, -1.0, -1.0],
+			"intensity" : 1.0
+		},
+		{
+			"type" : "point",
+			"color" : [0.8, 0.3, 0.3],
+			"position" : [-1.0, 0.1, 1.0],
+			"attenuation" : [0.1, 0.2, 0.3],
+			"intensity" : 3.0
+		},
+		{
+			"type" : "point",
+			"color" : [0.8, 0.3, 0.3],
+			"position" : [1.0, 0.1, -1.0],
+			"attenuation" : [0.1, 0.2, 0.3],
+			"intensity" : 2.0
+		}
+	],
 	"models" : ["floor", "sphere", "tree"],
 	"instances" : [
 		{
-			"modelName" : "floor",
+			"model" : "floor",
 			"origin" : [0.0, 0.0, 0.0],
 			"scale" : 2.0
 		},
 		{
-			"modelName" : "sphere",
+			"model" : "sphere",
 			"origin" : [-2.0, 3.0, -2.0],
 			"scale" : 0.5
 		},
 		{
-			"modelName" : "tree",
+			"model" : "tree",
 			"origin" : [0.0, 0.065, 0.0],
 			"scale" : 0.1
 		}

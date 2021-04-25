@@ -8,7 +8,7 @@ set(MODELS_DIR ${PROJECT_BINARY_DIR}/data/models)
 # of texture/model files exists. Download all from AWS S3 where they are stored
 # and publicly accessable.
 
-set(MODEL_LIST floor sphere)
+set(MODEL_LIST floor sphere tree)
 
 if(NOT EXISTS ${PROJECT_BINARY_DIR}/data/textures/straw.png)
   

@@ -26,27 +26,20 @@ namespace
         void render(const EventContainer& events) override;
 
     private:
-        void loadJsonModels(const nlohmann::json& sceneJson);
-        void loadJsonCamera(const nlohmann::json& sceneJson);
-        void loadJsonLight(const nlohmann::json& sceneJson);
-        void loadJsonInstances(const nlohmann::json& sceneJson);
+        void loadModels(const nlohmann::json& sceneJson);
+        void loadCamera(const nlohmann::json& sceneJson);
+        void loadLight(const nlohmann::json& sceneJson);
+        void loadInstances(const nlohmann::json& sceneJson);
 
-        void resetFrame(GLfloat aspectRatio) const;
+        void resetFrame(const EventContainer& events) const;
 
     private:
-        // Interactive camera
-        Camera m_camera;
-        // List of shaders that can be used to render the scene.
-        // Can be cycled through.
         Shader m_shader;
 
-        // List of Models used in the Scene
+        Camera m_camera;
         unordered_map<string, Model> m_models;
-        // Instances of Models that are scaled and translated to positions
         vector<ModelInstance> m_instances;
-
-        // Ambient + directional light
-        Light m_light;
+        LightManager m_lights;
     };
 }
 
@@ -72,12 +65,12 @@ void Scene3D::render(const EventContainer& events)
     m_shader.activateShader();
 
     // clear frame and pass projection matrix to shader
-    resetFrame(events.aspectRatio());
+    resetFrame(events);
 
     m_camera.processEvents(events);
     m_camera.talkToShader(m_shader);
 
-    m_light.talkToShader(m_shader);
+    m_lights.talkToShader(m_shader);
 
     for (auto& it : m_instances)
         it.render(m_shader);
@@ -85,13 +78,13 @@ void Scene3D::render(const EventContainer& events)
 
 Scene3D::Scene3D(const nlohmann::json& sceneJson)
 {
-    loadJsonModels(sceneJson);
-    loadJsonInstances(sceneJson);
-    loadJsonCamera(sceneJson);
-    loadJsonLight(sceneJson);
+    loadModels(sceneJson);
+    loadInstances(sceneJson);
+    loadCamera(sceneJson);
+    loadLight(sceneJson);
 }
 
-void Scene3D::loadJsonModels(const nlohmann::json& sceneJson)
+void Scene3D::loadModels(const nlohmann::json& sceneJson)
 {
     for (auto& model : sceneJson["models"])
         try
@@ -105,20 +98,20 @@ void Scene3D::loadJsonModels(const nlohmann::json& sceneJson)
         }
 }
 
-void Scene3D::loadJsonInstances(const nlohmann::json& sceneJson)
+void Scene3D::loadInstances(const nlohmann::json& sceneJson)
 {
     for (auto& instance : sceneJson["instances"])
-        if (m_models.find(instance["modelName"]) != m_models.end())
+        if (m_models.find(instance["model"]) != m_models.end())
             m_instances.push_back(
                 ModelInstance(
-                    m_models[instance["modelName"]],
+                    m_models[instance["model"]],
                     instance["origin"][0],
                     instance["origin"][1],
                     instance["origin"][2],
                     instance["scale"]));
 }
 
-void Scene3D::loadJsonCamera(const nlohmann::json& sceneJson)
+void Scene3D::loadCamera(const nlohmann::json& sceneJson)
 {
     m_camera = Camera(
         glm::vec3(
@@ -132,28 +125,59 @@ void Scene3D::loadJsonCamera(const nlohmann::json& sceneJson)
     );
 }
 
-void Scene3D::loadJsonLight(const nlohmann::json& sceneJson)
+void Scene3D::loadLight(const nlohmann::json& sceneJson)
 {
-    m_light = Light(
-        glm::vec3(
-            sceneJson["light"]["color"][0],
-            sceneJson["light"]["color"][1],
-            sceneJson["light"]["color"][2]),
-        glm::vec3(
-            sceneJson["light"]["direction"][0],
-            sceneJson["light"]["direction"][1],
-            sceneJson["light"]["direction"][2]),
-        sceneJson["light"]["ambientIntensity"],
-        sceneJson["light"]["diffuseIntensity"]
-    );
+    for (auto & light : sceneJson["lights"])
+        if (light["type"] == "ambient")
+        {
+            m_lights.setAmbientLight(AmbientLight(
+                glm::vec3(
+                    light["color"][0],
+                    light["color"][1],
+                    light["color"][2]),
+                light["intensity"]
+                ));
+        }
+        else if (light["type"] == "directional")
+        {
+            m_lights.setDirectionalLight(DirectionalLight(
+                glm::vec3(
+                    light["color"][0],
+                    light["color"][1],
+                    light["color"][2]),
+                glm::vec3(
+                    light["direction"][0],
+                    light["direction"][1],
+                    light["direction"][2]),
+                light["intensity"]
+                ));
+        }
+        else if (light["type"] == "point")
+        {
+            m_lights.addPointLight(PointLight(
+                glm::vec3(
+                    light["color"][0],
+                    light["color"][1],
+                    light["color"][2]),
+                glm::vec3(
+                    light["position"][0],
+                    light["position"][1],
+                    light["position"][2]),
+                glm::vec3(
+                    light["attenuation"][0],
+                    light["attenuation"][1],
+                    light["attenuation"][2]),
+                light["intensity"]
+                ));
+        }
 }
 
-void Scene3D::resetFrame(GLfloat aspectRatio) const
+void Scene3D::resetFrame(const EventContainer& events) const
 {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glm::mat4 projection = glm::perspective(45.0f, aspectRatio, 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(45.0f, events.aspectRatio(), 0.1f, 100.0f);
     glUniformMatrix4fv(m_shader.uniforms().projectionMatrix, 1, GL_FALSE,
         glm::value_ptr(projection));
 }

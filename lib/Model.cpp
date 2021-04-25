@@ -224,6 +224,7 @@ void Texture::deleteTexture()
 Model::Model(const string& modelName) :
 	m_name(modelName)
 {
+	resetBoundingBox();
 	loadModel();
 }
 
@@ -240,8 +241,13 @@ void Model::resetBoundingBox()
 void Model::loadModel()
 {
 	Assimp::Importer importer;
+	// flag to remove normals during import
+	importer.SetPropertyInteger(AI_CONFIG_PP_RVC_FLAGS, aiComponent_NORMALS);
+	// edge detection for smooth normal generation
+	importer.SetPropertyFloat("PP_GSN_MAX_SMOOTHING_ANGLE", 30);
 	const aiScene* scene = importer.ReadFile(MODELS_DIR + m_name + "/" + m_name + ".obj",
-		aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals |
+		aiProcess_Triangulate | aiProcess_FlipUVs | 
+		aiProcess_RemoveComponent |aiProcess_GenSmoothNormals |
 		aiProcess_JoinIdenticalVertices);
 	if (!scene)
 		throw ModelException("Failed to load a model: " + string(importer.GetErrorString()));
@@ -378,8 +384,8 @@ void Model::render(const Shader& shader) const
 void Material::activate(const Shader& shader) const
 {
 	m_texture.activate();
-	glUniform1f(shader.uniforms().materialShininess, m_shininess);
-	glUniform3f(shader.uniforms().materialColor,
+	glUniform1f(shader.uniforms().material.shininess, m_shininess);
+	glUniform3f(shader.uniforms().material.color,
 		m_diffuseColor.x, m_diffuseColor.y, m_diffuseColor.z);
 }
 

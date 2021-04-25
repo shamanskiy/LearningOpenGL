@@ -6,6 +6,8 @@
 #include <cstring>
 #include "Config.h"
 
+using namespace std;
+
 Shader::Shader()
 {
     auto vertexStr = readShaderCode(SHADERS_DIR + "vertexShader.glsl");
@@ -39,10 +41,10 @@ std::string Shader::readShaderCode(const std::string& filename)
     std::ifstream fileStream(filename);
 
     if (!fileStream.is_open())
-        throw std::runtime_error("Failed to open " + filename);
+        throw runtime_error("Failed to open " + filename);
 
     std::string line;
-    while (std::getline(fileStream, line))
+    while (getline(fileStream, line))
         fileContent.append(line + "\n");
 
     fileStream.close();
@@ -81,8 +83,8 @@ void Shader::compileShader(const std::string &shaderCode, GLenum shaderType)
     if (!result)
     {
         glGetShaderInfoLog(shader, sizeof(eLog), NULL, eLog);
-        throw std::runtime_error("Error compiling shader program: "
-                                 + std::string(eLog));
+        throw runtime_error("Error compiling shader program: "
+                                 + string(eLog));
     }
 
     glAttachShader(m_id,shader);
@@ -98,8 +100,8 @@ void Shader::linkShaders()
     if (!result)
     {
         glGetProgramInfoLog(m_id, sizeof(eLog), NULL, eLog);
-        throw std::runtime_error("Error linking shader program: " +
-                                 std::string(eLog));
+        throw runtime_error("Error linking shader program: " +
+                                 string(eLog));
     }
 }
 
@@ -113,8 +115,8 @@ void Shader::validateShaders()
     if (!result)
     {
         glGetProgramInfoLog(m_id, sizeof(eLog), NULL, eLog);
-        throw std::runtime_error("Error validating shader program: " +
-            std::string(eLog));
+        throw runtime_error("Error validating shader program: " +
+            string(eLog));
     }
 }
 
@@ -124,12 +126,37 @@ void Shader::getUniforms()
     m_uniforms.modelMatrix = glGetUniformLocation(m_id, "model");
     m_uniforms.viewMatrix = glGetUniformLocation(m_id, "view");
     m_uniforms.projectionMatrix = glGetUniformLocation(m_id, "projection");
-    m_uniforms.lightColor = glGetUniformLocation(m_id, "light.color");
-    m_uniforms.lightDirection = glGetUniformLocation(m_id, "light.direction");
-    m_uniforms.ambientIntensity = glGetUniformLocation(m_id, "light.ambientIntensity");
-    m_uniforms.diffuseIntensity = glGetUniformLocation(m_id, "light.diffuseIntensity");
-    m_uniforms.materialShininess = glGetUniformLocation(m_id, "material.shininess");
-    m_uniforms.materialColor = glGetUniformLocation(m_id, "material.diffuseColor");
+
+    m_uniforms.ambientLight.color = glGetUniformLocation(m_id, "lightA.color");
+    m_uniforms.ambientLight.intensity = glGetUniformLocation(m_id, "lightA.intensity");
+
+    m_uniforms.diffuseLight.color = glGetUniformLocation(m_id, "lightD.color");
+    m_uniforms.diffuseLight.intensity = glGetUniformLocation(m_id, "lightD.intensity");
+    m_uniforms.diffuseLight.direction = glGetUniformLocation(m_id, "lightD.direction");
+
+    m_uniforms.numPointLights = glGetUniformLocation(m_id, "numPointLights");
+
+    char locBuff[100] = { '\0' };
+    for (int i = 0; i < MAX_POINT_LIGHTS; i++)
+    {
+        snprintf(locBuff, sizeof(locBuff), "lightP[%d].color", i);
+        m_uniforms.pointLights[i].color = glGetUniformLocation(m_id, locBuff);
+
+        snprintf(locBuff, sizeof(locBuff), "lightP[%d].intensity", i);
+        m_uniforms.pointLights[i].intensity =
+            glGetUniformLocation(m_id, locBuff);
+
+        snprintf(locBuff, sizeof(locBuff), "lightP[%d].attenuation", i);
+        m_uniforms.pointLights[i].attenuation =
+            glGetUniformLocation(m_id, locBuff);
+
+        snprintf(locBuff, sizeof(locBuff), "lightP[%d].position", i);
+        m_uniforms.pointLights[i].position =
+            glGetUniformLocation(m_id, locBuff);
+    }
+
+    m_uniforms.material.shininess = glGetUniformLocation(m_id, "material.shininess");
+    m_uniforms.material.color = glGetUniformLocation(m_id, "material.diffuseColor");
 }
 
 void Shader::deleteShaders()
