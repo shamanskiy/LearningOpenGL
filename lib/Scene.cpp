@@ -64,12 +64,10 @@ void Scene3D::render(const EventContainer& events)
 {
     m_shader.activateShader();
 
-    // clear frame and pass projection matrix to shader
     resetFrame(events);
-
     m_camera.processEvents(events);
+    
     m_camera.talkToShader(m_shader);
-
     m_lights.talkToShader(m_shader);
 
     for (auto& it : m_instances)

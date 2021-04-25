@@ -63,7 +63,7 @@ public:
     void talkToShader(const Shader& shader) const;
 
 private:
-    void talkAboutPointLights(const Shader& shader);
+    void talkAboutPointLights(const Shader& shader) const;
 private:
     AmbientLight m_ambient;
     DirectionalLight m_directional;
