@@ -34,7 +34,7 @@ struct SpotLight
     vec3 color;
     vec3 attenuation;
     float intensity;
-    float halfAngle;
+    float halfAngleCos;
     bool isOn;
 };
 
@@ -53,17 +53,17 @@ struct Camera
 uniform sampler2D texSampler;
 uniform Camera camera;
 
-uniform AmbientLight lightA;
-uniform DirectionalLight lightD;
+uniform AmbientLight ambientLight;
+uniform DirectionalLight directionalLight;
 uniform int numPointLights;
-uniform PointLight lightP[5];
-uniform SpotLight lightS;
+uniform PointLight pointLights[5];
+uniform SpotLight spotLight;
 
 uniform Material material;
 
 vec3 computeAmbientLight()
 {
-    return lightA.color * lightA.intensity;
+    return ambientLight.color * ambientLight.intensity;
 }
 
 vec3 computeLightFromDirection(vec3 color, vec3 direction, float intensity)
@@ -88,8 +88,8 @@ vec3 computeLightFromDirection(vec3 color, vec3 direction, float intensity)
 
 vec3 computeDirectionalLight()
 {
-    return computeLightFromDirection(lightD.color, lightD.direction,
-                                     lightD.intensity);
+    return computeLightFromDirection(directionalLight.color, directionalLight.direction,
+                                     directionalLight.intensity);
 }
 
 float computeAttenuation(vec3 coeffs, float dist)
@@ -103,14 +103,33 @@ vec3 computePointLights()
 
     for (int i = 0; i < numPointLights; i++)
     {
-        vec3 direction = pos3D - lightP[i].position;
+        vec3 direction = pos3D - pointLights[i].position;
         float distance = length(direction);
-        float attenuation = computeAttenuation(lightP[i].attenuation, distance);
-        pointLightsColor += computeLightFromDirection(lightP[i].color, normalize(direction),
-                            lightP[i].intensity / attenuation);
+        float attenuation = computeAttenuation(pointLights[i].attenuation, distance);
+        pointLightsColor += computeLightFromDirection(pointLights[i].color, normalize(direction),
+                            pointLights[i].intensity / attenuation);
     }
 
     return pointLightsColor;
+}
+
+vec3 computeSpotLight()
+{
+    if (!spotLight.isOn)
+        return vec3(0.0,0.0,0.0);
+
+    vec3 direction = pos3D - camera.position;
+    direction.y += 0.3;
+    float distance = length(direction);
+    vec3 normalizedDirection = normalize(direction);
+    float angleFromBeamAxis = dot(normalizedDirection, camera.direction);
+    if (angleFromBeamAxis < spotLight.halfAngleCos)
+        return vec3(0.0,0.0,0.0);
+
+    float attenuation = computeAttenuation(spotLight.attenuation, distance);
+
+    return computeLightFromDirection(spotLight.color,normalizedDirection,
+        spotLight.intensity/attenuation) * (1.0 - (1.0 - angleFromBeamAxis)*(1.0f/(1.0f - spotLight.halfAngleCos)));
 }
 
 void main()
@@ -118,7 +137,8 @@ void main()
     vec4 materialColor = vec4(material.diffuseColor, 1.0);
     vec4 lightColor = vec4(computeAmbientLight() + 
                       computeDirectionalLight() + 
-                      computePointLights(), 1.0);
+                      computePointLights() +
+                      computeSpotLight(), 1.0);
 
     color = materialColor * texture(texSampler, posUV) * lightColor;
 }

@@ -68,7 +68,7 @@ private:
     // attenuation a*D^2 + b*D + c
     glm::vec3 m_attenuation;
     GLfloat m_intensity;
-    GLfloat m_halfAngle;
+    GLfloat m_halfAngleCos;
     bool m_isOn;
 };
 

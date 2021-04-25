@@ -56,7 +56,7 @@ SpotLight::SpotLight(glm::vec3 color, glm::vec3 attenuation,
     m_color(color),
     m_attenuation(attenuation),
     m_intensity(intensity),
-    m_halfAngle(halfAngle),
+    m_halfAngleCos(cos(glm::radians(halfAngle))),
     m_isOn(isOn)
 {}
 
@@ -67,7 +67,7 @@ void SpotLight::talkToShader(const Shader& shader) const
     glUniform3f(shader.uniforms().spotLight.attenuation,
         m_attenuation.x, m_attenuation.y, m_attenuation.z);
     glUniform1f(shader.uniforms().spotLight.intensity, m_intensity);
-    glUniform1f(shader.uniforms().spotLight.halfAngle, m_halfAngle);
+    glUniform1f(shader.uniforms().spotLight.halfAngleCos, m_halfAngleCos);
     glUniform1f(shader.uniforms().spotLight.isOn, m_isOn);
 }
 

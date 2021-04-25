@@ -128,7 +128,7 @@ void Scene3D::loadLight(const nlohmann::json& sceneJson)
     m_lights.setSpotLight(SpotLight(
         glm::vec3(1.0f, 1.0f, 1.0f),
         glm::vec3(0.1, 0.2, 0.3),
-        1.0f, 15.0f, true
+        10.0f, 15.0f, true
     ));
 
     for (auto & light : sceneJson["lights"])
