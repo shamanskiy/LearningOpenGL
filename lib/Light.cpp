@@ -1,6 +1,7 @@
 #include "Light.h"
 
 #include "Shader.h"
+#include <algorithm> 
 
 Light::Light(glm::vec3 color, GLfloat intensity) :
     m_color(color),
@@ -40,13 +41,40 @@ LightPoint::LightPoint(glm::vec3 color, glm::vec3 position,
     m_attenuation(attenuation)
 {}
 
-void LightPoint::talkToShader(const Shader& shader) const
+void LightPoint::talkToShader(const Shader& shader, int pointLightNumber) const
 {
-    glUniform3f(shader.uniforms().pointLights[0].color,
+    glUniform3f(shader.uniforms().pointLights[pointLightNumber].color,
         m_color.x, m_color.y, m_color.z);
-    glUniform3f(shader.uniforms().pointLights[0].position,
+    glUniform3f(shader.uniforms().pointLights[pointLightNumber].position,
         m_position.x, m_position.y, m_position.z);
-    glUniform3f(shader.uniforms().pointLights[0].attenuation,
+    glUniform3f(shader.uniforms().pointLights[pointLightNumber].attenuation,
         m_attenuation.x, m_attenuation.y, m_attenuation.z);
-    glUniform1f(shader.uniforms().pointLights[0].intensity, m_intensity);
+    glUniform1f(shader.uniforms().pointLights[pointLightNumber].intensity, m_intensity);
 }
+
+void LightManager::setAmbientLight(const LightAmbient& ambient)
+{
+    m_ambient = ambient;
+}
+
+void LightManager::setDirectionalLight(const LightDirectional& directional)
+{
+    m_directional = directional;
+}
+
+void LightManager::addPointLight(const LightPoint& point)
+{
+    m_points.push_back(point);
+}
+
+void LightManager::talkToShader(const Shader& shader) const
+{
+    m_ambient.talkToShader(shader);
+    m_directional.talkToShader(shader);
+
+    size_t numPointLight = std::min(m_points.size(), MAX_POINT_LIGHTS);
+    glUniform1i(shader.uniforms().numPointLights, numPointLight);
+    for (int i = 0; i < numPointLight; i++)
+        m_points[i].talkToShader(shader, i);
+}
+

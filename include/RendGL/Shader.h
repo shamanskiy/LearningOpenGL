@@ -4,7 +4,7 @@
 
 #include <GL/glew.h>
 
-const int MAX_POINT_LIGHTS = 5;
+const size_t MAX_POINT_LIGHTS = 5;
 
 struct UniformVariables {
     GLuint cameraPosition{ 0 };

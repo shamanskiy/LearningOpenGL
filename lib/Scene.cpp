@@ -45,8 +45,7 @@ namespace
         // Instances of Models that are scaled and translated to positions
         vector<ModelInstance> m_instances;
 
-        // Ambient + directional light
-        vector<unique_ptr<Light>> m_lights;
+        LightManager m_lights;
     };
 }
 
@@ -77,9 +76,7 @@ void Scene3D::render(const EventContainer& events)
     m_camera.processEvents(events);
     m_camera.talkToShader(m_shader);
 
-    for (auto& it : m_lights)
-        it->talkToShader(m_shader);
-    glUniform1i(m_shader.uniforms().numPointLights, 1);
+    m_lights.talkToShader(m_shader);
 
     for (auto& it : m_instances)
         it.render(m_shader);
@@ -139,7 +136,7 @@ void Scene3D::loadJsonLight(const nlohmann::json& sceneJson)
     for (auto & light : sceneJson["lights"])
         if (light["type"] == "ambient")
         {
-            m_lights.push_back(make_unique<LightAmbient>(
+            m_lights.setAmbientLight(LightAmbient(
                 glm::vec3(
                     light["color"][0],
                     light["color"][1],
@@ -147,9 +144,9 @@ void Scene3D::loadJsonLight(const nlohmann::json& sceneJson)
                 light["intensity"]
                 ));
         }
-        else if (light["type"] == "diffuse")
+        else if (light["type"] == "directional")
         {
-            m_lights.push_back(make_unique<LightDirectional>(
+            m_lights.setDirectionalLight(LightDirectional(
                 glm::vec3(
                     light["color"][0],
                     light["color"][1],
@@ -163,7 +160,7 @@ void Scene3D::loadJsonLight(const nlohmann::json& sceneJson)
         }
         else if (light["type"] == "point")
         {
-            m_lights.push_back(make_unique<LightPoint>(
+            m_lights.addPointLight(LightPoint(
                 glm::vec3(
                     light["color"][0],
                     light["color"][1],
