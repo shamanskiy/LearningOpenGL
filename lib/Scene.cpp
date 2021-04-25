@@ -66,6 +66,7 @@ void Scene3D::render(const EventContainer& events)
 
     resetFrame(events);
     m_camera.processEvents(events);
+    m_lights.processEvents(events);
     
     m_camera.talkToShader(m_shader);
     m_lights.talkToShader(m_shader);

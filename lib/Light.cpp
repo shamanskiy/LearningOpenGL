@@ -1,6 +1,7 @@
 #include "Light.h"
 
 #include "Shader.h"
+#include "Utils.h"
 #include <algorithm> 
 
 AmbientLight::AmbientLight(glm::vec3 color, GLfloat intensity) :
@@ -71,6 +72,13 @@ void SpotLight::talkToShader(const Shader& shader) const
     glUniform1f(shader.uniforms().spotLight.isOn, m_isOn);
 }
 
+void SpotLight::toggleOnOff()
+{
+    m_isOn = !m_isOn;
+}
+
+
+
 void LightManager::setAmbientLight(const AmbientLight& ambientLight)
 {
     m_ambientLight = ambientLight;
@@ -110,3 +118,15 @@ void LightManager::talkAboutPointLights(const Shader& shader) const
         m_pointLights[i].talkToShader(shader, i);
 }
 
+void LightManager::processEvents(const EventContainer& events)
+{
+    if (events.keyState(GLFW_KEY_F) && m_spotLightSwitch)
+        m_spotLight.toggleOnOff();
+
+    if (events.keyState(GLFW_KEY_F))
+        m_spotLightSwitch = false;
+
+    if (!events.keyState(GLFW_KEY_F) && !m_spotLightSwitch)
+        m_spotLightSwitch = true;
+
+}

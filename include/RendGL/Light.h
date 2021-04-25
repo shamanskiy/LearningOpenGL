@@ -6,6 +6,7 @@
 #include <vector>
 
 class Shader;
+class EventContainer;
 
 
 class AmbientLight
@@ -62,6 +63,7 @@ public:
         bool isOn);
 
     void talkToShader(const Shader & shader) const;
+    void toggleOnOff();
 
 private:
     glm::vec3 m_color;
@@ -82,6 +84,7 @@ public:
     void setSpotLight(const SpotLight& spotLight);
 
     void talkToShader(const Shader& shader) const;
+    void processEvents(const EventContainer& events);
 
 private:
     void talkAboutPointLights(const Shader& shader) const;
@@ -90,4 +93,5 @@ private:
     DirectionalLight m_directionalLight;
     std::vector<PointLight> m_pointLights;
     SpotLight m_spotLight;
+    bool m_spotLightSwitch{ true };
 };
