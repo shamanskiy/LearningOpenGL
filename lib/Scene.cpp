@@ -34,17 +34,11 @@ namespace
         void resetFrame(GLfloat aspectRatio) const;
 
     private:
-        // Interactive camera
-        Camera m_camera;
-        // List of shaders that can be used to render the scene.
-        // Can be cycled through.
         Shader m_shader;
 
-        // List of Models used in the Scene
+        Camera m_camera;
         unordered_map<string, Model> m_models;
-        // Instances of Models that are scaled and translated to positions
         vector<ModelInstance> m_instances;
-
         LightManager m_lights;
     };
 }
@@ -136,7 +130,7 @@ void Scene3D::loadJsonLight(const nlohmann::json& sceneJson)
     for (auto & light : sceneJson["lights"])
         if (light["type"] == "ambient")
         {
-            m_lights.setAmbientLight(LightAmbient(
+            m_lights.setAmbientLight(AmbientLight(
                 glm::vec3(
                     light["color"][0],
                     light["color"][1],
@@ -146,7 +140,7 @@ void Scene3D::loadJsonLight(const nlohmann::json& sceneJson)
         }
         else if (light["type"] == "directional")
         {
-            m_lights.setDirectionalLight(LightDirectional(
+            m_lights.setDirectionalLight(DirectionalLight(
                 glm::vec3(
                     light["color"][0],
                     light["color"][1],
@@ -160,7 +154,7 @@ void Scene3D::loadJsonLight(const nlohmann::json& sceneJson)
         }
         else if (light["type"] == "point")
         {
-            m_lights.addPointLight(LightPoint(
+            m_lights.addPointLight(PointLight(
                 glm::vec3(
                     light["color"][0],
                     light["color"][1],
