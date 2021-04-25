@@ -26,12 +26,12 @@ namespace
         void render(const EventContainer& events) override;
 
     private:
-        void loadJsonModels(const nlohmann::json& sceneJson);
-        void loadJsonCamera(const nlohmann::json& sceneJson);
-        void loadJsonLight(const nlohmann::json& sceneJson);
-        void loadJsonInstances(const nlohmann::json& sceneJson);
+        void loadModels(const nlohmann::json& sceneJson);
+        void loadCamera(const nlohmann::json& sceneJson);
+        void loadLight(const nlohmann::json& sceneJson);
+        void loadInstances(const nlohmann::json& sceneJson);
 
-        void resetFrame(GLfloat aspectRatio) const;
+        void resetFrame(const EventContainer& events) const;
 
     private:
         Shader m_shader;
@@ -65,7 +65,7 @@ void Scene3D::render(const EventContainer& events)
     m_shader.activateShader();
 
     // clear frame and pass projection matrix to shader
-    resetFrame(events.aspectRatio());
+    resetFrame(events);
 
     m_camera.processEvents(events);
     m_camera.talkToShader(m_shader);
@@ -78,13 +78,13 @@ void Scene3D::render(const EventContainer& events)
 
 Scene3D::Scene3D(const nlohmann::json& sceneJson)
 {
-    loadJsonModels(sceneJson);
-    loadJsonInstances(sceneJson);
-    loadJsonCamera(sceneJson);
-    loadJsonLight(sceneJson);
+    loadModels(sceneJson);
+    loadInstances(sceneJson);
+    loadCamera(sceneJson);
+    loadLight(sceneJson);
 }
 
-void Scene3D::loadJsonModels(const nlohmann::json& sceneJson)
+void Scene3D::loadModels(const nlohmann::json& sceneJson)
 {
     for (auto& model : sceneJson["models"])
         try
@@ -98,7 +98,7 @@ void Scene3D::loadJsonModels(const nlohmann::json& sceneJson)
         }
 }
 
-void Scene3D::loadJsonInstances(const nlohmann::json& sceneJson)
+void Scene3D::loadInstances(const nlohmann::json& sceneJson)
 {
     for (auto& instance : sceneJson["instances"])
         if (m_models.find(instance["model"]) != m_models.end())
@@ -111,7 +111,7 @@ void Scene3D::loadJsonInstances(const nlohmann::json& sceneJson)
                     instance["scale"]));
 }
 
-void Scene3D::loadJsonCamera(const nlohmann::json& sceneJson)
+void Scene3D::loadCamera(const nlohmann::json& sceneJson)
 {
     m_camera = Camera(
         glm::vec3(
@@ -125,7 +125,7 @@ void Scene3D::loadJsonCamera(const nlohmann::json& sceneJson)
     );
 }
 
-void Scene3D::loadJsonLight(const nlohmann::json& sceneJson)
+void Scene3D::loadLight(const nlohmann::json& sceneJson)
 {
     for (auto & light : sceneJson["lights"])
         if (light["type"] == "ambient")
@@ -172,12 +172,12 @@ void Scene3D::loadJsonLight(const nlohmann::json& sceneJson)
         }
 }
 
-void Scene3D::resetFrame(GLfloat aspectRatio) const
+void Scene3D::resetFrame(const EventContainer& events) const
 {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glm::mat4 projection = glm::perspective(45.0f, aspectRatio, 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(45.0f, events.aspectRatio(), 0.1f, 100.0f);
     glUniformMatrix4fv(m_shader.uniforms().projectionMatrix, 1, GL_FALSE,
         glm::value_ptr(projection));
 }
