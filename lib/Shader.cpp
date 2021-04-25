@@ -122,10 +122,13 @@ void Shader::validateShaders()
 
 void Shader::getUniforms()
 {
-    m_uniforms.cameraPosition = glGetUniformLocation(m_id, "cameraPosition");
     m_uniforms.modelMatrix = glGetUniformLocation(m_id, "model");
     m_uniforms.viewMatrix = glGetUniformLocation(m_id, "view");
     m_uniforms.projectionMatrix = glGetUniformLocation(m_id, "projection");
+
+
+    m_uniforms.camera.position = glGetUniformLocation(m_id, "camera.position");
+    m_uniforms.camera.direction = glGetUniformLocation(m_id, "camera.direction");
 
     m_uniforms.ambientLight.color = glGetUniformLocation(m_id, "lightA.color");
     m_uniforms.ambientLight.intensity = glGetUniformLocation(m_id, "lightA.intensity");
@@ -154,6 +157,12 @@ void Shader::getUniforms()
         m_uniforms.pointLights[i].position =
             glGetUniformLocation(m_id, locBuff);
     }
+
+    m_uniforms.spotLight.color = glGetUniformLocation(m_id, "lightS.color");
+    m_uniforms.spotLight.intensity = glGetUniformLocation(m_id, "lightS.intensity");
+    m_uniforms.spotLight.attenuation = glGetUniformLocation(m_id, "lightS.attenuation");
+    m_uniforms.spotLight.halfAngle = glGetUniformLocation(m_id, "lightS.halfAngle");
+    m_uniforms.spotLight.isOn = glGetUniformLocation(m_id, "lightS.isOn");
 
     m_uniforms.material.shininess = glGetUniformLocation(m_id, "material.shininess");
     m_uniforms.material.color = glGetUniformLocation(m_id, "material.diffuseColor");

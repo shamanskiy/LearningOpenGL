@@ -8,25 +8,34 @@ out vec4 color;
 
 const int MAX_POINT_LIGHTS = 5;
 
-struct LightAmbient
+struct AmbientLight
 {
     vec3 color;
     float intensity;
 };
 
-struct LightDirectional
+struct DirectionalLight
 {
     vec3 color;
     vec3 direction;
     float intensity;
 };
 
-struct LightPoint
+struct PointLight
 {
     vec3 color;
     vec3 position;
     vec3 attenuation;
     float intensity;
+};
+
+struct SpotLight
+{
+    vec3 color;
+    vec3 attenuation;
+    float intensity;
+    float halfAngle;
+    bool isOn;
 };
 
 struct Material
@@ -35,13 +44,20 @@ struct Material
     vec3 diffuseColor;
 };
 
-uniform sampler2D texSampler;
-uniform vec3 cameraPosition;
+struct Camera
+{
+    vec3 position;
+    vec3 direction;
+};
 
-uniform LightAmbient lightA;
-uniform LightDirectional lightD;
+uniform sampler2D texSampler;
+uniform Camera camera;
+
+uniform AmbientLight lightA;
+uniform DirectionalLight lightD;
 uniform int numPointLights;
-uniform LightPoint lightP[5];
+uniform PointLight lightP[5];
+uniform SpotLight lightS;
 
 uniform Material material;
 
@@ -60,7 +76,7 @@ vec3 computeLightFromDirection(vec3 color, vec3 direction, float intensity)
     // Compute specular
     if (incidentAngle > 0.0f)
     {
-        vec3 dirToCamera = normalize(cameraPosition - pos3D);
+        vec3 dirToCamera = normalize(camera.position - pos3D);
         vec3 reflectedLight = reflect(direction, normalizedNormal);
         float specularAngle = dot(reflectedLight, dirToCamera);
         if (specularAngle > 0.0f)
