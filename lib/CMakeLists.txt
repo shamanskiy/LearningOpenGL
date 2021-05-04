@@ -24,6 +24,11 @@ set(SHADERS_LIST
   ${PROJECT_SOURCE_DIR}/lib/shaders/vertexShader.glsl
 )
 
+set(SCENES_LIST
+  ${PROJECT_SOURCE_DIR}/scenes/exampleScene.json
+  ${PROJECT_SOURCE_DIR}/scenes/welcomeToOpenGL_hero.json
+)
+
 # define a library to compile
 add_library(RendGL
   ${SOURCES_LIST}
@@ -62,4 +67,9 @@ target_include_directories(RendGL
 source_group(Shaders
   FILES
     ${SHADERS_LIST}
+)
+
+source_group(Scenes
+  FILES
+    ${SCENES_LIST}
 )

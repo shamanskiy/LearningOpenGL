@@ -122,38 +122,48 @@ void Shader::validateShaders()
 
 void Shader::getUniforms()
 {
-    m_uniforms.cameraPosition = glGetUniformLocation(m_id, "cameraPosition");
     m_uniforms.modelMatrix = glGetUniformLocation(m_id, "model");
     m_uniforms.viewMatrix = glGetUniformLocation(m_id, "view");
     m_uniforms.projectionMatrix = glGetUniformLocation(m_id, "projection");
 
-    m_uniforms.ambientLight.color = glGetUniformLocation(m_id, "lightA.color");
-    m_uniforms.ambientLight.intensity = glGetUniformLocation(m_id, "lightA.intensity");
 
-    m_uniforms.diffuseLight.color = glGetUniformLocation(m_id, "lightD.color");
-    m_uniforms.diffuseLight.intensity = glGetUniformLocation(m_id, "lightD.intensity");
-    m_uniforms.diffuseLight.direction = glGetUniformLocation(m_id, "lightD.direction");
+    m_uniforms.camera.position = glGetUniformLocation(m_id, "camera.position");
+    m_uniforms.camera.direction = glGetUniformLocation(m_id, "camera.direction");
+
+    m_uniforms.ambientLight.color = glGetUniformLocation(m_id, "ambientLight.color");
+    m_uniforms.ambientLight.intensity = glGetUniformLocation(m_id, "ambientLight.intensity");
+
+    m_uniforms.diffuseLight.color = glGetUniformLocation(m_id, "directionalLight.color");
+    m_uniforms.diffuseLight.intensity = glGetUniformLocation(m_id, "directionalLight.intensity");
+    m_uniforms.diffuseLight.direction = glGetUniformLocation(m_id, "directionalLight.direction");
 
     m_uniforms.numPointLights = glGetUniformLocation(m_id, "numPointLights");
 
     char locBuff[100] = { '\0' };
     for (int i = 0; i < MAX_POINT_LIGHTS; i++)
     {
-        snprintf(locBuff, sizeof(locBuff), "lightP[%d].color", i);
+        snprintf(locBuff, sizeof(locBuff), "pointLights[%d].color", i);
         m_uniforms.pointLights[i].color = glGetUniformLocation(m_id, locBuff);
 
-        snprintf(locBuff, sizeof(locBuff), "lightP[%d].intensity", i);
+        snprintf(locBuff, sizeof(locBuff), "pointLights[%d].intensity", i);
         m_uniforms.pointLights[i].intensity =
             glGetUniformLocation(m_id, locBuff);
 
-        snprintf(locBuff, sizeof(locBuff), "lightP[%d].attenuation", i);
+        snprintf(locBuff, sizeof(locBuff), "pointLights[%d].attenuation", i);
         m_uniforms.pointLights[i].attenuation =
             glGetUniformLocation(m_id, locBuff);
 
-        snprintf(locBuff, sizeof(locBuff), "lightP[%d].position", i);
+        snprintf(locBuff, sizeof(locBuff), "pointLights[%d].position", i);
         m_uniforms.pointLights[i].position =
             glGetUniformLocation(m_id, locBuff);
     }
+
+    m_uniforms.spotLight.color = glGetUniformLocation(m_id, "spotLight.color");
+    m_uniforms.spotLight.intensity = glGetUniformLocation(m_id, "spotLight.intensity");
+    m_uniforms.spotLight.attenuation = glGetUniformLocation(m_id, "spotLight.attenuation");
+    m_uniforms.spotLight.halfAngleCos = glGetUniformLocation(m_id, "spotLight.halfAngleCos");
+    m_uniforms.spotLight.verticalOffset = glGetUniformLocation(m_id, "spotLight.verticalOffset");
+    m_uniforms.spotLight.isOn = glGetUniformLocation(m_id, "spotLight.isOn");
 
     m_uniforms.material.shininess = glGetUniformLocation(m_id, "material.shininess");
     m_uniforms.material.color = glGetUniformLocation(m_id, "material.diffuseColor");

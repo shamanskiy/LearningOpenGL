@@ -87,10 +87,11 @@ void Camera::updateOrientation()
 
 void Camera::talkToShader(const Shader& shader) const
 {
-    glUniform3f(shader.uniforms().cameraPosition,
-        m_state.pos.x,
-        m_state.pos.y,
-        m_state.pos.z);
+    glUniform3f(shader.uniforms().camera.position,
+        m_state.pos.x, m_state.pos.y, m_state.pos.z);
+
+    glUniform3f(shader.uniforms().camera.direction,
+        m_front.x, m_front.y, m_front.z);
 
     glUniformMatrix4fv(shader.uniforms().viewMatrix, 1, GL_FALSE,
         glm::value_ptr(viewMatrix()));

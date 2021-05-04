@@ -7,10 +7,14 @@
 const size_t MAX_POINT_LIGHTS = 5;
 
 struct UniformVariables {
-    GLuint cameraPosition{ 0 };
     GLuint modelMatrix{ 0 };
     GLuint viewMatrix{ 0 };
     GLuint projectionMatrix{ 0 };
+
+    struct {
+        GLuint position{ 0 };
+        GLuint direction{ 0 };
+    } camera;
 
     struct {
         GLuint color{ 0 };
@@ -29,6 +33,15 @@ struct UniformVariables {
         GLuint position{ 0 };
         GLuint attenuation{ 0 };
     } pointLights[MAX_POINT_LIGHTS];
+
+    struct {
+        GLuint color{ 0 };
+        GLuint intensity{ 0 };
+        GLuint attenuation{ 0 };
+        GLuint halfAngleCos{ 0 };
+        GLuint verticalOffset{ 0 };
+        GLuint isOn{ 0 };
+    } spotLight;
 
     GLuint numPointLights{ 0 };
     

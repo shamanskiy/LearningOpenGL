@@ -10,7 +10,6 @@ public:
         const std::string& windowName = "MyApp");
     ~Window();
 
-
     // Process GLFW input. Should be called at the start of the loop
     void pollEvents();
 
