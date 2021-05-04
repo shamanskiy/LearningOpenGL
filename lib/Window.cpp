@@ -29,6 +29,7 @@ void Window::initialize()
     }
 
     // Set OpenGL version
+    glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     // Core Profile = No Backwards Compatibility (?)

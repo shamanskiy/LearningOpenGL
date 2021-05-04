@@ -30,6 +30,7 @@ namespace
         void loadCamera(const nlohmann::json& sceneJson);
         void loadLight(const nlohmann::json& sceneJson);
         void loadInstances(const nlohmann::json& sceneJson);
+        void loadBackgroundColor(const nlohmann::json& sceneJson);
 
         void resetFrame(const EventContainer& events) const;
 
@@ -40,6 +41,7 @@ namespace
         unordered_map<string, Model> m_models;
         vector<ModelInstance> m_instances;
         LightManager m_lights;
+        glm::vec3 m_backgroundColor;
     };
 }
 
@@ -81,6 +83,16 @@ Scene3D::Scene3D(const nlohmann::json& sceneJson)
     loadInstances(sceneJson);
     loadCamera(sceneJson);
     loadLight(sceneJson);
+    loadBackgroundColor(sceneJson);
+}
+
+void Scene3D::loadBackgroundColor(const nlohmann::json& sceneJson)
+{
+    m_backgroundColor = glm::vec3(
+        sceneJson["backgroundColor"][0],
+        sceneJson["backgroundColor"][1],
+        sceneJson["backgroundColor"][2]
+    );
 }
 
 void Scene3D::loadModels(const nlohmann::json& sceneJson)
@@ -129,7 +141,7 @@ void Scene3D::loadLight(const nlohmann::json& sceneJson)
     m_lights.setSpotLight(SpotLight(
         glm::vec3(1.0f, 1.0f, 1.0f),
         glm::vec3(0.1, 0.2, 0.3),
-        10.0f, 15.0f, true
+        10.0f, 15.0f, false
     ));
 
     for (auto & light : sceneJson["lights"])
@@ -179,7 +191,8 @@ void Scene3D::loadLight(const nlohmann::json& sceneJson)
 
 void Scene3D::resetFrame(const EventContainer& events) const
 {
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(m_backgroundColor.x, m_backgroundColor.y, m_backgroundColor.z,
+        1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glm::mat4 projection = glm::perspective(45.0f, events.aspectRatio(), 0.1f, 100.0f);

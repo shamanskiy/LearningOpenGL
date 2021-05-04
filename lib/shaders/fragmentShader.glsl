@@ -88,6 +88,9 @@ vec3 computeLightFromDirection(vec3 color, vec3 direction, float intensity)
 
 vec3 computeDirectionalLight()
 {
+    if (directionalLight.intensity < 0)
+        return vec3(0,0,0); 
+
     return computeLightFromDirection(directionalLight.color, directionalLight.direction,
                                      directionalLight.intensity);
 }
