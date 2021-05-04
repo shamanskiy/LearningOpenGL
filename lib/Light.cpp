@@ -52,12 +52,13 @@ void PointLight::talkToShader(const Shader& shader, int number) const
 }
 
 SpotLight::SpotLight(glm::vec3 color, glm::vec3 attenuation,
-    GLfloat intensity, GLfloat halfAngle,
+    GLfloat intensity, GLfloat halfAngle, GLfloat verticalOffset,
     bool isOn) :
     m_color(color),
     m_attenuation(attenuation),
     m_intensity(intensity),
     m_halfAngleCos(cos(glm::radians(halfAngle))),
+    m_verticalOffset(verticalOffset),
     m_isOn(isOn)
 {}
 
@@ -69,7 +70,8 @@ void SpotLight::talkToShader(const Shader& shader) const
         m_attenuation.x, m_attenuation.y, m_attenuation.z);
     glUniform1f(shader.uniforms().spotLight.intensity, m_intensity);
     glUniform1f(shader.uniforms().spotLight.halfAngleCos, m_halfAngleCos);
-    glUniform1f(shader.uniforms().spotLight.isOn, m_isOn);
+    glUniform1f(shader.uniforms().spotLight.verticalOffset, m_verticalOffset);
+    glUniform1i(shader.uniforms().spotLight.isOn, m_isOn);
 }
 
 void SpotLight::toggleOnOff()

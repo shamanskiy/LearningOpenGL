@@ -162,6 +162,7 @@ void Shader::getUniforms()
     m_uniforms.spotLight.intensity = glGetUniformLocation(m_id, "spotLight.intensity");
     m_uniforms.spotLight.attenuation = glGetUniformLocation(m_id, "spotLight.attenuation");
     m_uniforms.spotLight.halfAngleCos = glGetUniformLocation(m_id, "spotLight.halfAngleCos");
+    m_uniforms.spotLight.verticalOffset = glGetUniformLocation(m_id, "spotLight.verticalOffset");
     m_uniforms.spotLight.isOn = glGetUniformLocation(m_id, "spotLight.isOn");
 
     m_uniforms.material.shininess = glGetUniformLocation(m_id, "material.shininess");

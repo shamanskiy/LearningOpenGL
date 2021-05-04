@@ -138,12 +138,6 @@ void Scene3D::loadCamera(const nlohmann::json& sceneJson)
 
 void Scene3D::loadLight(const nlohmann::json& sceneJson)
 {
-    m_lights.setSpotLight(SpotLight(
-        glm::vec3(1.0f, 1.0f, 1.0f),
-        glm::vec3(0.1, 0.2, 0.3),
-        10.0f, 15.0f, false
-    ));
-
     for (auto & light : sceneJson["lights"])
         if (light["type"] == "ambient")
         {
@@ -186,6 +180,23 @@ void Scene3D::loadLight(const nlohmann::json& sceneJson)
                     light["attenuation"][2]),
                 light["intensity"]
                 ));
+        }
+        else if (light["type"] == "spot")
+        {
+            m_lights.setSpotLight(SpotLight(
+                glm::vec3(
+                    light["color"][0],
+                    light["color"][1],
+                    light["color"][2]),
+                glm::vec3(
+                    light["attenuation"][0],
+                    light["attenuation"][1],
+                    light["attenuation"][2]),
+                light["intensity"],
+                light["halfAngle"],
+                light["verticalOffset"],
+                light["isOn"] == 0 ? false : true
+            ));
         }
 }
 

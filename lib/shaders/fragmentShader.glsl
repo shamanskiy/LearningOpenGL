@@ -35,6 +35,7 @@ struct SpotLight
     vec3 attenuation;
     float intensity;
     float halfAngleCos;
+    float verticalOffset;
     bool isOn;
 };
 
@@ -66,33 +67,32 @@ vec3 computeAmbientLight()
     return ambientLight.color * ambientLight.intensity;
 }
 
-vec3 computeLightFromDirection(vec3 color, vec3 direction, float intensity)
+float computeIllumination(vec3 direction)
 {
     // Assume light direction is normalized
     vec3 normalizedNormal = normalize(normal);
-    float incidentAngle = max(-1 * dot(normalizedNormal, direction), 0.0f);
-    float lightFactor = intensity * incidentAngle;
+    float illumination = max(-1 * dot(normalizedNormal, direction), 0.0f);
     
     // Compute specular
-    if (incidentAngle > 0.0f)
+    if (illumination > 0.0f)
     {
         vec3 dirToCamera = normalize(camera.position - pos3D);
         vec3 reflectedLight = reflect(direction, normalizedNormal);
         float specularAngle = dot(reflectedLight, dirToCamera);
         if (specularAngle > 0.0f)
-            lightFactor += pow(specularAngle,material.shininess);
+            illumination += pow(specularAngle,material.shininess);
     }
 
-    return color * lightFactor;
+    return illumination;
 }
 
 vec3 computeDirectionalLight()
 {
-    if (directionalLight.intensity < 0)
+    if (directionalLight.intensity <= 0)
         return vec3(0,0,0); 
 
-    return computeLightFromDirection(directionalLight.color, directionalLight.direction,
-                                     directionalLight.intensity);
+    return computeIllumination(directionalLight.direction) *
+           directionalLight.color * directionalLight.intensity;
 }
 
 float computeAttenuation(vec3 coeffs, float dist)
@@ -109,8 +109,8 @@ vec3 computePointLights()
         vec3 direction = pos3D - pointLights[i].position;
         float distance = length(direction);
         float attenuation = computeAttenuation(pointLights[i].attenuation, distance);
-        pointLightsColor += computeLightFromDirection(pointLights[i].color, normalize(direction),
-                            pointLights[i].intensity / attenuation);
+        pointLightsColor += computeIllumination(normalize(direction)) * 
+            pointLights[i].color * pointLights[i].intensity / attenuation;
     }
 
     return pointLightsColor;
@@ -122,7 +122,7 @@ vec3 computeSpotLight()
         return vec3(0.0,0.0,0.0);
 
     vec3 direction = pos3D - camera.position;
-    direction.y += 0.3;
+    direction.y -= spotLight.verticalOffset;
     float distance = length(direction);
     vec3 normalizedDirection = normalize(direction);
     float angleFromBeamAxis = dot(normalizedDirection, camera.direction);
@@ -130,9 +130,10 @@ vec3 computeSpotLight()
         return vec3(0.0,0.0,0.0);
 
     float attenuation = computeAttenuation(spotLight.attenuation, distance);
+    float smoothEdgeFactor = 1.0 - (1.0 - angleFromBeamAxis)/(1.0 - spotLight.halfAngleCos);
 
-    return computeLightFromDirection(spotLight.color,normalizedDirection,
-        spotLight.intensity/attenuation) * (1.0 - (1.0 - angleFromBeamAxis)*(1.0f/(1.0f - spotLight.halfAngleCos)));
+    return computeIllumination(normalizedDirection) * spotLight.color *
+        spotLight.intensity / attenuation * smoothEdgeFactor;
 }
 
 void main()

@@ -59,7 +59,7 @@ class SpotLight
 public:
     SpotLight() = default;
     SpotLight(glm::vec3 color, glm::vec3 attenuation,
-        GLfloat intensity, GLfloat halfAngle,
+        GLfloat intensity, GLfloat halfAngle, GLfloat verticalOffset,
         bool isOn);
 
     void talkToShader(const Shader & shader) const;
@@ -71,6 +71,7 @@ private:
     glm::vec3 m_attenuation;
     GLfloat m_intensity;
     GLfloat m_halfAngleCos;
+    GLfloat m_verticalOffset;
     bool m_isOn;
 };
 

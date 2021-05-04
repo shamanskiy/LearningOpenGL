@@ -39,6 +39,7 @@ struct UniformVariables {
         GLuint intensity{ 0 };
         GLuint attenuation{ 0 };
         GLuint halfAngleCos{ 0 };
+        GLuint verticalOffset{ 0 };
         GLuint isOn{ 0 };
     } spotLight;
 
