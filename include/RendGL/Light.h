@@ -5,6 +5,8 @@
 
 #include <vector>
 
+#include "Utils.h"
+
 class Shader;
 class EventContainer;
 
@@ -63,7 +65,7 @@ public:
         bool isOn);
 
     void talkToShader(const Shader & shader) const;
-    void toggleOnOff();
+    void switchOnOff(bool signal);
 
 private:
     glm::vec3 m_color;
@@ -72,7 +74,7 @@ private:
     GLfloat m_intensity;
     GLfloat m_halfAngleCos;
     GLfloat m_verticalOffset;
-    bool m_isOn;
+    StickyButton m_isOn;
 };
 
 
@@ -94,5 +96,4 @@ private:
     DirectionalLight m_directionalLight;
     std::vector<PointLight> m_pointLights;
     SpotLight m_spotLight;
-    bool m_spotLightSwitch{ true };
 };

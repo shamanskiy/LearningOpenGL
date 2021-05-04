@@ -67,3 +67,19 @@ void debugOutput(const std::string& message)
 	std::cout << message << "\n";
 }
 
+StickyButton::StickyButton(bool state) :
+	m_state(state),
+	m_responsive(true)
+{}
+
+void StickyButton::push()
+{
+	if (m_responsive)
+		m_state = !m_state;
+	m_responsive = false;
+}
+
+void StickyButton::release()
+{
+	m_responsive = true;
+}

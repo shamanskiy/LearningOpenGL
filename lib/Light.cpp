@@ -71,15 +71,16 @@ void SpotLight::talkToShader(const Shader& shader) const
     glUniform1f(shader.uniforms().spotLight.intensity, m_intensity);
     glUniform1f(shader.uniforms().spotLight.halfAngleCos, m_halfAngleCos);
     glUniform1f(shader.uniforms().spotLight.verticalOffset, m_verticalOffset);
-    glUniform1i(shader.uniforms().spotLight.isOn, m_isOn);
+    glUniform1i(shader.uniforms().spotLight.isOn, m_isOn.state());
 }
 
-void SpotLight::toggleOnOff()
+void SpotLight::switchOnOff(bool signal)
 {
-    m_isOn = !m_isOn;
+    if (signal)
+        m_isOn.push();
+    else
+        m_isOn.release();
 }
-
-
 
 void LightManager::setAmbientLight(const AmbientLight& ambientLight)
 {
@@ -122,13 +123,9 @@ void LightManager::talkAboutPointLights(const Shader& shader) const
 
 void LightManager::processEvents(const EventContainer& events)
 {
-    if (events.keyState(GLFW_KEY_F) && m_spotLightSwitch)
-        m_spotLight.toggleOnOff();
-
     if (events.keyState(GLFW_KEY_F))
-        m_spotLightSwitch = false;
-
-    if (!events.keyState(GLFW_KEY_F) && !m_spotLightSwitch)
-        m_spotLightSwitch = true;
+        m_spotLight.switchOnOff(true);
+    else
+        m_spotLight.switchOnOff(false);
 
 }

@@ -98,3 +98,17 @@ private:
 
 // TODO: prints a message to the console in the debug build only
 void debugOutput(const std::string& message);
+
+class StickyButton
+{
+public:
+    StickyButton(bool state = false);
+
+    bool state() const { return m_state; }
+    void push(); 
+    void release();
+
+private:
+    bool m_state;
+    bool m_responsive;
+};
