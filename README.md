@@ -1,7 +1,9 @@
 # LearningOpenGL
-LearningOpenGL is a small project based on [a great OpenGL course by Ben Cook on Udemy.com.](https://www.udemy.com/course/graphics-with-modern-opengl)
+LearningOpenGL is a small beginner-level project to learn a bit of OpenGL.
 
 The project follows the guidelines of modern OpenGL and demonstrates the complete rendering pipeline, object importing, shading, interactive camera, texturing and more. This is also my playground to experiment with Cmake and unit testing.
+
+<img src="https://raw.githubusercontent.com/Shamanskiy/LearningOpenGL/media/images/hero_image.png" width="500">
 
 ## Dependencies
 The following libraries have to be installed to compile the project:
