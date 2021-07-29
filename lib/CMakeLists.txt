@@ -46,7 +46,7 @@ target_link_libraries(RendGL
     OpenGL::GL
     GLEW::GLEW
     glfw
-    glm
+    glm::glm
     assimp::assimp
 )
 
