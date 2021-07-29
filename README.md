@@ -5,6 +5,10 @@ The project follows the guidelines of modern OpenGL and demonstrates the complet
 
 <img src="https://raw.githubusercontent.com/Shamanskiy/LearningOpenGL/media/images/hero_image.png" width="500">
 
+## Prerequisites
+* CMake >= 3.20
+* C++ compiler (MSVC, GCC, Clang)
+
 ## How to download
 The project includes [vcpkg](https://github.com/microsoft/vcpkg) as a submodule. To clone everything in one go, do
 ```
