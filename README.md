@@ -43,4 +43,6 @@ When you configure the project for the first time, vcpkg will download OpenGL, G
  ```
  or using your preferred method. Enjoy!
 
+ cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=/Users/shamanskiy/Software/vcpkg/scripts/buildsystems/vcpkg.cmake
+
 
