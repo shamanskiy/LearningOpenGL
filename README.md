@@ -9,18 +9,8 @@ The project follows the guidelines of modern OpenGL and demonstrates the complet
 * CMake >= 3.20
 * C++ compiler (MSVC, GCC, Clang)
 
-## How to download
-The project includes [vcpkg](https://github.com/microsoft/vcpkg) as a submodule. To clone everything in one go, do
-```
-git clone --recurse-submodules https://github.com/Shamanskiy/LearningOpenGL.git
-```
-If you have already cloned the project and CMake complains that it can't find vcpkg, you have to clone the submodule yourself. To that end, do
-```
-git submodule init
-git submodule update
-```
-
 ## How to configure
+This project uses vcpkg to manage dependencies. If you don't have [https://vcpkg.io/en/index.html](aass)
 Use CMake to configure the project. For example, from the project root directory do
 ```
 mkdir build
