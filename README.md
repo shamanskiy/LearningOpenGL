@@ -7,32 +7,35 @@ The project follows the guidelines of modern OpenGL and demonstrates the complet
 
 ## Prerequisites
 * CMake >= 3.20
+* vcpkg
 * C++ compiler (MSVC, GCC, Clang)
 
-## How to configure
-This project uses vcpkg to manage dependencies. If you don't have [https://vcpkg.io/en/index.html](aass)
+## How to get vcpkg
+This project uses [vcpkg](https://vcpkg.io/en/index.html) to manage dependencies. If you don't have vcpkg, you can get it by running
+```
+git clone https://github.com/microsoft/vcpkg.git
+./vcpkg/bootstrap-vcpkg
+```
+
+## How to configure the project
 Use CMake to configure the project. For example, from the project root directory do
 ```
-mkdir build
-cd build
-cmake ..
+cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=/path/to/vcpkg/scripts/buildsystems/vcpkg.cmake
 ```
-When you configure the project for the first time, vcpkg will download OpenGL, GLEW, glfw3, glm, assimp and googletest (and possibly other libraries, too) and install them locally in the CMake build folder. This step may take a while. 
+The CMAKE_TOOLCHAIN_FILE settings allows CMake to use libraries provided by vcpkg. If anything is missing, vcpkg will download and build it. When you configure the project for the first time, vcpkg will download OpenGL, GLEW, glfw3, glm, assimp and googletest (and possibly other libraries, too). This step may take a while. 
 
  ## How to test
  The `unit_tests` target builds all the unit tests. Build it with
  ```
- cmake --build . --target unit_tests --config Release
+ cmake --build . --target unit_tests
  ```
  or using your preferred method.
 
  ## How to run
  The `exampleScene` target builds the demo app. Build it with
  ```
- cmake --build . --target exampleScene --config Release
+ cmake --build . --target exampleScene
  ```
  or using your preferred method. Enjoy!
-
- cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=/Users/shamanskiy/Software/vcpkg/scripts/buildsystems/vcpkg.cmake
 
 
