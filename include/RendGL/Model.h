@@ -151,7 +151,7 @@ struct ModelException : public std::exception
 		m_message(message)
 	{}
 
-	const char* what() const
+	const char* what() const _NOEXCEPT
 	{
 		return m_message.c_str();
 	}

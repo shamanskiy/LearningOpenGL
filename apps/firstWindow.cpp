@@ -31,7 +31,7 @@ int main()
     glfwMakeContextCurrent(window);
 
     // Try to initialize GLEW. GLEW (OpenGL Extension Wrangler Library) adapts OpenGL to your
-    // OS and hardware. For all intents and purposes, you can of GLEW and OpenGL as the same.
+    // OS and hardware. 
     if (glewInit() != GLEW_OK) {
         std::cout << "Failed to initialize GLFW\n";
         return -1;
@@ -41,12 +41,13 @@ int main()
     // Here is where the magic happens.
     while(!glfwWindowShouldClose(window)) 
     {
-        // Check the input. You can make your 
+        // Check the input.
         glfwPollEvents();
 
+        // Clear the back/hidden buffer before drawing to it.
         glClear(GL_COLOR_BUFFER_BIT);
 
-
+        // Swap the front/displayed buffer with the back buffer to display the latter.
         glfwSwapBuffers(window);
     }
 

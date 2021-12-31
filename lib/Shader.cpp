@@ -58,7 +58,7 @@ void Shader::createShaders(const std::string &vShader, const std::string &fShade
     compileShader(vShader, GL_VERTEX_SHADER);
     compileShader(fShader, GL_FRAGMENT_SHADER);
     linkShaders();
-    validateShaders();
+    //validateShaders();
 
     getUniforms();
 }

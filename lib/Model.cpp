@@ -20,7 +20,7 @@ namespace
 {
 	struct TextureException : public std::exception
 	{
-		const char* what() const
+		const char* what() const _NOEXCEPT
 		{
 			return "Texture file not found";
 		}
