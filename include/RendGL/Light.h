@@ -9,6 +9,7 @@
 
 class EventContainer;
 
+constexpr size_t MAX_POINT_LIGHTS = 5;
 
 class AmbientLight
 {

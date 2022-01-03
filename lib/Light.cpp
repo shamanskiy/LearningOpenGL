@@ -1,6 +1,5 @@
 #include "Light.h"
 
-#include "Shader.h"
 #include "Utils.h"
 #include <algorithm> 
 
