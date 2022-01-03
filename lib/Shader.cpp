@@ -43,7 +43,13 @@ void Shader::createShaders(const std::string &vShader, const std::string &fShade
     compileShader(vShader, GL_VERTEX_SHADER);
     compileShader(fShader, GL_FRAGMENT_SHADER);
     linkShaders();
-    //validateShaders();
+
+    // To validate a shader, we need a bound VAO
+    GLuint validationVAO;
+	glGenVertexArrays(1, &validationVAO);
+    glBindVertexArray(validationVAO);
+    validateShaders();
+    glDeleteVertexArrays(1, &validationVAO);
 }
 
 void Shader::compileShader(const std::string &shaderCode, GLenum shaderType)

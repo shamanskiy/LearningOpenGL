@@ -3,37 +3,12 @@
 #include <GLFW/glfw3.h>
 
 #include "Shader.h"
+#include "Window.h"
 #include "Config.h"
 
 int main( void )
 {
-	if (!glfwInit())
-    {
-        std::cout << "Failed to initialize GLFW\n";
-        return -1;
-    }
-
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    
-    GLFWwindow *window = glfwCreateWindow(800, 600, "My first OpenGL triangle", nullptr, nullptr);
-    if (!window)
-    {
-        std::cout << "Failed to create a GLFW window\n";
-        glfwTerminate();
-        return -1;
-    }
-    glfwMakeContextCurrent(window);
-
-    if (glewInit() != GLEW_OK)
-    {
-        std::cout << "Failed to initialize GLEW\n";
-        glfwTerminate();
-        return -1;
-    }
-    glewExperimental = GL_TRUE;
+    Window window(800, 600, "OpenGL Triangle");
 
     // Vertex data in the memory that we will send to the GPU.
 	const GLfloat vertices[] = { 
@@ -81,24 +56,21 @@ int main( void )
     Shader shader(SHADERS_DIR + "vertexShaderBasic.glsl", SHADERS_DIR + "fragmentShaderBasic.glsl");
     shader.activateShader();
 
-    while (!glfwWindowShouldClose(window))
+    while (!window.shouldClose())
     {
-        glfwPollEvents();    
-        glClear(GL_COLOR_BUFFER_BIT);
+        window.pollEvents();
 
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // Draw triangles from the currently bound VAO.
         // Start at vertex 0, draw 3 vertices.
         glDrawArrays(GL_TRIANGLES, 0, 3); 
         
-        glfwSwapBuffers(window);
+        window.swapBuffers();
     }
 
     // free memory on GPU
 	glDeleteBuffers(1, &vertexBufferID);
 	glDeleteVertexArrays(1, &vertexArrayID);
     
-    glfwDestroyWindow(window);
-    glfwTerminate();
-
 	return 0;
 }
