@@ -63,7 +63,6 @@ public:
     Shader(Shader&& other) noexcept;
     Shader& operator=(Shader&& other) & noexcept;
 
-    const UniformVariables& uniforms() const { return m_uniforms; }
     void activateShader() const { glUseProgram(m_id); }
     GLuint id() const { return m_id; }
     

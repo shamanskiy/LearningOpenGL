@@ -367,7 +367,7 @@ void Model::loadMaterials(const aiScene* scene)
 	}
 }
 
-void Model::render(const Shader& shader) const
+void Model::render(GLuint shader) const
 {
 	for (size_t i = 0; i < m_meshes.size(); i++)
 	{
@@ -381,11 +381,11 @@ void Model::render(const Shader& shader) const
 // ==============          MATERIAL CLASS     ===================================
 // ==============================================================================
 
-void Material::activate(const Shader& shader) const
+void Material::activate(GLuint shader) const
 {
 	m_texture.activate();
-	glUniform1f(shader.uniforms().material.shininess, m_shininess);
-	glUniform3f(shader.uniforms().material.color,
+	glUniform1f(glGetUniformLocation(shader, "material.shininess"), m_shininess);
+	glUniform3f(glGetUniformLocation(shader, "material.diffuseColor"),
 		m_diffuseColor.x, m_diffuseColor.y, m_diffuseColor.z);
 }
 
@@ -405,10 +405,10 @@ ModelInstance::ModelInstance(const Model& model,
 		glm::vec3(scale, scale, scale));
 }
 
-void ModelInstance::render(const Shader& shader) const
+void ModelInstance::render(GLuint shader) const
 {
 	// send model matrix to the GPU
-	glUniformMatrix4fv(shader.uniforms().modelMatrix, 1, GL_FALSE,
+	glUniformMatrix4fv(glGetUniformLocation(shader, "model"), 1, GL_FALSE,
 		glm::value_ptr(m_modelMatrix));
 	// render the model
 	m_model.render(shader);

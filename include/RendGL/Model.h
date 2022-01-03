@@ -81,7 +81,7 @@ struct Material
 	glm::vec3 m_diffuseColor;
 	GLfloat m_shininess;
 
-	void activate(const Shader& shader) const;
+	void activate(GLuint shader) const;
 };
 
 // Model represent a 3D model stored in a file.
@@ -93,7 +93,7 @@ public:
 	Model() = default;
 	Model(const string& modelName);
 
-	void render(const Shader& shader) const;
+	void render(GLuint shader) const;
 
 	const array<GLfloat, 6>& boundingBox() const { return m_boundingBox; }
 	string boundingBoxAsString() const;
@@ -136,7 +136,7 @@ public:
 		GLfloat posX = 0.0f, GLfloat posY = 0.0f, GLfloat posZ = 0.0f,
 		GLfloat scale = 1.0f);
 
-	void render(const Shader& shader) const;
+	void render(GLuint shader) const;
 
 private:
 	// a non-owning pointer to the Model

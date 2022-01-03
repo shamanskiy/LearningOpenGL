@@ -74,7 +74,7 @@ void Scene3D::render(const EventContainer& events)
     m_lights.talkToShader(m_shader.id());
 
     for (auto& it : m_instances)
-        it.render(m_shader);
+        it.render(m_shader.id());
 }
 
 Scene3D::Scene3D(const nlohmann::json& sceneJson)
@@ -207,6 +207,6 @@ void Scene3D::resetFrame(const EventContainer& events) const
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glm::mat4 projection = glm::perspective(45.0f, events.aspectRatio(), 0.1f, 100.0f);
-    glUniformMatrix4fv(m_shader.uniforms().projectionMatrix, 1, GL_FALSE,
+    glUniformMatrix4fv(glGetUniformLocation(m_shader.id(), "projection"), 1, GL_FALSE,
         glm::value_ptr(projection));
 }
