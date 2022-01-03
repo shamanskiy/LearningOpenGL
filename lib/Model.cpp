@@ -110,11 +110,11 @@ void Mesh::createMesh(const vector<GLfloat>& vertices,
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * m_numIndices, &indices[0], GL_STATIC_DRAW);
 
 	// deactivate VAO, no need to edit this object (should it be here or after VBO and EBO?)
-	glBindVertexArray(0);
+	//glBindVertexArray(0);
 	// deactivate VBO, no need to edit the vertex data any more
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
 	// deactivate EBO, no need to edit the index data any more
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 void Mesh::render() const
@@ -122,12 +122,12 @@ void Mesh::render() const
 	// activate VAO, VAO = object (?)
 	glBindVertexArray(m_VAO);
 	// activate EBO
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
 	// 0 is a nullptr to smth
 	glDrawElements(GL_TRIANGLES, m_numIndices, GL_UNSIGNED_INT, nullptr);
 	// deactivate VAO and EBO
-	glBindVertexArray(0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	//glBindVertexArray(0);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 void Mesh::deleteMesh()
