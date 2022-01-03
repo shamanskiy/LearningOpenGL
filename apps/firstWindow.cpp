@@ -1,3 +1,4 @@
+// This is a demo app that shows how to create a GLFW window.
 #include <iostream>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

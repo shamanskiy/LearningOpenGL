@@ -1,7 +1,4 @@
-#include <iostream>
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-
+// This is a demo app that shows basic OpenGL steps to draw a single triangle.
 #include "Shader.h"
 #include "Window.h"
 #include "Config.h"
@@ -10,12 +7,16 @@ int main( void )
 {
     Window window(800, 600, "OpenGL Triangle");
 
+    // Create, compile and activate the shader
+    Shader shader(SHADERS_DIR + "vertexShaderBasic.glsl", SHADERS_DIR + "fragmentShaderBasic.glsl");
+    shader.activateShader();
+
     // Vertex data in the memory that we will send to the GPU.
-	const GLfloat vertices[] = { 
-		-1.0f, -1.0f, 0.0f,
-		 1.0f, -1.0f, 0.0f,
-		 0.0f,  1.0f, 0.0f,
-	};
+    const GLfloat vertices[] = { 
+        -1.0f, -1.0f, 0.0f,
+         1.0f, -1.0f, 0.0f,
+         0.0f,  1.0f, 0.0f,
+    };
     
     // Create a buffer object on the GPU where we will store the raw vertex data.
     GLuint vertexBufferID;
@@ -30,8 +31,8 @@ int main( void )
 
     // Create a vertex array object (VAO) on the GPU that will map data from the vertex buffer
     // to the vertex shader.
-	GLuint vertexArrayID;
-	glGenVertexArrays(1, &vertexArrayID);
+    GLuint vertexArrayID;
+    glGenVertexArrays(1, &vertexArrayID);
     // Bind the VAO. While it's bound, the following vertex array operations
     // will refer to this VAO.
     glBindVertexArray(vertexArrayID);
@@ -52,10 +53,6 @@ int main( void )
     // We are done with the buffer, unbind it. Not necessary but a good practice.
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     
-	// Create, compile and activate the shader
-    Shader shader(SHADERS_DIR + "vertexShaderBasic.glsl", SHADERS_DIR + "fragmentShaderBasic.glsl");
-    shader.activateShader();
-
     while (!window.shouldClose())
     {
         window.pollEvents();
@@ -68,9 +65,9 @@ int main( void )
         window.swapBuffers();
     }
 
-    // free memory on GPU
-	glDeleteBuffers(1, &vertexBufferID);
-	glDeleteVertexArrays(1, &vertexArrayID);
+    // free memory on the GPU
+    glDeleteBuffers(1, &vertexBufferID);
+    glDeleteVertexArrays(1, &vertexArrayID);
     
-	return 0;
+    return 0;
 }
