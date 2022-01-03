@@ -7,7 +7,6 @@
 
 #include "Utils.h"
 
-class Shader;
 class EventContainer;
 
 
@@ -17,7 +16,7 @@ public:
     AmbientLight() = default;
     AmbientLight(glm::vec3 color, GLfloat intensity);
 
-    void talkToShader(const Shader& shader) const;
+    void talkToShader(GLuint shader) const;
 
 private:
     glm::vec3 m_color;
@@ -31,7 +30,7 @@ public:
     DirectionalLight(glm::vec3 color, glm::vec3 direction,
         GLfloat intensity);
 
-    void talkToShader(const Shader& shader) const;
+    void talkToShader(GLuint shader) const;
 
 private:
     glm::vec3 m_color;
@@ -46,7 +45,7 @@ public:
     PointLight(glm::vec3 color, glm::vec3 position,
         glm::vec3 attenuation, GLfloat intensity);
 
-    void talkToShader(const Shader& shader, int number) const;
+    void talkToShader(GLuint shader, int number) const;
 
 private:
     glm::vec3 m_color;
@@ -64,7 +63,7 @@ public:
         GLfloat intensity, GLfloat halfAngle, GLfloat verticalOffset,
         bool isOn);
 
-    void talkToShader(const Shader & shader) const;
+    void talkToShader(GLuint shader) const;
     void switchOnOff(bool signal);
 
 private:
@@ -86,11 +85,11 @@ public:
     void addPointLight(const PointLight& pointLight);
     void setSpotLight(const SpotLight& spotLight);
 
-    void talkToShader(const Shader& shader) const;
+    void talkToShader(GLuint shader) const;
     void processEvents(const EventContainer& events);
 
 private:
-    void talkAboutPointLights(const Shader& shader) const;
+    void talkAboutPointLights(GLuint shader) const;
 private:
     AmbientLight m_ambientLight;
     DirectionalLight m_directionalLight;

@@ -4,7 +4,6 @@
 #include <iostream>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Shader.h"
 #include "Utils.h"
 
 
@@ -85,14 +84,14 @@ void Camera::updateOrientation()
     m_up = glm::normalize(glm::cross(m_right,m_front));
 }
 
-void Camera::talkToShader(const Shader& shader) const
+void Camera::talkToShader(GLuint shader) const
 {
-    glUniform3f(shader.uniforms().camera.position,
+    glUniform3f(glGetUniformLocation(shader, "camera.position"),
         m_state.pos.x, m_state.pos.y, m_state.pos.z);
 
-    glUniform3f(shader.uniforms().camera.direction,
+    glUniform3f(glGetUniformLocation(shader, "camera.direction"),
         m_front.x, m_front.y, m_front.z);
 
-    glUniformMatrix4fv(shader.uniforms().viewMatrix, 1, GL_FALSE,
+    glUniformMatrix4fv(glGetUniformLocation(shader, "view"), 1, GL_FALSE,
         glm::value_ptr(viewMatrix()));
 }

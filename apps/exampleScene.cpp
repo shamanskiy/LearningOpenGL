@@ -3,6 +3,7 @@
 #include "Window.h"
 #include "Scene.h"
 #include "Config.h"
+#include "Shader.h"
 
 int main() {
     try

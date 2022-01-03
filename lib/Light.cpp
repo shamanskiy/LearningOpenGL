@@ -9,11 +9,11 @@ AmbientLight::AmbientLight(glm::vec3 color, GLfloat intensity) :
     m_intensity(intensity)
 {}
 
-void AmbientLight::talkToShader(const Shader& shader) const
+void AmbientLight::talkToShader(GLuint shader) const
 {
-    glUniform3f(shader.uniforms().ambientLight.color,
+    glUniform3f(glGetUniformLocation(shader, "ambientLight.color"),
         m_color.x, m_color.y, m_color.z);
-    glUniform1f(shader.uniforms().ambientLight.intensity, m_intensity);
+    glUniform1f(glGetUniformLocation(shader, "ambientLight.intensity"), m_intensity);
 }
 
 DirectionalLight::DirectionalLight(glm::vec3 color, glm::vec3 direction,
@@ -23,13 +23,13 @@ DirectionalLight::DirectionalLight(glm::vec3 color, glm::vec3 direction,
     m_intensity(intensity)
 {}
 
-void DirectionalLight::talkToShader(const Shader& shader) const
+void DirectionalLight::talkToShader(GLuint shader) const
 {
-    glUniform3f(shader.uniforms().diffuseLight.color,
+    glUniform3f(glGetUniformLocation(shader, "diffuseLight.color"),
         m_color.x, m_color.y, m_color.z);
-    glUniform3f(shader.uniforms().diffuseLight.direction,
+    glUniform3f(glGetUniformLocation(shader, "diffuseLight.direction"),
         m_direction.x, m_direction.y, m_direction.z);
-    glUniform1f(shader.uniforms().diffuseLight.intensity, m_intensity);
+    glUniform1f(glGetUniformLocation(shader, "diffuseLight.intensity"), m_intensity);
 }
 
 PointLight::PointLight(glm::vec3 color, glm::vec3 position,
@@ -40,15 +40,24 @@ PointLight::PointLight(glm::vec3 color, glm::vec3 position,
     m_intensity(intensity)
 {}
 
-void PointLight::talkToShader(const Shader& shader, int number) const
+void PointLight::talkToShader(GLuint shader, int number) const
 {
-    glUniform3f(shader.uniforms().pointLights[number].color,
+    char locBuff[100] = { '\0' };
+
+    snprintf(locBuff, sizeof(locBuff), "pointLights[%d].color", number);    
+    glUniform3f(glGetUniformLocation(shader, locBuff),
         m_color.x, m_color.y, m_color.z);
-    glUniform3f(shader.uniforms().pointLights[number].position,
+
+    snprintf(locBuff, sizeof(locBuff), "pointLights[%d].position", number);
+    glUniform3f(glGetUniformLocation(shader, locBuff),
         m_position.x, m_position.y, m_position.z);
-    glUniform3f(shader.uniforms().pointLights[number].attenuation,
+
+    snprintf(locBuff, sizeof(locBuff), "pointLights[%d].attenuation", number);    
+    glUniform3f(glGetUniformLocation(shader, locBuff),
         m_attenuation.x, m_attenuation.y, m_attenuation.z);
-    glUniform1f(shader.uniforms().pointLights[number].intensity, m_intensity);
+
+    snprintf(locBuff, sizeof(locBuff), "pointLights[%d].intensity", number); 
+    glUniform1f(glGetUniformLocation(shader, locBuff), m_intensity);
 }
 
 SpotLight::SpotLight(glm::vec3 color, glm::vec3 attenuation,
@@ -62,16 +71,16 @@ SpotLight::SpotLight(glm::vec3 color, glm::vec3 attenuation,
     m_isOn(isOn)
 {}
 
-void SpotLight::talkToShader(const Shader& shader) const
+void SpotLight::talkToShader(GLuint shader) const
 {
-    glUniform3f(shader.uniforms().spotLight.color,
+    glUniform3f(glGetUniformLocation(shader, "spotLight.color"),
         m_color.x, m_color.y, m_color.z);
-    glUniform3f(shader.uniforms().spotLight.attenuation,
+    glUniform3f(glGetUniformLocation(shader, "spotLight.attenuation"),
         m_attenuation.x, m_attenuation.y, m_attenuation.z);
-    glUniform1f(shader.uniforms().spotLight.intensity, m_intensity);
-    glUniform1f(shader.uniforms().spotLight.halfAngleCos, m_halfAngleCos);
-    glUniform1f(shader.uniforms().spotLight.verticalOffset, m_verticalOffset);
-    glUniform1i(shader.uniforms().spotLight.isOn, m_isOn.state());
+    glUniform1f(glGetUniformLocation(shader, "spotLight.intensity"), m_intensity);
+    glUniform1f(glGetUniformLocation(shader, "spotLight.halfAngleCos"), m_halfAngleCos);
+    glUniform1f(glGetUniformLocation(shader, "spotLight.verticalOffset"), m_verticalOffset);
+    glUniform1i(glGetUniformLocation(shader, "spotLight.isOn"), m_isOn.state());
 }
 
 void SpotLight::switchOnOff(bool signal)
@@ -103,7 +112,7 @@ void LightManager::setSpotLight(const SpotLight& spotLight)
 }
 
 
-void LightManager::talkToShader(const Shader& shader) const
+void LightManager::talkToShader(GLuint shader) const
 {
     m_ambientLight.talkToShader(shader);
     m_directionalLight.talkToShader(shader);
@@ -113,10 +122,10 @@ void LightManager::talkToShader(const Shader& shader) const
     m_spotLight.talkToShader(shader);
 }
 
-void LightManager::talkAboutPointLights(const Shader& shader) const
+void LightManager::talkAboutPointLights(GLuint shader) const
 {
     size_t cappedNumberOfLights = std::min(m_pointLights.size(), MAX_POINT_LIGHTS);
-    glUniform1i(shader.uniforms().numPointLights, cappedNumberOfLights);
+    glUniform1i(glGetUniformLocation(shader, "numPointLights"), cappedNumberOfLights);
     for (int i = 0; i < cappedNumberOfLights; i++)
         m_pointLights[i].talkToShader(shader, i);
 }

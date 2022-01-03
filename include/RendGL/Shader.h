@@ -65,6 +65,7 @@ public:
 
     const UniformVariables& uniforms() const { return m_uniforms; }
     void activateShader() const { glUseProgram(m_id); }
+    GLuint id() const { return m_id; }
     
 private:
     std::string readShaderCode(const std::string& filename);

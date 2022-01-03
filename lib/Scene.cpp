@@ -70,8 +70,8 @@ void Scene3D::render(const EventContainer& events)
     m_camera.processEvents(events);
     m_lights.processEvents(events);
     
-    m_camera.talkToShader(m_shader);
-    m_lights.talkToShader(m_shader);
+    m_camera.talkToShader(m_shader.id());
+    m_lights.talkToShader(m_shader.id());
 
     for (auto& it : m_instances)
         it.render(m_shader);
