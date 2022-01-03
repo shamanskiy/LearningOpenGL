@@ -8,29 +8,16 @@
 
 using namespace std;
 
-Shader::Shader()
+Shader::Shader(const std::string& vertexShaderFile, const std::string& fragmentShaderFile)
 {
-    auto vertexStr = readShaderCode(SHADERS_DIR + "vertexShader.glsl");
-    auto fragmentStr = readShaderCode(SHADERS_DIR + "fragmentShader.glsl");
+    auto vertexStr = readShaderCode(vertexShaderFile);
+    auto fragmentStr = readShaderCode(fragmentShaderFile);
     createShaders(vertexStr, fragmentStr);
 }
 
 Shader::~Shader()
 {
     deleteShaders();
-}
-
-Shader::Shader(Shader&& other) noexcept :
-    m_id(other.m_id)
-{
-    other.m_id = 0;
-}
-
-Shader& Shader::operator=(Shader&& other) & noexcept
-{
-    m_id = other.m_id;
-    other.m_id = 0;
-    return *this;
 }
 
 std::string Shader::readShaderCode(const std::string& filename)

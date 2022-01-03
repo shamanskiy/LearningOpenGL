@@ -10,11 +10,8 @@
 class Shader
 {
 public:
-    // move-only
-    Shader();
+    Shader(const std::string& vertexShaderFile, const std::string& fragmentShaderFile);
     ~Shader();
-    Shader(Shader&& other) noexcept;
-    Shader& operator=(Shader&& other) & noexcept;
 
     void activateShader() const { glUseProgram(m_id); }
     GLuint id() const { return m_id; }

@@ -5,7 +5,5 @@ target_link_libraries(exampleScene PRIVATE RendGL)
 add_executable(firstWindow firstWindow.cpp)
 target_link_libraries(firstWindow PUBLIC GLEW::GLEW glfw)
 
-add_executable(firstTriangle2 firstTriangle2.cpp)
-target_link_libraries(firstTriangle2 PRIVATE RendGL)
-
-add_subdirectory(firstTriangle)
+add_executable(firstTriangle firstTriangle.cpp)
+target_link_libraries(firstTriangle PRIVATE RendGL)

@@ -2,7 +2,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include "loadShader.h"
+#include "Shader.h"
+#include "Config.h"
 
 int main( void )
 {
@@ -77,8 +78,8 @@ int main( void )
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     
 	// Create, compile and activate the shader
-	GLuint shaderID = loadShaders("vertexShader.glsl", "fragmentShader.glsl");
-    glUseProgram(shaderID);
+    Shader shader(SHADERS_DIR + "vertexShaderBasic.glsl", SHADERS_DIR + "fragmentShaderBasic.glsl");
+    shader.activateShader();
 
     while (!glfwWindowShouldClose(window))
     {

@@ -19,7 +19,6 @@ namespace
     class Scene3D : public Scene
     {
     public:
-        Scene3D() = default;
         Scene3D(const nlohmann::json& sceneJson);
 
         // Get fresh events and render the scene
@@ -57,7 +56,7 @@ std::unique_ptr<Scene> Scene::loadScene(const std::string& fileName)
     if (sceneJson["sceneType"].get<std::string>() == "3D")
         return std::make_unique<Scene3D>(sceneJson);
     else
-        return std::make_unique<Scene3D>();
+        throw std::runtime_error("Unknown scene type");
 }
 
 Scene::~Scene() = default;
@@ -77,7 +76,8 @@ void Scene3D::render(const EventContainer& events)
         it.render(m_shader.id());
 }
 
-Scene3D::Scene3D(const nlohmann::json& sceneJson)
+Scene3D::Scene3D(const nlohmann::json& sceneJson) :
+    m_shader(SHADERS_DIR + "vertexShader.glsl", SHADERS_DIR + "fragmentShader.glsl")
 {
     loadModels(sceneJson);
     loadInstances(sceneJson);
