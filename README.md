@@ -3,7 +3,7 @@ LearningOpenGL is a small beginner-level project to learn a bit of OpenGL.
 
 The project follows the guidelines of modern OpenGL and demonstrates the complete rendering pipeline, object importing, shading, interactive camera, texturing and more. This is also my playground to experiment with Cmake, vcpkg and unit testing.
 
-<img src="https://raw.githubusercontent.com/Shamanskiy/LearningOpenGL/media/images/hero.png" width="500">
+<img src="https://raw.githubusercontent.com/Shamanskiy/LearningOpenGL/media/images/hero-500x500.png" width="500">
 
 ## Prerequisites
 * CMake >= 3.20
