@@ -19,9 +19,6 @@ find_package(glm CONFIG REQUIRED) # linear algebra library for OpenGL
 find_package(assimp CONFIG REQUIRED) # asset import
 find_package(GTest CONFIG REQUIRED) # unit_testing
 
-# download content (textures and models) from AWS S3 if not yet downloaded
-include(cmake/DownloadData.txt)
-
 # The compiled library code is here
 add_subdirectory(lib)
 
@@ -31,12 +28,7 @@ add_subdirectory(apps)
 # Unit tests are here
 add_subdirectory(tests)
 
-# Config.h contains various useful #defines:
-# TEXTURE_DIR is a path to textures.
-# SHADERS_DIR is a path to shaders.
-set(SHADERS_DIR ${PROJECT_SOURCE_DIR}/lib/shaders)
-set(SCENES_DIR ${PROJECT_SOURCE_DIR}/scenes)
-configure_file("${PROJECT_SOURCE_DIR}/lib/Config.h.in" "${PROJECT_BINARY_DIR}/include/Config.h")
-
+# Configure path macros
+include(cmake/configure.cmake)
 
 

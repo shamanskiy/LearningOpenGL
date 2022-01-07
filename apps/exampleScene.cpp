@@ -13,7 +13,7 @@ int main() {
 
         // Scene holds all information about models, textures and lights to render
         // as well as the camera.
-        auto scene = Scene::loadScene(SCENES_DIR + "exampleScene.json");
+        auto scene = Scene::loadScene(SCENES_DIR + "welcomeToOpenGL_hero.json");
 
         // Loop until the window is closed.
         while (!window.shouldClose())
