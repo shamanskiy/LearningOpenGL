@@ -13,13 +13,13 @@
 		{
 			"type": "ambient",
 			"color": [ 1.0, 1.0, 1.0 ],
-			"intensity": 0.3
+			"intensity": 0.4
 		},
 		{
 			"type": "directional",
 			"color": [ 1.0, 1.0, 1.0 ],
 			"direction": [ -1.0, -1.0, -1.0 ],
-			"intensity": 0.3
+			"intensity": 0.4
 		},
 		{
 			"type": "point",
