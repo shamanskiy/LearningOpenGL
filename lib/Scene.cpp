@@ -14,8 +14,14 @@
 #include "Camera.h"
 #include "Utils.h"
 
+#include <cstdlib>
+
 namespace
 {
+    float rand01() {
+        return float(rand())/float(RAND_MAX);
+    }
+
     class Scene3D : public Scene
     {
     public:
@@ -113,13 +119,26 @@ void Scene3D::loadInstances(const nlohmann::json& sceneJson)
 {
     for (auto& instance : sceneJson["instances"])
         if (m_models.find(instance["model"]) != m_models.end())
-            m_instances.push_back(
-                ModelInstance(
+            m_instances.emplace_back(
                     m_models[instance["model"]],
                     instance["origin"][0],
                     instance["origin"][1],
                     instance["origin"][2],
-                    instance["scale"]));
+                    instance["scale"]);
+
+    int num_stars = 1000;
+    if (m_models.find("star") != m_models.end())
+        for (int i = 0; i < num_stars; i++)
+        {
+            float phi = rand01() * M_PI;
+            float theta = rand01() * M_PI - M_PI_2;
+            float radius = 15. + rand01() * 10;
+            GLfloat x = sin(theta) * radius;
+            GLfloat y = sin(phi)*cos(theta) * radius;
+            GLfloat z = cos(phi)*cos(theta) * radius;
+            GLfloat scale = 0.01 + rand01() * 0.09;
+            m_instances.emplace_back(m_models["star"],x,y,z,scale);
+        }
 }
 
 void Scene3D::loadCamera(const nlohmann::json& sceneJson)
