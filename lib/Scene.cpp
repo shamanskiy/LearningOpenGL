@@ -83,7 +83,7 @@ void Scene3D::render(const EventContainer& events)
 }
 
 Scene3D::Scene3D(const nlohmann::json& sceneJson) :
-    m_shader(SHADERS_DIR + "vertexShader.glsl", SHADERS_DIR + "fragmentShader.glsl")
+    m_shader(SHADERS_DIR + "exampleSceneVertex.glsl", SHADERS_DIR + "exampleSceneFragment.glsl")
 {
     loadModels(sceneJson);
     loadInstances(sceneJson);
