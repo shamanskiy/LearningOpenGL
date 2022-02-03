@@ -40,7 +40,7 @@ namespace
         void resetFrame(const EventContainer& events) const;
 
     private:
-        Shader m_shader;
+        ShaderProgram m_shader;
 
         Camera m_camera;
         unordered_map<string, Model> m_models;

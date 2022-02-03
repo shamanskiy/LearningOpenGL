@@ -5,31 +5,31 @@
 #include <GL/glew.h>
 
 
-// Shader loads shader glsl code and compiles it on the GPU.
+// ShaderProgram loads shader glsl code and compiles it on the GPU.
 // It then serves as a handle for the shader variables.
-class Shader
+class ShaderProgram
 {
 public:
-    Shader(const std::string& vertexShaderFile, const std::string& fragmentShaderFile);
-    ~Shader();
+    ShaderProgram(const std::string& vertexShaderFile, const std::string& fragmentShaderFile);
+    ~ShaderProgram();
 
-    void activateShader() const { glUseProgram(m_id); }
-    GLuint id() const { return m_id; }
+    void activateShader() const { glUseProgram(m_programID); }
+    GLuint id() const { return m_programID; }
     
 private:
     std::string readShaderCode(const std::string& filename);
 
-    void createShaders(const std::string & vShader,
+    void createProgram(const std::string & vShader,
                       const std::string & fShader);
     // compile shader code on GPU
     void compileShader(const std::string & shaderCode, GLenum shaderType);
 
-    void linkShaders();
-    void validateShaders();
+    void linkProgram();
+    void validateProgram();
     
     // free memory on GPU
-    void deleteShaders();
+    void deleteProgram();
    
 private:
-    GLuint m_id{0};
+    GLuint m_programID{0};
 };

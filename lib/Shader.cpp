@@ -37,19 +37,19 @@ namespace
     }
 }
 
-Shader::Shader(const std::string& vertexShaderFile, const std::string& fragmentShaderFile)
+ShaderProgram::ShaderProgram(const std::string& vertexShaderFile, const std::string& fragmentShaderFile)
 {
     auto vertexStr = readShaderCode(vertexShaderFile);
     auto fragmentStr = readShaderCode(fragmentShaderFile);
-    createShaders(vertexStr, fragmentStr);
+    createProgram(vertexStr, fragmentStr);
 }
 
-Shader::~Shader()
+ShaderProgram::~ShaderProgram()
 {
-    deleteShaders();
+    deleteProgram();
 }
 
-std::string Shader::readShaderCode(const std::string& filename)
+std::string ShaderProgram::readShaderCode(const std::string& filename)
 {
     std::string fileContent;
     std::ifstream fileStream(filename);
@@ -65,17 +65,17 @@ std::string Shader::readShaderCode(const std::string& filename)
     return fileContent;
 }
 
-void Shader::createShaders(const std::string &vShader, const std::string &fShader)
+void ShaderProgram::createProgram(const std::string &vShader, const std::string &fShader)
 {
-    m_id = glCreateProgram();
+    m_programID = glCreateProgram();
 
     compileShader(vShader, GL_VERTEX_SHADER);
     compileShader(fShader, GL_FRAGMENT_SHADER);
-    linkShaders();
-    validateShaders();
+    linkProgram();
+    validateProgram();
 }
 
-void Shader::compileShader(const std::string &shaderCode, GLenum shaderType)
+void ShaderProgram::compileShader(const std::string &shaderCode, GLenum shaderType)
 {
     auto shader = glCreateShader(shaderType);
 
@@ -90,33 +90,33 @@ void Shader::compileShader(const std::string &shaderCode, GLenum shaderType)
 
     checkShader(shader);
 
-    glAttachShader(m_id,shader);
+    glAttachShader(m_programID, shader);
 }
 
-void Shader::linkShaders()
+void ShaderProgram::linkProgram()
 {
-    glLinkProgram(m_id);
-    checkProgram(m_id, GL_LINK_STATUS);
+    glLinkProgram(m_programID);
+    checkProgram(m_programID, GL_LINK_STATUS);
 }
 
-void Shader::validateShaders()
+void ShaderProgram::validateProgram()
 {
     // To validate a shader, we need a bound VAO
     GLuint validationVAO;
 	glGenVertexArrays(1, &validationVAO);
     glBindVertexArray(validationVAO);
 
-    glValidateProgram(m_id);
-    checkProgram(m_id, GL_VALIDATE_STATUS);
+    glValidateProgram(m_programID);
+    checkProgram(m_programID, GL_VALIDATE_STATUS);
 
     glDeleteVertexArrays(1, &validationVAO);
 }
 
-void Shader::deleteShaders()
+void ShaderProgram::deleteProgram()
 {
-    if (m_id != 0)
+    if (m_programID != 0)
     {
-        glDeleteProgram(m_id);
-        m_id = 0;
+        glDeleteProgram(m_programID);
+        m_programID = 0;
     }
 }

@@ -12,7 +12,7 @@
 
 using namespace std;
 
-class Shader;
+class ShaderProgram;
 class aiNode;
 class aiMesh;
 class aiScene;

@@ -8,7 +8,7 @@ int main()
     Window window(600, 400, "OpenGL Triangle");
 
     // Create, compile and activate the shader
-    Shader shader(SHADERS_DIR + "vertexShaderBasic.glsl", SHADERS_DIR + "fragmentShaderBasic.glsl");
+    ShaderProgram shader(SHADERS_DIR + "vertexShaderBasic.glsl", SHADERS_DIR + "fragmentShaderBasic.glsl");
     shader.activateShader();
 
     // Vertex data in the memory that we will send to the GPU.
