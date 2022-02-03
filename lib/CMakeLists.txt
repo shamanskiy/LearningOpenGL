@@ -43,7 +43,7 @@ add_library(RendGL
 # PUBLIC means that they will also be linked to any downstream app or lib
 target_link_libraries(RendGL
   PUBLIC
-    OpenGL::GL
+    #OpenGL::GL
     GLEW::GLEW
     glfw
     glm::glm

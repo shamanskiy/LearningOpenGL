@@ -1,9 +1,11 @@
 #version 330 core
 
-// Output fragment color, automatically mapped to the drawing buffer.
+// Interpolated position passed from the vertex shader.
+in vec3 position3D;
+// Output fragment color.
 out vec3 color;
 
 void main()
 { 
-    color = vec3(1,1,1);
+    color = (position3D + vec3(1.,1.,2.))/2.;
 }

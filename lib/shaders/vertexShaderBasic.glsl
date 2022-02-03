@@ -1,9 +1,14 @@
 #version 330 core
 
-// Input data mapped from attribute 1 of the bound VAO
-layout(location = 1) in vec3 vertexPos;
+// Input vector with 3D coordinates of a vertex.
+layout(location = 1) in vec3 vertexCoordinates;
+// Output vector that will be passed to the fragment shader.
+out vec3 position3D;
 
-void main(){
-    // Global variable that must be set in the vertex shader.
-    gl_Position = vec4(vertexPos, 1.0);
+void main() {
+    // Built-in vector of homogeneous vertex coordinates.
+    // Has to be assigned before rasterization.
+    gl_Position = vec4(vertexCoordinates, 1.0);
+    // Pass the coordinates to the fragment shader without change.
+    position3D = vertexCoordinates;
 }
