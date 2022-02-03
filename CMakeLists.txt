@@ -12,7 +12,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # find necessary libraries
-#find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED) # a distribution/wrapper for OpenGL (I guess)
 find_package(glfw3 REQUIRED) # window and IO manager for OpenGL
 find_package(glm CONFIG REQUIRED) # linear algebra library for OpenGL

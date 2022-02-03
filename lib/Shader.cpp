@@ -8,6 +8,35 @@
 
 using namespace std;
 
+namespace 
+{
+    void checkShader(GLuint shaderID)
+    {
+        GLint result = 0;
+        GLchar eLog[1024] = { 0 };
+        glGetShaderiv(shaderID, GL_COMPILE_STATUS, &result);
+
+        if (!result)
+        {
+            glGetShaderInfoLog(shaderID, sizeof(eLog), NULL, eLog);
+            throw runtime_error("Shader error: " + string(eLog));
+        }
+    }
+
+    void checkProgram(GLuint programID, GLenum whatToCheck)
+    {
+        GLint result = 0;
+        GLchar eLog[1024] = { 0 };
+        glGetProgramiv(programID, whatToCheck, &result);
+
+        if (!result)
+        {
+            glGetProgramInfoLog(programID, sizeof(eLog), NULL, eLog);
+            throw runtime_error("Shader error: " + string(eLog));
+        }
+    }
+}
+
 Shader::Shader(const std::string& vertexShaderFile, const std::string& fragmentShaderFile)
 {
     auto vertexStr = readShaderCode(vertexShaderFile);
@@ -43,13 +72,7 @@ void Shader::createShaders(const std::string &vShader, const std::string &fShade
     compileShader(vShader, GL_VERTEX_SHADER);
     compileShader(fShader, GL_FRAGMENT_SHADER);
     linkShaders();
-
-    // To validate a shader, we need a bound VAO
-    GLuint validationVAO;
-	glGenVertexArrays(1, &validationVAO);
-    glBindVertexArray(validationVAO);
     validateShaders();
-    glDeleteVertexArrays(1, &validationVAO);
 }
 
 void Shader::compileShader(const std::string &shaderCode, GLenum shaderType)
@@ -65,16 +88,7 @@ void Shader::compileShader(const std::string &shaderCode, GLenum shaderType)
     glShaderSource(shader, 1, codes, codeLens);
     glCompileShader(shader);
 
-    GLint result = 0;
-    GLchar eLog[1024] = { 0 };
-
-    glGetShaderiv(shader,GL_COMPILE_STATUS,&result);
-    if (!result)
-    {
-        glGetShaderInfoLog(shader, sizeof(eLog), NULL, eLog);
-        throw runtime_error("Error compiling shader program: "
-                                 + string(eLog));
-    }
+    checkShader(shader);
 
     glAttachShader(m_id,shader);
 }
@@ -82,31 +96,20 @@ void Shader::compileShader(const std::string &shaderCode, GLenum shaderType)
 void Shader::linkShaders()
 {
     glLinkProgram(m_id);
-
-    GLint result = 0;
-    GLchar eLog[1024] = { 0 };
-    glGetProgramiv(m_id, GL_LINK_STATUS, &result);
-    if (!result)
-    {
-        glGetProgramInfoLog(m_id, sizeof(eLog), NULL, eLog);
-        throw runtime_error("Error linking shader program: " +
-                                 string(eLog));
-    }
+    checkProgram(m_id, GL_LINK_STATUS);
 }
 
 void Shader::validateShaders()
 {
+    // To validate a shader, we need a bound VAO
+    GLuint validationVAO;
+	glGenVertexArrays(1, &validationVAO);
+    glBindVertexArray(validationVAO);
+
     glValidateProgram(m_id);
- 
-    GLint result = 0;
-    GLchar eLog[1024] = { 0 };
-    glGetProgramiv(m_id, GL_VALIDATE_STATUS, &result);
-    if (!result)
-    {
-        glGetProgramInfoLog(m_id, sizeof(eLog), NULL, eLog);
-        throw runtime_error("Error validating shader program: " +
-            string(eLog));
-    }
+    checkProgram(m_id, GL_VALIDATE_STATUS);
+
+    glDeleteVertexArrays(1, &validationVAO);
 }
 
 void Shader::deleteShaders()

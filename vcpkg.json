@@ -2,7 +2,6 @@
     "name" : "learning-open-gl",
     "version-string" : "1.0",
     "dependencies" : [
-        "opengl",
         "glew",
         "glfw3",
         "glm",
