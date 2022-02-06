@@ -9,23 +9,8 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Shader.h"
 #include "Config.h"
-
-// ==============================================================================
-// =======================          Helpers     =============================
-// ==============================================================================
-
-namespace
-{
-	struct TextureException : public std::exception
-	{
-		const char* what() const _NOEXCEPT
-		{
-			return "Texture file not found";
-		}
-	};
-}
+#include "Utils.h"
 
 // ==============================================================================
 // =====================       TEXTURE CLASS       ==============================
@@ -63,7 +48,7 @@ void Texture::loadTexture(const string& fileName)
 	// load image/texture data
 	unsigned char* textureData = stbi_load(fileName.c_str(), &width, &height, &bitDepth, 0);
 	if (!textureData)
-		throw TextureException();
+		throw runtime_error("Texture file " + fileName + " not found!");
 
 	// create texture object on the GPU
 	glGenTextures(1, &m_textureID);
@@ -136,7 +121,7 @@ void Model::loadModel()
 		aiProcess_RemoveComponent |aiProcess_GenSmoothNormals |
 		aiProcess_JoinIdenticalVertices);
 	if (!scene)
-		throw ModelException("Failed to load a model: " + string(importer.GetErrorString()));
+		throw runtime_error("Failed to load a model: " + string(importer.GetErrorString()));
 
 	loadNode(scene->mRootNode, scene);
 	loadMaterials(scene);
@@ -221,9 +206,9 @@ Texture Model::loadTexture(aiMaterial* material) const
 		{
 			return Texture(MODELS_DIR + m_name + "/" + path.data);
 		}
-		catch (const TextureException& ex)
+		catch (const exception& ex)
 		{
-			debugOutput(m_name + "/" + path.data + ": file not found.");
+			debugOutput(ex.what());
 		}
 	}
 	

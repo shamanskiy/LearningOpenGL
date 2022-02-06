@@ -2,14 +2,14 @@
 
 #include <vector>
 #include <string>
-#include <stdexcept>
+#include <array>
 
 // must be here for some reason; can't move to Texture.cpp
 #include <stb_image.h>
+#include <GL/glew.h>
 #include <glm/glm.hpp>
 
 #include "Mesh.h"
-#include "Utils.h"
 
 using namespace std;
 
@@ -114,18 +114,4 @@ private:
 	glm::mat4 m_modelMatrix;
 };
 
-struct ModelException : public std::exception
-{
-	ModelException(const string& message) :
-		m_message(message)
-	{}
-
-	const char* what() const _NOEXCEPT
-	{
-		return m_message.c_str();
-	}
-
-private:
-	string m_message;
-};
 

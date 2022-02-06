@@ -109,7 +109,7 @@ void Scene3D::loadModels(const nlohmann::json& sceneJson)
             m_models[model] = Model(model);
             debugOutput(m_models[model].boundingBoxAsString());
         }
-        catch (const ModelException& e)
+        catch (const exception& e)
         {
             debugOutput(e.what());
         }
