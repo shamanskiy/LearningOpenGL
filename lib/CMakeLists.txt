@@ -2,6 +2,7 @@
 set(HEADERS_LIST
   ${PROJECT_SOURCE_DIR}/include/RendGL/Camera.h
   ${PROJECT_SOURCE_DIR}/include/RendGL/Light.h
+  ${PROJECT_SOURCE_DIR}/include/RendGL/Mesh.h
   ${PROJECT_SOURCE_DIR}/include/RendGL/Model.h
   ${PROJECT_SOURCE_DIR}/include/RendGL/Scene.h
   ${PROJECT_SOURCE_DIR}/include/RendGL/Shader.h
@@ -12,6 +13,7 @@ set(HEADERS_LIST
 set(SOURCES_LIST
   ${PROJECT_SOURCE_DIR}/lib/Camera.cpp
   ${PROJECT_SOURCE_DIR}/lib/Light.cpp
+  ${PROJECT_SOURCE_DIR}/lib/Mesh.cpp
   ${PROJECT_SOURCE_DIR}/lib/Model.cpp
   ${PROJECT_SOURCE_DIR}/lib/Scene.cpp
   ${PROJECT_SOURCE_DIR}/lib/Shader.cpp
