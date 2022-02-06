@@ -6,6 +6,9 @@
 
 using namespace std;
 
+// Use as a bit mask to specify data types in a vertex array.
+// For example, if the data contain positions and normals,
+// pass VertexData::POSITION | VertexData::NORMAL to Mesh. 
 class VertexData {
 public:
 	enum Value {
@@ -16,11 +19,11 @@ public:
 
 	constexpr VertexData(Value value) : m_value(value) {}
 
-	bool has(Value value) const { return (m_value & value) == value; }
-	int stride() const { return 3*has(POSITION) + 2*has(UV) + 3*has(NORMAL); }
-	int positionOffset() const { return 0; }
-	int uvOffset() const { return 3*has(POSITION); }
-	int normalOffset() const { return 3*has(POSITION) + 2*has(UV); }
+	constexpr bool has(Value value) const { return (m_value & value) == value; }
+	constexpr int stride() const { return 3*has(POSITION) + 2*has(UV) + 3*has(NORMAL); }
+	constexpr int positionOffset() const { return 0; }
+	constexpr int uvOffset() const { return 3*has(POSITION); }
+	constexpr int normalOffset() const { return 3*has(POSITION) + 2*has(UV); }
 
 private:
 	Value m_value;
@@ -36,27 +39,19 @@ inline VertexData::Value operator&(VertexData::Value a, VertexData::Value b) {
 	return static_cast<VertexData::Value>(char_result);
 }
 
-// Mesh represents a single 3D object. It gets an array of vertices
-// and an array of indices, copies them to the GPU and then holds
-// the pointers to the arrays of the GPU.
+// Mesh represents a single 3D object. It holds pointers to vertex data on the GPU.
+// The format of vertex data is POSITION -> UV (optional) -> NORMALs (optional).
 class Mesh
 {
 public:
 	Mesh(const vector<GLfloat>& vertices,
-		const vector<GLuint>& indices, VertexData dataTypes);
+		const vector<GLuint>& indices, VertexData vertexData);
 	~Mesh();
 	// Copy constructor is needed for std::vector
 	Mesh(Mesh&& other) noexcept;
 	Mesh& operator=(Mesh&& other) & noexcept = delete;
 
 	void render() const;
-
-private:
-	// create arrays on the GPU
-	void createMesh(const vector<GLfloat>& vertices,
-		const vector<GLuint>& indices, VertexData dataTypes);
-	// delete from GPU
-	void deleteMesh();
 
 private:
 	// Vertex Array, Vertex Buffer and Element Buffer Objects
