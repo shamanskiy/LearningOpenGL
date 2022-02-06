@@ -29,7 +29,7 @@ public:
 	constexpr VertexData(Value value) : m_value(value) {}
 
 	bool has(Value value) const { return (m_value & value) == value; }
-	int sizePerVertex() const { return 3*has(POSITION) + 2*has(UV) + 3*has(NORMAL); }
+	int stride() const { return 3*has(POSITION) + 2*has(UV) + 3*has(NORMAL); }
 	int positionOffset() const { return 0; }
 	int uvOffset() const { return 3*has(POSITION); }
 	int normalOffset() const { return 3*has(POSITION) + 2*has(UV); }
@@ -48,16 +48,6 @@ inline VertexData::Value operator&(VertexData::Value a, VertexData::Value b) {
 	return static_cast<VertexData::Value>(char_result);
 }
 
-/*inline VertexDat operator &(VertexDat a, VertexDat b) {
-	auto char_result = static_cast<char>(a) & static_cast<char>(b);
-	return static_cast<VertexDat>(char_result);
-}
-
-inline VertexDat operator |(VertexDat a, VertexDat b) {
-	auto char_result = static_cast<char>(a) | static_cast<char>(b);
-	return static_cast<VertexDat>(char_result);
-}*/
-
 // Mesh represents a single 3D object. It gets an array of vertices
 // and an array of indices, copies them to the GPU and then holds
 // the pointers to the arrays of the GPU.
@@ -65,7 +55,7 @@ class Mesh
 {
 public:
 	Mesh(const vector<GLfloat>& vertices,
-		const vector<GLuint>& indices);
+		const vector<GLuint>& indices, VertexData dataTypes);
 	~Mesh();
 	// Copy constructor is needed for std::vector
 	Mesh(Mesh&& other) noexcept;
@@ -76,7 +66,7 @@ public:
 private:
 	// create arrays on the GPU
 	void createMesh(const vector<GLfloat>& vertices,
-		const vector<GLuint>& indices);
+		const vector<GLuint>& indices, VertexData dataTypes);
 	// delete from GPU
 	void deleteMesh();
 

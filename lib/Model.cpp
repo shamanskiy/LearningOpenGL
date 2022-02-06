@@ -32,9 +32,9 @@ namespace
 // ==============================================================================
 
 Mesh::Mesh(const std::vector<GLfloat>& vertices,
-	const std::vector<GLuint>& indices)
+	const std::vector<GLuint>& indices, VertexData dataTypes)
 {
-	createMesh(vertices, indices);
+	createMesh(vertices, indices, dataTypes);
 }
 
 Mesh::~Mesh()
@@ -55,7 +55,7 @@ Mesh::Mesh(Mesh&& other) noexcept :
 
 
 void Mesh::createMesh(const vector<GLfloat>& vertices,
-	const vector<GLuint>& indices)
+	const vector<GLuint>& indices, VertexData vertexData)
 {
 	GLuint numVertices = vertices.size();
 	m_numIndices = indices.size();
@@ -72,22 +72,33 @@ void Mesh::createMesh(const vector<GLfloat>& vertices,
 	// copy vertices to the GPU
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[0]) * numVertices, &vertices[0], GL_STATIC_DRAW);
 
-	// we copy 5 values per vertex: the first 3 are the coordinates in 3D, the last 2 are the corresponding texture coordinates
-	// here we tell OpenGl which values are coordinates
-	// layout -> size of data (3 coordinates) -> type -> normalize -> stride -> offset
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * 8, 0);
-	// enable (layout = 0), no need to search to the vertices when using the vertex shader (?)
-	glEnableVertexAttribArray(0);
+	// map position to vertex shader
+	if (vertexData.has(VertexData::POSITION)) {
+		// enable (location = 0) in vertex shader, disable by default
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(
+			0, // (location = 0) in vertex shader
+			3, // position has 3 elements
+			GL_FLOAT, GL_FALSE, // float data, no need to normalize 
+			sizeof(vertices[0]) * vertexData.stride(),
+			(void*)(sizeof(vertices[0]) * vertexData.positionOffset()) );
+	}
 
-	// here we tell OpenGL which values are texture coordinates
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * 8, (void*)(sizeof(vertices[0]) * 3));
-	// same as above
-	glEnableVertexAttribArray(1);
-
-	// here we tell OpenGL which values are normal components
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(vertices[0]) * 8, (void*)(sizeof(vertices[0]) * 5));
-	// same as above
-	glEnableVertexAttribArray(2);
+	// map uv/texture coordinates to vertex shader
+	if (vertexData.has(VertexData::UV)) {
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 
+			sizeof(vertices[0]) * vertexData.stride(), 
+			(void*)(sizeof(vertices[0]) * vertexData.uvOffset()) );
+	}
+	
+	// map normal vectors to vertex shader
+	if (vertexData.has(VertexData::NORMAL)) {
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 
+			sizeof(vertices[0]) * vertexData.stride(), 
+			(void*)(sizeof(vertices[0]) * vertexData.normalOffset()) );
+	}
 
 	// create a Element Buffer Object on the GPU and store its number
 	glGenBuffers(1, &m_EBO);
@@ -102,7 +113,6 @@ void Mesh::createMesh(const vector<GLfloat>& vertices,
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	// deactivate EBO, no need to edit the index data any more
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	
 }
 
 void Mesh::render() const
@@ -304,7 +314,8 @@ void Model::loadMesh(aiMesh* mesh, const aiScene* scene)
 			indices[3 * i + j] = mesh->mFaces[i].mIndices[j];
 
 	// create a Mesh from vertices and indices
-	m_meshes.emplace_back(vertices, indices);
+	m_meshes.emplace_back(vertices, indices, 
+		VertexData::POSITION | VertexData::UV | VertexData::NORMAL);
 	// save a texture index that this Mesh uses
 	m_meshToMaterial.push_back(mesh->mMaterialIndex);
 }
