@@ -24,13 +24,12 @@ class aiMaterial;
 class Mesh
 {
 public:
-	// move-only
-	Mesh() = default;
 	Mesh(const vector<GLfloat>& vertices,
 		const vector<GLuint>& indices);
 	~Mesh();
+	// Copy constructor is needed for std::vector
 	Mesh(Mesh&& other) noexcept;
-	Mesh& operator=(Mesh&& other) & noexcept;
+	Mesh& operator=(Mesh&& other) & noexcept = delete;
 
 	void render() const;
 

@@ -9,7 +9,7 @@ int main() {
     try
     {
         // Create and initialize an application window with given dimensions and name.
-        Window window(800, 600, "OpenGL App");
+        Window window(800, 600, "Example Scene");
 
         // Scene holds all information about models, textures and lights to render
         // as well as the camera.

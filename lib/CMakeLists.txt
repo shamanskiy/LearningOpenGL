@@ -20,8 +20,10 @@ set(SOURCES_LIST
 )
 
 set(SHADERS_LIST
-  ${PROJECT_SOURCE_DIR}/lib/shaders/fragmentShader.glsl
-  ${PROJECT_SOURCE_DIR}/lib/shaders/vertexShader.glsl
+  ${PROJECT_SOURCE_DIR}/lib/shaders/exampleSceneVertex.glsl
+  ${PROJECT_SOURCE_DIR}/lib/shaders/exampleSceneFragment.glsl
+  ${PROJECT_SOURCE_DIR}/lib/shaders/firstTriangleVertex.glsl
+  ${PROJECT_SOURCE_DIR}/lib/shaders/firstTriangleFragment.glsl
 )
 
 set(SCENES_LIST

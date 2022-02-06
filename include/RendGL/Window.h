@@ -15,13 +15,13 @@ public:
 
     // Give access to all GLFW events processed during this frame,
     // e.g. key pressed, mouse moved, time elapsed.
-    const EventContainer& events() { return m_events; }
+    const EventContainer& events() const { return m_events; }
 
     // Swap OpenGL buffers to update the window image
     void swapBuffers() { glfwSwapBuffers(m_window); }
 
     // Check if the should close (e.g. "close" button was clicked)
-    bool shouldClose() { return glfwWindowShouldClose(m_window); }
+    bool shouldClose() const { return glfwWindowShouldClose(m_window); }
 
     // Access functions for the buffer size.
     // Buffer size may differ from the window size,

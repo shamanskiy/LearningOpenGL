@@ -53,19 +53,6 @@ Mesh::Mesh(Mesh&& other) noexcept :
 	other.m_EBO = 0;
 }
 
-Mesh& Mesh::operator=(Mesh&& other) & noexcept
-{
-	m_VAO = other.m_VAO;
-	m_VBO = other.m_VBO;
-	m_EBO = other.m_EBO;
-	m_numIndices = other.m_numIndices;
-
-	other.m_VAO = 0;
-	other.m_VBO = 0;
-	other.m_EBO = 0;
-
-	return *this;
-}
 
 void Mesh::createMesh(const vector<GLfloat>& vertices,
 	const vector<GLuint>& indices)
@@ -110,24 +97,22 @@ void Mesh::createMesh(const vector<GLfloat>& vertices,
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices[0]) * m_numIndices, &indices[0], GL_STATIC_DRAW);
 
 	// deactivate VAO, no need to edit this object (should it be here or after VBO and EBO?)
-	//glBindVertexArray(0);
+	glBindVertexArray(0);
 	// deactivate VBO, no need to edit the vertex data any more
-	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	// deactivate EBO, no need to edit the index data any more
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	
 }
 
 void Mesh::render() const
 {
-	// activate VAO, VAO = object (?)
+	// bind VAO (also activates VBO and EBO)
 	glBindVertexArray(m_VAO);
-	// activate EBO
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-	// 0 is a nullptr to smth
-	glDrawElements(GL_TRIANGLES, m_numIndices, GL_UNSIGNED_INT, nullptr);
-	// deactivate VAO and EBO
-	//glBindVertexArray(0);
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	// 0 is the offset from the beginning of the index array
+	glDrawElements(GL_TRIANGLES, m_numIndices, GL_UNSIGNED_INT, 0);
+	// deactivate VAO
+	glBindVertexArray(0);
 }
 
 void Mesh::deleteMesh()
@@ -319,7 +304,7 @@ void Model::loadMesh(aiMesh* mesh, const aiScene* scene)
 			indices[3 * i + j] = mesh->mFaces[i].mIndices[j];
 
 	// create a Mesh from vertices and indices
-	m_meshes.push_back(Mesh(vertices, indices));
+	m_meshes.emplace_back(vertices, indices);
 	// save a texture index that this Mesh uses
 	m_meshToMaterial.push_back(mesh->mMaterialIndex);
 }

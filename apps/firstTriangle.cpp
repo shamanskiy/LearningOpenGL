@@ -5,7 +5,7 @@
 
 int main()
 {
-    Window window(600, 400, "OpenGL Triangle");
+    Window window(600, 400, "First Triangle");
 
     // Create, compile and activate the shader
     ShaderProgram shader(SHADERS_DIR + "firstTriangleVertex.glsl", SHADERS_DIR + "firstTriangleFragment.glsl");

@@ -20,7 +20,7 @@ int main()
     glewExperimental = GL_TRUE;
 
     // Create a GLFW window and tell OpenGL to draw to it.
-    GLFWwindow* window = glfwCreateWindow(600, 400, "OpenGL Window", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(600, 400, "First Window", nullptr, nullptr);
     if (!window) {
         std::cout << "Failed to create a GLFW window\n";
         return -1;
